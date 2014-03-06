@@ -1,0 +1,9 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =7
+let g:netrw_dirhist_1='/Users/shichiku_yuki/Documents/project/pigg/fantasia.trunk/views'
+let g:netrw_dirhist_2='/Users/shichiku_yuki/Documents/study/server/utils/public'
+let g:netrw_dirhist_3='/'
+let g:netrw_dirhist_4='/Users/shichiku_yuki/Documents/project/g1/g1-base/server/game/backend/features/init'
+let g:netrw_dirhist_5='/Users/shichiku_yuki/.ssh/pem'
+let g:netrw_dirhist_6='/Users/shichiku_yuki/Documents/project/pigg/fantasia.trunk/node_modules/boost/lib/cacheupdater'
+let g:netrw_dirhist_7='/Users/shichiku_yuki/Documents/study/comtec/views'
