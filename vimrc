@@ -18,6 +18,11 @@ endif
 
  NeoBundle 'itchyny/lightline.vim'
 
+" NerdTree
+ NeoBundle 'scrooloose/nerdtree'
+" NerdTree Tabs
+" NeoBundle 'jistr/vim-nerdtree-tabs'
+
 " vim-fugitive
  NeoBundle 'tpope/vim-fugitive'
  NeoBundle 'gregsexton/gitv.git'
