@@ -49,6 +49,8 @@ endif
 " Open Browser
  NeoBundle 'tyru/open-browser.vim'
 
+" Indent
+ NeoBundle 'nathanaelkane/vim-indent-guides'
 " neocomplcache
 " NeoBundle 'Shougo/neocomplcache.vim'
 " NeoBundle 'Shougo/neocomplete.vim'
@@ -159,7 +161,7 @@ set expandtab
 set tabstop=2
 set softtabstop=2
 set shiftwidth=2
-set backspace=indent
+set backspace=indent,eol,start
 
 " ====================
 " mouse options
@@ -220,6 +222,16 @@ let g:syntastic_javascript_checkers = ['jshint']
 "let g:ctrlp_clear_cache_on_exit = 0
 "let g:ctrlp_mruf_max            = 500
 "" let g:ctrlp_open_new_file       = 1
+
+
+" ====================
+" vim-indent-guides
+" ====================
+let g:indent_guides_auto_colors=0
+autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd   ctermbg=234
+autocmd VimEnter,Colorscheme * :hi IndentGuidesEven  ctermbg=240
+let g:indent_guides_enable_on_vim_startup=2
+let g:indent_guides_guide_size=1
 
 
 "" old settings
