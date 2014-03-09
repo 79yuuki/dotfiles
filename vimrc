@@ -1,9 +1,13 @@
 " Setting for NeoBundle
-filetype off
-if has('vim_starting')
-  set runtimepath+=~/.vim/neobundle.vim.git
-  call neobundle#rc(expand('~/.bundle/'))
-endif
+ if has('vim_starting')
+   set nocompatible               " Be iMproved
+
+   " Required:
+   set runtimepath+=~/.vim/bundle/neobundle.vim/
+ endif
+
+ " Required:
+ call neobundle#rc(expand('~/.vim/bundle/'))
 
 " originalrepos on github
  NeoBundle 'Shougo/neobundle.vim'
