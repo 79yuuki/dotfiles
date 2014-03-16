@@ -17,13 +17,14 @@
  NeoBundle 'Shougo/unite.vim'
  NeoBundle 'Shougo/neocomplcache'
  NeoBundle 'Shougo/neosnippet'
+ NeoBundle 'Shougo/neosnippet-snippets'
  NeoBundle 'jpalardy/vim-slime'
  NeoBundle 'scrooloose/syntastic'
 
  NeoBundle 'itchyny/lightline.vim'
 
 " NerdTree
-" NeoBundle 'scrooloose/nerdtree'
+ NeoBundle 'scrooloose/nerdtree'
 " NerdTree Tabs
 " NeoBundle 'jistr/vim-nerdtree-tabs'
 
@@ -106,7 +107,7 @@
  NeoBundle 'scrooloose/syntastic'
 
 " Color Schemes
-" NeoBundle 'goatslacker/mango.vim'
+ NeoBundle 'goatslacker/mango.vim'
 
 ""NeoBundle 'https://bitbucket.org/kovisoft/slimv'
 
@@ -186,9 +187,10 @@ endif
 syntax enable
 set t_Co=256
 set background=dark
-"colorscheme mango
+color mango
 "colorscheme proteus
 "colorscheme molokai
+"colorscheme desert
 "colorscheme distinguished
 
 " Adjust omnifunc pop menu
