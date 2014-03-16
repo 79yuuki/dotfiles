@@ -23,7 +23,7 @@
  NeoBundle 'itchyny/lightline.vim'
 
 " NerdTree
- NeoBundle 'scrooloose/nerdtree'
+" NeoBundle 'scrooloose/nerdtree'
 " NerdTree Tabs
 " NeoBundle 'jistr/vim-nerdtree-tabs'
 
