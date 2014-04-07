@@ -19,12 +19,11 @@
  NeoBundle 'Shougo/neosnippet'
  NeoBundle 'Shougo/neosnippet-snippets'
  NeoBundle 'jpalardy/vim-slime'
- NeoBundle 'scrooloose/syntastic'
 
  NeoBundle 'itchyny/lightline.vim'
 
 " NerdTree
- NeoBundle 'scrooloose/nerdtree'
+" NeoBundle 'scrooloose/nerdtree'
 " NerdTree Tabs
 " NeoBundle 'jistr/vim-nerdtree-tabs'
 
@@ -36,6 +35,10 @@
 
 " Syntastic
  NeoBundle 'scrooloose/syntastic'
+
+" Pathogen
+ NeoBundle 'tpope/vim-pathogen'
+
 " Tagbar
  NeoBundle 'majutsushi/tagbar'
 
@@ -101,10 +104,7 @@
 
 
 " CtrlP
-" NeoBundle "kien/ctrlp.vim"
-
- " Syntastic
- NeoBundle 'scrooloose/syntastic'
+ NeoBundle "kien/ctrlp.vim"
 
 " Color Schemes
  NeoBundle 'goatslacker/mango.vim'
@@ -141,6 +141,28 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 set list
 set listchars=tab:»-,trail:-,nbsp:%,extends:>,precedes:<
 
+let g:lightline = {
+      \ 'active': {
+      \   'right': [ [ 'syntastic', 'lineinfo' ],
+      \              [ 'percent' ],
+      \              [ 'fileformat', 'fileencoding', 'filetype' ] ]
+      \ },
+      \ 'component_expand': {
+      \   'syntastic': 'SyntasticStatuslineFlag',
+      \ },
+      \ 'component_type': {
+      \   'syntastic': 'error',
+      \ }
+      \ }
+let g:syntastic_mode_map = { 'mode': 'passive' }
+augroup AutoSyntastic
+  autocmd!
+  autocmd BufWritePost *.c,*.cpp call s:syntastic()
+augroup END
+function! s:syntastic()
+  SyntasticCheck
+  call lightline#update()
+endfunction
 
 if has("syntax")
   syntax on
@@ -219,20 +241,21 @@ let g:syntastic_enable_signs=1
 let g:syntastic_auto_loc_list=1
 let g:syntastic_mode_map={
       \ 'mode': 'active',
-      \ 'active_filetypes': ['javascript'],
+      \ 'active_filetypes': ['javascript', 'json'],
       \ 'passive_filetypes': ['html','cpp']
       \}
 let g:syntastic_javascript_checkers = ['jshint']
+let g:syntastic_javascript_jshint_conf="~/.jshintrc"
 
 
 
 " ====================
 " ctrlp
 " ====================
-"let g:ctrlp_use_migemo = 1
-"let g:ctrlp_clear_cache_on_exit = 0
-"let g:ctrlp_mruf_max            = 500
-"" let g:ctrlp_open_new_file       = 1
+let g:ctrlp_use_migemo = 1
+let g:ctrlp_clear_cache_on_exit = 0
+let g:ctrlp_mruf_max            = 500
+" let g:ctrlp_open_new_file       = 1
 
 
 " ====================
@@ -266,5 +289,7 @@ let g:indent_guides_guide_size=1
 "imap <nul> <c-y>,
 "let g:user_zen_expandaddr_key='<Nul>'
 
+" enable syntastic
+execute pathogen#infect()
 
 let $PYTHON_DLL = "/Users/shichiku_yuki/.pythonbrew/build/Python-2.6.8/libpython2.6.dylib"
