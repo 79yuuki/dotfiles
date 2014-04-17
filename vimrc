@@ -1,13 +1,13 @@
 " Setting for NeoBundle
- if has('vim_starting')
-   set nocompatible               " Be iMproved
+set nocompatible
+filetype off
 
-   " Required:
-   set runtimepath+=~/.vim/bundle/neobundle.vim/
- endif
+if has('vim_starting')
+  set runtimepath+=$HOME/.vim/bundle/neobundle.vim/
+  call neobundle#rc(expand('$HOME/.vim/bundle'))
+endif
 
- " Required:
- call neobundle#rc(expand('~/.vim/bundle/'))
+ NeoBundleFetch 'Shougo/neobundle.vim'
 
 " originalrepos on github
  NeoBundle 'Shougo/neobundle.vim'
@@ -17,7 +17,6 @@
  NeoBundle 'Shougo/unite.vim'
  NeoBundle 'Shougo/neocomplcache'
  NeoBundle 'Shougo/neosnippet'
- NeoBundle 'Shougo/neosnippet-snippets'
  NeoBundle 'jpalardy/vim-slime'
 
  NeoBundle 'itchyny/lightline.vim'
@@ -134,6 +133,7 @@ set showmatch
 set laststatus=2
 set cursorline
 set ttyfast
+set lazyredraw
 " cursor
 let &t_SI = "\<Esc>]50;CursorShape=1\x7"
 let &t_EI = "\<Esc>]50;CursorShape=0\x7"
@@ -141,28 +141,28 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 set list
 set listchars=tab:»-,trail:-,nbsp:%,extends:>,precedes:<
 
-let g:lightline = {
-      \ 'active': {
-      \   'right': [ [ 'syntastic', 'lineinfo' ],
-      \              [ 'percent' ],
-      \              [ 'fileformat', 'fileencoding', 'filetype' ] ]
-      \ },
-      \ 'component_expand': {
-      \   'syntastic': 'SyntasticStatuslineFlag',
-      \ },
-      \ 'component_type': {
-      \   'syntastic': 'error',
-      \ }
-      \ }
-let g:syntastic_mode_map = { 'mode': 'passive' }
-augroup AutoSyntastic
-  autocmd!
-  autocmd BufWritePost *.c,*.cpp call s:syntastic()
-augroup END
-function! s:syntastic()
-  SyntasticCheck
-  call lightline#update()
-endfunction
+"let g:lightline = {
+"      \ 'active': {
+"      \   'right': [ [ 'syntastic', 'lineinfo' ],
+"      \              [ 'percent' ],
+"      \              [ 'fileformat', 'fileencoding', 'filetype' ] ]
+"      \ },
+"      \ 'component_expand': {
+"      \   'syntastic': 'SyntasticStatuslineFlag',
+"      \ },
+"      \ 'component_type': {
+"      \   'syntastic': 'error',
+"      \ }
+"      \ }
+"let g:syntastic_mode_map = { 'mode': 'passive' }
+"augroup AutoSyntastic
+"  autocmd!
+"  autocmd BufWritePost *.c,*.cpp,*.js,*.json call s:syntastic()
+"augroup END
+"function! s:syntastic()
+"  SyntasticCheck
+"  call lightline#update()
+"endfunction
 
 if has("syntax")
   syntax on
@@ -209,10 +209,9 @@ endif
 syntax enable
 set t_Co=256
 set background=dark
-color mango
+colorscheme mango
 "colorscheme proteus
 "colorscheme molokai
-"colorscheme desert
 "colorscheme distinguished
 
 " Adjust omnifunc pop menu
@@ -238,15 +237,15 @@ au! BufRead,BufNewFile *.json set filetype=javascript
 let g:syntastic_enable_signs=1
 "let g:syntastic_auto_jump=1
 "let g:syntastic_check_on_open=1w
-let g:syntastic_auto_loc_list=1
-let g:syntastic_mode_map={
-      \ 'mode': 'active',
+let g:syntastic_mode_map = { 'mode': 'active',
       \ 'active_filetypes': ['javascript', 'json'],
-      \ 'passive_filetypes': ['html','cpp']
+      \ 'passive_filetypes': ['html']
       \}
+let g:syntastic_auto_loc_list = 1
 let g:syntastic_javascript_checkers = ['jshint']
-let g:syntastic_javascript_jshint_conf="~/.jshintrc"
+let g:syntastic_javascript_jshint_conf = '~/.jshintrc'
 
+"let g:syntastic_javascript_jshint_conf = '$HOME/.jshintrc'
 
 
 " ====================
@@ -289,7 +288,5 @@ let g:indent_guides_guide_size=1
 "imap <nul> <c-y>,
 "let g:user_zen_expandaddr_key='<Nul>'
 
-" enable syntastic
-execute pathogen#infect()
 
-let $PYTHON_DLL = "/Users/shichiku_yuki/.pythonbrew/build/Python-2.6.8/libpython2.6.dylib"
+"let $PYTHON_DLL = "/Users/shichiku_yuki/.pythonbrew/build/Python-2.6.8/libpython2.6.dylib"
