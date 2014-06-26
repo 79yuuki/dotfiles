@@ -107,6 +107,8 @@ endif
 
 " Color Schemes
  NeoBundle 'goatslacker/mango.vim'
+ NeoBundle 'altercation/vim-colors-solarized'
+ NeoBundle 'tomasr/molokai'
 
 ""NeoBundle 'https://bitbucket.org/kovisoft/slimv'
 
@@ -206,13 +208,29 @@ endif
 " ====================
 " color scheme
 " ====================
+
+" solarized
+"let g:solarized_termcolors=256
+"let g:solarized_termtrans=0
+"let g:solarized_degrade=0
+"let g:solarized_bold=1
+"let g:solarized_underline=1
+"let g:solarized_italic=1
+"let g:solarized_contrast='normal'
+"let g:solarized_visibility='normal'
+
+" molokai
+let g:molokai_original = 1
+let g:rehash256 = 1
+
 syntax enable
 set t_Co=256
 set background=dark
-colorscheme mango
+"colorscheme mango
 "colorscheme proteus
-"colorscheme molokai
+"colorscheme solarized
 "colorscheme distinguished
+colorscheme molokai
 
 " Adjust omnifunc pop menu
 highlight Pmenu ctermbg=179 ctermfg=16 cterm=bold
@@ -261,11 +279,21 @@ let g:ctrlp_mruf_max            = 500
 " vim-indent-guides
 " ====================
 let g:indent_guides_auto_colors=0
-autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd   ctermbg=234
-autocmd VimEnter,Colorscheme * :hi IndentGuidesEven  ctermbg=240
+autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd   ctermbg=240
+autocmd VimEnter,Colorscheme * :hi IndentGuidesEven  ctermbg=250
 let g:indent_guides_enable_on_vim_startup=2
 let g:indent_guides_guide_size=1
 
+" Jq for vim
+command! -nargs=? Jq call s:Jq(<f-args>)
+function! s:Jq(...)
+    if 0 == a:0
+        let l:arg = "."
+    else
+        let l:arg = a:1
+    endif
+    execute "%! jq \"" . l:arg . "\""
+endfunction
 
 "" old settings
 "set nocompatible
