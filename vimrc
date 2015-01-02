@@ -1,12 +1,11 @@
 " Setting for NeoBundle
-set nocompatible
-filetype off
+if !1 | finish | endif
 
 if has('vim_starting')
   set runtimepath+=$HOME/.vim/bundle/neobundle.vim/
-  call neobundle#rc(expand('$HOME/.vim/bundle'))
 endif
 
+call neobundle#begin(expand('$HOME/.vim/bundle/'))
  NeoBundleFetch 'Shougo/neobundle.vim'
 
 " originalrepos on github
@@ -17,12 +16,13 @@ endif
  NeoBundle 'Shougo/unite.vim'
  NeoBundle 'Shougo/neocomplcache'
  NeoBundle 'Shougo/neosnippet'
+ NeoBundle 'Shougo/neosnippet-snippets'
  NeoBundle 'jpalardy/vim-slime'
 
  NeoBundle 'itchyny/lightline.vim'
 
 " NerdTree
-" NeoBundle 'scrooloose/nerdtree'
+ NeoBundle 'scrooloose/nerdtree'
 " NerdTree Tabs
 " NeoBundle 'jistr/vim-nerdtree-tabs'
 
@@ -66,7 +66,6 @@ endif
 " neocomplcache
 " NeoBundle 'Shougo/neocomplcache.vim'
 " NeoBundle 'Shougo/neocomplete.vim'
-" NeoBundle 'Shougo/neosnippet.vim'
 " tern
  NeoBundle 'marijnh/tern_for_vim'
 
@@ -100,6 +99,7 @@ endif
 " NeoBundle "guns/xterm-color-table.vim"
 "
  NeoBundle 'editorconfig/editorconfig-vim'
+ NeoBundle 'w0ng/vim-hybrid'
 
 
 " CtrlP
@@ -111,6 +111,8 @@ endif
  NeoBundle 'tomasr/molokai'
 
 ""NeoBundle 'https://bitbucket.org/kovisoft/slimv'
+
+call neobundle#end()
 
 filetype plugin indent on     " required!
 filetype indent on
@@ -218,6 +220,7 @@ endif
 "let g:solarized_italic=1
 "let g:solarized_contrast='normal'
 "let g:solarized_visibility='normal'
+let g:hybrid_use_Xresources = 1
 
 " molokai
 let g:molokai_original = 1
@@ -230,7 +233,8 @@ set background=dark
 "colorscheme proteus
 "colorscheme solarized
 "colorscheme distinguished
-colorscheme molokai
+"colorscheme molokai
+colorscheme hybrid
 
 " Adjust omnifunc pop menu
 highlight Pmenu ctermbg=179 ctermfg=16 cterm=bold
