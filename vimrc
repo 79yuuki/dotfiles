@@ -323,3 +323,6 @@ endfunction
 
 
 "let $PYTHON_DLL = "/Users/shichiku_yuki/.pythonbrew/build/Python-2.6.8/libpython2.6.dylib"
+
+" NERDTree
+nnoremap <silent><C-a> :NERDTree<CR>
