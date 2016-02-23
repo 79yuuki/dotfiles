@@ -14,9 +14,9 @@ call neobundle#begin(expand('$HOME/.vim/bundle/'))
  NeoBundle 'VimClojure'
  NeoBundle 'Shougo/vimshell'
  NeoBundle 'Shougo/unite.vim'
- NeoBundle 'Shougo/neocomplcache'
- NeoBundle 'Shougo/neosnippet'
- NeoBundle 'Shougo/neosnippet-snippets'
+" NeoBundle 'Shougo/neocomplcache'
+" NeoBundle 'Shougo/neosnippet'
+" NeoBundle 'Shougo/neosnippet-snippets'
  NeoBundle 'jpalardy/vim-slime'
 
  NeoBundle 'itchyny/lightline.vim'
@@ -112,6 +112,10 @@ call neobundle#begin(expand('$HOME/.vim/bundle/'))
 
 ""NeoBundle 'https://bitbucket.org/kovisoft/slimv'
 
+" Emmet
+NeoBundle 'mattn/emmet-vim'
+
+
 call neobundle#end()
 
 filetype plugin indent on     " required!
@@ -185,6 +189,8 @@ if has("syntax")
     autocmd! invisible
     autocmd BufNew,BufRead * call ActivateInvisibleIndicator()
   augroup END
+
+  au BufNewFile,BufRead *.ect set filetype=html
 endif
 
 " ====================
@@ -252,6 +258,7 @@ highlight Noise ctermfg=216
 " ====================
 au! BufRead,BufNewFile *.json set filetype=javascript
 
+au BufNewFile,BufRead *.tag set filetype=javascript
 
 " ====================
 " Syntastic
