@@ -149,29 +149,6 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 set list
 set listchars=tab:»-,trail:-,nbsp:%,extends:>,precedes:<
 
-"let g:lightline = {
-"      \ 'active': {
-"      \   'right': [ [ 'syntastic', 'lineinfo' ],
-"      \              [ 'percent' ],
-"      \              [ 'fileformat', 'fileencoding', 'filetype' ] ]
-"      \ },
-"      \ 'component_expand': {
-"      \   'syntastic': 'SyntasticStatuslineFlag',
-"      \ },
-"      \ 'component_type': {
-"      \   'syntastic': 'error',
-"      \ }
-"      \ }
-"let g:syntastic_mode_map = { 'mode': 'passive' }
-"augroup AutoSyntastic
-"  autocmd!
-"  autocmd BufWritePost *.c,*.cpp,*.js,*.json call s:syntastic()
-"augroup END
-"function! s:syntastic()
-"  SyntasticCheck
-"  call lightline#update()
-"endfunction
-
 if has("syntax")
   syntax on
 
