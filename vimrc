@@ -248,9 +248,9 @@ let g:syntastic_mode_map = { 'mode': 'active',
       \ 'passive_filetypes': ['html']
       \}
 let g:syntastic_auto_loc_list = 1
-let g:syntastic_javascript_checkers = ['jshint', 'eslint',  'jscs']
-let g:syntastic_javascript_jshint_args = '--config /Users/a11964/.jshintrc'
-let g:syntastic_javascript_jscs_args = '--config /Users/a11964/.jscsrc'
+let g:syntastic_javascript_checkers = ['eslint', 'jshint', 'jscs']
+let g:syntastic_javascript_jshint_args = '--config $HOME/.jshintrc'
+let g:syntastic_javascript_jscs_args = '--config $HOME/.jscsrc'
 
 "let g:syntastic_javascript_jshint_conf = '$HOME/.jshintrc'
 
