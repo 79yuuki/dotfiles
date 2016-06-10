@@ -248,7 +248,7 @@ let g:syntastic_mode_map = { 'mode': 'active',
       \ 'passive_filetypes': ['html']
       \}
 let g:syntastic_auto_loc_list = 1
-let g:syntastic_javascript_checkers = ['jshint', 'jscs']
+let g:syntastic_javascript_checkers = ['jshint', 'eslint',  'jscs']
 let g:syntastic_javascript_jshint_args = '--config /Users/a11964/.jshintrc'
 let g:syntastic_javascript_jscs_args = '--config /Users/a11964/.jscsrc'
 
@@ -261,6 +261,7 @@ let g:syntastic_javascript_jscs_args = '--config /Users/a11964/.jscsrc'
 let g:ctrlp_use_migemo = 1
 let g:ctrlp_clear_cache_on_exit = 0
 let g:ctrlp_mruf_max            = 500
+let g:ctrlp_custom_ignore = 'DS_Store\|git\|hg\|svn\|optimized\|compiled\|node_modules\|bower_components'
 " let g:ctrlp_open_new_file       = 1
 
 
@@ -283,6 +284,33 @@ function! s:Jq(...)
     endif
     execute "%! jq \"" . l:arg . "\""
 endfunction
+
+
+" ====================
+" clip board
+" ====================
+if has('nvim')
+  set clipboard+=unnamedplus
+  function! ClipboardYank()
+    call system('pbcopy', @@)
+  endfunction
+  function! ClipboardPaste()
+    let @@ = system('pbpaste')
+  endfunction
+  vnoremap <silent> y y:call ClipboardYank()<cr>
+  vnoremap <silent> d d:call ClipboardYank()<cr>
+  nnoremap <silent> p :call ClipboardPaste()<cr>p
+else
+  set clipboard=unnamed,autoselect
+endif
+
+" ====================
+" file encoding
+" ====================
+set encoding=utf-8
+set termencoding=utf-8
+set fileencoding=utf-8
+
 
 "" old settings
 "set nocompatible
