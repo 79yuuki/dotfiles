@@ -243,12 +243,14 @@ au BufNewFile,BufRead *.tag set filetype=javascript
 let g:syntastic_enable_signs=1
 "let g:syntastic_auto_jump=1
 "let g:syntastic_check_on_open=1w
+let g:syntastic_check_on_wq=0
 let g:syntastic_mode_map = { 'mode': 'active',
       \ 'active_filetypes': ['javascript', 'json'],
       \ 'passive_filetypes': ['html']
       \}
 let g:syntastic_auto_loc_list = 1
-let g:syntastic_javascript_checkers = ['eslint', 'jshint', 'jscs']
+let g:syntastic_loc_list_height = 6
+let g:syntastic_javascript_checkers = ['eslint'] ", 'jshint', 'jscs']
 let g:syntastic_javascript_jshint_args = '--config $HOME/.jshintrc'
 let g:syntastic_javascript_jscs_args = '--config $HOME/.jscsrc'
 
