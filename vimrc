@@ -34,6 +34,7 @@ call neobundle#begin(expand('$HOME/.vim/bundle/'))
 
 " Syntastic
  NeoBundle 'scrooloose/syntastic'
+ NeoBundle 'millermedeiros/vim-esformatter'
 
 " Pathogen
  NeoBundle 'tpope/vim-pathogen'
@@ -244,18 +245,27 @@ let g:syntastic_enable_signs=1
 "let g:syntastic_auto_jump=1
 "let g:syntastic_check_on_open=1w
 let g:syntastic_check_on_wq=0
-let g:syntastic_mode_map = { 'mode': 'active',
-      \ 'active_filetypes': ['javascript', 'json'],
-      \ 'passive_filetypes': ['html']
-      \}
-let g:syntastic_auto_loc_list = 1
 let g:syntastic_loc_list_height = 6
-let g:syntastic_javascript_checkers = ['eslint'] ", 'jshint', 'jscs']
-let g:syntastic_javascript_jshint_args = '--config $HOME/.jshintrc'
 let g:syntastic_javascript_jscs_args = '--config $HOME/.jscsrc'
 
 "let g:syntastic_javascript_jshint_conf = '$HOME/.jshintrc'
 
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 0 " show log 
+let g:syntastic_auto_loc_list = 1 " show log 
+let g:syntastic_check_on_open = 0
+let g:syntastic_check_on_wq = 0 " check when write file if mode active
+let g:syntastic_mode_map = { "mode": "passive",
+      \ 'active_filetypes': ['javascript', 'json'],
+      \ 'passive_filetypes': ['html'] }
+let g:syntastic_javascript_checkers = ['eslint']
+map <C-l> :SyntasticCheck<cr>
+
+map <c-h> :Esformatter<cr>
+autocmd FileType javascript noremap <buffer>  <c-h> :Esformatter<cr>
 
 " ====================
 " ctrlp
