@@ -53,7 +53,7 @@
     "curly": [2],// 中括弧の省略を許可しない
     "default-case": [2],//Swith文でのdefaultの省略を許可しない
     "eqeqeq": [2],// 等価演算子を許可しない
-    "no-empty-label": [2],//繰り返し処理やswitch文以外に対してのラベルの使用を許可しない
+    "no-labels": [2],//繰り返し処理やswitch文以外に対してのラベルの使用を許可しない
     "no-eq-null": [2],// 等価演算子でのnull比較を許可しない
     "no-eval": [2],// evalの使用を許可しない
     "no-extend-native": [2],// ネイティブオブジェクトの拡張を許可しない
