@@ -1,0 +1,206 @@
+[[plugins]]
+repo = 'Shougo/dein.vim'
+
+[[plugins]]
+repo = 'Shougo/vimproc'
+
+[[plugins]]
+repo = 'Shougo/vimshell'
+
+[[plugins]]
+repo = 'Shougo/unite.vim'
+
+[[plugins]]
+repo = 'jpalardy/vim-slime'
+
+[[plugins]]
+repo = 'itchyny/lightline.vim'
+
+[[plugins]]
+repo = 'scrooloose/nerdtree'
+
+[[plugins]]
+repo = 'tpope/vim-fugitive'
+
+[[plugins]]
+repo = 'gregsexton/gitv.git'
+
+[[plugins]]
+repo = 'airblade/vim-gitgutter'
+
+[[plugins]]
+repo = 'scrooloose/syntastic'
+
+[[plugins]]
+repo = 'millermedeiros/vim-esformatter'
+
+[[plugins]]
+repo = 'tpope/vim-pathogen'
+
+[[plugins]]
+repo = 'majutsushi/tagbar'
+
+[[plugins]]
+repo = 'osyo-manga/vim-over'
+
+[[plugins]]
+repo = 'LeafCage/yankround.vim'
+
+[[plugins]]
+repo = 't9md/vim-choosewin'
+
+[[plugins]]
+repo = "thinca/vim-quickrun"
+
+[[plugins]]
+repo = 'tyru/open-browser.vim'
+
+[[plugins]]
+repo = 'nathanaelkane/vim-indent-guides'
+
+[[plugins]]
+repo = 'marijnh/tern_for_vim'
+
+[[plugins]]
+repo = 'pangloss/vim-javascript'
+
+[[plugins]]
+repo = 'kchmck/vim-coffee-script'
+
+[[plugins]]
+repo = 'hail2u/vim-css3-syntax'
+
+[[plugins]]
+repo = 'digitaltoad/vim-jade'
+
+[[plugins]]
+repo = 'wavded/vim-stylus'
+
+[[plugins]]
+repo = 'stephpy/vim-yaml'
+
+[[plugins]]
+repo = 'tpope/vim-markdown'
+
+[[plugins]]
+repo = 'kannokanno/previm'
+
+[[plugins]]
+repo = 'editorconfig/editorconfig-vim'
+
+[[plugins]]
+repo = 'w0ng/vim-hybrid'
+
+[[plugins]]
+repo = "kien/ctrlp.vim"
+
+[[plugins]]
+repo = 'goatslacker/mango.vim'
+
+[[plugins]]
+repo = 'altercation/vim-colors-solarized'
+
+[[plugins]]
+repo = 'tomasr/molokai'
+
+[[plugins]]
+repo = 'Shougo/vimproc'
+
+[[plugins]]
+repo = 'Shougo/vimshell'
+
+[[plugins]]
+repo = 'Shougo/unite.vim'
+
+[[plugins]]
+repo = 'jpalardy/vim-slime'
+
+[[plugins]]
+repo = 'itchyny/lightline.vim'
+
+[[plugins]]
+repo = 'scrooloose/nerdtree'
+
+[[plugins]]
+repo = 'tpope/vim-fugitive'
+
+[[plugins]]
+repo = 'gregsexton/gitv.git'
+
+[[plugins]]
+repo = 'airblade/vim-gitgutter'
+
+[[plugins]]
+repo = 'scrooloose/syntastic'
+
+[[plugins]]
+repo = 'millermedeiros/vim-esformatter'
+
+[[plugins]]
+repo = 'tpope/vim-pathogen'
+
+[[plugins]]
+repo = 'majutsushi/tagbar'
+
+[[plugins]]
+repo = 'osyo-manga/vim-over'
+
+[[plugins]]
+repo = 'LeafCage/yankround.vim'
+
+[[plugins]]
+repo = 't9md/vim-choosewin'
+
+[[plugins]]
+repo = "thinca/vim-quickrun"
+
+[[plugins]]
+repo = 'tyru/open-browser.vim'
+
+[[plugins]]
+repo = 'nathanaelkane/vim-indent-guides'
+
+[[plugins]]
+repo = 'marijnh/tern_for_vim'
+
+[[plugins]]
+repo = 'pangloss/vim-javascript'
+
+[[plugins]]
+repo = 'kchmck/vim-coffee-script'
+
+[[plugins]]
+repo = 'hail2u/vim-css3-syntax'
+
+[[plugins]]
+repo = 'digitaltoad/vim-jade'
+
+[[plugins]]
+repo = 'wavded/vim-stylus'
+
+[[plugins]]
+repo = 'stephpy/vim-yaml'
+
+[[plugins]]
+repo = 'tpope/vim-markdown'
+
+[[plugins]]
+repo = 'kannokanno/previm'
+
+[[plugins]]
+repo = 'editorconfig/editorconfig-vim'
+
+[[plugins]]
+repo = 'w0ng/vim-hybrid'
+
+[[plugins]]
+repo = "kien/ctrlp.vim"
+
+[[plugins]]
+repo = 'goatslacker/mango.vim'
+
+[[plugins]]
+repo = 'altercation/vim-colors-solarized'
+
+[[plugins]]
+repo = 'tomasr/molokai'

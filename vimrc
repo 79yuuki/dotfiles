@@ -1,123 +1,41 @@
-" Setting for NeoBundle
-if !1 | finish | endif
+" Setting for dein
+" プラグインが実際にインストールされるディレクトリ
+let s:dein_dir = expand('~/.cache/dein')
+" dein.vim 本体
+let s:dein_repo_dir = s:dein_dir . '/repos/github.com/Shougo/dein.vim'
 
-if has('vim_starting')
-  set runtimepath+=$HOME/.vim/bundle/neobundle.vim/
+" dein.vim がなければ github から落としてくる
+if &runtimepath !~# '/dein.vim'
+  if !isdirectory(s:dein_repo_dir)
+    execute '!git clone https://github.com/Shougo/dein.vim' s:dein_repo_dir
+  endif
+  execute 'set runtimepath^=' . fnamemodify(s:dein_repo_dir, ':p')
 endif
 
-call neobundle#begin(expand('$HOME/.vim/bundle/'))
- NeoBundleFetch 'Shougo/neobundle.vim'
+" 設定開始
+if dein#load_state(s:dein_dir)
+  call dein#begin(s:dein_dir)
 
-" originalrepos on github
- NeoBundle 'Shougo/neobundle.vim'
- NeoBundle 'Shougo/vimproc'
- NeoBundle 'VimClojure'
- NeoBundle 'Shougo/vimshell'
- NeoBundle 'Shougo/unite.vim'
-" NeoBundle 'Shougo/neocomplcache'
-" NeoBundle 'Shougo/neosnippet'
-" NeoBundle 'Shougo/neosnippet-snippets'
- NeoBundle 'jpalardy/vim-slime'
+  " プラグインリストを収めた TOML ファイル
+  " 予め TOML ファイル（後述）を用意しておく
+  let g:rc_dir    = expand('~/.vim/rc')
+  let s:toml      = g:rc_dir . '/dein.toml'
+"  let s:lazy_toml = g:rc_dir . '/dein_lazy.toml'
 
- NeoBundle 'itchyny/lightline.vim'
+  " TOML を読み込み、キャッシュしておく
+  call dein#load_toml(s:toml,      {'lazy': 0})
+"  call dein#load_toml(s:lazy_toml, {'lazy': 1})
 
-" NerdTree
- NeoBundle 'scrooloose/nerdtree'
-" NerdTree Tabs
-" NeoBundle 'jistr/vim-nerdtree-tabs'
+  " 設定終了
+  call dein#end()
+  call dein#save_state()
+endif
 
-" vim-fugitive
- NeoBundle 'tpope/vim-fugitive'
- NeoBundle 'gregsexton/gitv.git'
-" GitGutter
- NeoBundle 'airblade/vim-gitgutter'
+" もし、未インストールものものがあったらインストール
+if dein#check_install()
+  call dein#install()
+endif
 
-" Syntastic
- NeoBundle 'scrooloose/syntastic'
- NeoBundle 'millermedeiros/vim-esformatter'
-
-" Pathogen
- NeoBundle 'tpope/vim-pathogen'
-
-" Tagbar
- NeoBundle 'majutsushi/tagbar'
-
-" Vim Over
- NeoBundle 'osyo-manga/vim-over'
-" Dash.app
-" NeoBundle 'rizzatti/funcoo.vim'
-" NeoBundle 'rizzatti/dash.vim'
-
-" Vim Multi cursor
-" NeoBundle 'terryma/vim-multiple-cursors'
-
-" YankRing
- NeoBundle 'LeafCage/yankround.vim'
-
-" ChooseWin
- NeoBundle 't9md/vim-choosewin'
-
-" Quick-Run
- NeoBundle "thinca/vim-quickrun"
-" Open Browser
- NeoBundle 'tyru/open-browser.vim'
-
-" Indent
- NeoBundle 'nathanaelkane/vim-indent-guides'
-" neocomplcache
-" NeoBundle 'Shougo/neocomplcache.vim'
-" NeoBundle 'Shougo/neocomplete.vim'
-" tern
- NeoBundle 'marijnh/tern_for_vim'
-
-"NeoBundle 'suguru/vim-javascript-syntax'
-"NeoBundle 'jelera/vim-javascript-syntax'
- NeoBundle 'pangloss/vim-javascript'
-"NeoBundle 'nathanaelkane/vim-indent-guides'
-"NeoBundle 'jiangmiao/simple-javascript-indenter'
-
-" Coffeescript
- NeoBundle 'kchmck/vim-coffee-script'
-
-" Node.js
-"NeoBundle 'myhere/vim-nodejs-complete'
-
-" CSS3
- NeoBundle 'hail2u/vim-css3-syntax'
-" Jade
- NeoBundle 'digitaltoad/vim-jade'
-" Stylus
- NeoBundle 'wavded/vim-stylus'
-" Yaml
- NeoBundle 'stephpy/vim-yaml'
-" Markdonw
- NeoBundle 'tpope/vim-markdown'
-
-" Markdonw preview
- NeoBundle 'kannokanno/previm'
-
-" color table
-" NeoBundle "guns/xterm-color-table.vim"
-"
- NeoBundle 'editorconfig/editorconfig-vim'
- NeoBundle 'w0ng/vim-hybrid'
-
-
-" CtrlP
- NeoBundle "kien/ctrlp.vim"
-
-" Color Schemes
- NeoBundle 'goatslacker/mango.vim'
- NeoBundle 'altercation/vim-colors-solarized'
- NeoBundle 'tomasr/molokai'
-
-""NeoBundle 'https://bitbucket.org/kovisoft/slimv'
-
-" Emmet
-NeoBundle 'mattn/emmet-vim'
-
-
-call neobundle#end()
 
 filetype plugin indent on     " required!
 filetype indent on
