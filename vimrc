@@ -156,6 +156,13 @@ au! BufRead,BufNewFile *.json set filetype=javascript
 
 au BufNewFile,BufRead *.tag set filetype=javascript
 
+au BufNewFile,BufRead *.vue set filetype=javascript
+
+" --------------------------------
+" tpope/vim-pathogen
+" --------------------------------
+execute pathogen#infect()
+
 " ====================
 " Syntastic
 " ====================
@@ -180,10 +187,26 @@ let g:syntastic_mode_map = { "mode": "passive",
       \ 'active_filetypes': ['javascript', 'json'],
       \ 'passive_filetypes': ['html'] }
 let g:syntastic_javascript_checkers = ['eslint']
+
+" --------------------------------
+" sekel/vim-vue-syntastic
+" --------------------------------
+let g:syntastic_vue_checkers = ['eslint']
+let local_eslint = finddir('node_modules', '.;') . '/.bin/eslint'
+if matchstr(local_eslint, "^\/\\w") == ''
+    let local_eslint = getcwd() . "/" . local_eslint
+endif
+if executable(local_eslint)
+    let g:syntastic_javascript_eslint_exec = local_eslint
+    let g:syntastic_vue_eslint_exec = local_eslint
+endif
+
+
 map <C-l> :SyntasticCheck<cr>
 
 map <c-h> :Esformatter<cr>
 autocmd FileType javascript noremap <buffer>  <c-h> :Esformatter<cr>
+autocmd FileType vue syntax sync fromstart
 
 " ====================
 " ctrlp
