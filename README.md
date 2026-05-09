@@ -282,6 +282,8 @@ Homebrew 由来のツール群は `Brewfile` と `scripts/setup-homebrew.sh` で
 
 通常は `./install.sh` が自動で同期します。managed な base を編集したあとだけ、必要に応じて次を実行してください。
 
+runtime section が空なら、まだ machine-local な project trust や UI 状態が記録されていないだけです。異常ではありません。
+
 ```bash
 ./scripts/sync-codex-config.sh
 ```
@@ -291,6 +293,8 @@ Homebrew 由来のツール群は `Brewfile` と `scripts/setup-homebrew.sh` で
 `Claude` の runtime state は主に `~/.claude/history.jsonl`、`sessions/`、`tasks/`、`todos/`、`plugins/cache/` などへ書かれます。`settings.json` 自体は大きく汚れにくいですが、repo 側の managed base と machine-local override を分けるため、この repo では `claude/settings.base.json` だけを管理し、実際の `~/.claude/settings.json` は `scripts/sync-claude-settings.sh` で生成します。
 
 ローカル固有の差分を足したい場合は `~/.claude/settings.local.json` に書きます。managed base を編集したあとだけ、必要に応じて次を実行してください。
+
+`~/.claude/settings.local.json` は必須ではありません。base 設定だけで足りるなら、ファイルが存在しない状態のままで問題ありません。
 
 ```bash
 ./scripts/sync-claude-settings.sh
