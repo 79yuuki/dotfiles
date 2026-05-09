@@ -9,7 +9,7 @@ Execute plan by dispatching fresh subagent per task, with two-stage review after
 
 **Why subagents:** You delegate tasks to specialized agents with isolated context. By precisely crafting their instructions and context, you ensure they stay focused and succeed at their task. They should never inherit your session's context or history — you construct exactly what they need. This also preserves your own context for coordination work.
 
-**Core principle:** Fresh subagent per task + two-stage review (spec then quality) = high quality, fast iteration
+**Core principle:** Fresh subagent per task + two-stage review (spec then quality) + Codex external step review when available = high quality, fast iteration
 
 **Continuous execution:** Do not pause to check in with your human partner between tasks. Execute all tasks from the plan without stopping. The only reasons to stop are: BLOCKED status you cannot resolve, ambiguity that genuinely prevents progress, or all tasks complete. "Should I continue?" prompts and progress summaries waste their time — they asked you to execute the plan, so execute it.
 
@@ -37,6 +37,7 @@ digraph when_to_use {
 - Same session (no context switch)
 - Fresh subagent per task (no context pollution)
 - Two-stage review after each task: spec compliance first, then code quality
+- Codex external step review after each task/commit when the tmux right pane is available
 - Faster iteration (no human-in-loop between tasks)
 
 ## The Process
@@ -57,6 +58,9 @@ digraph process {
         "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" [shape=box];
         "Code quality reviewer subagent approves?" [shape=diamond];
         "Implementer subagent fixes quality issues" [shape=box];
+        "Ask Codex for external step review (codex skill)" [shape=box];
+        "Codex approves?" [shape=diamond];
+        "Fix Codex findings and re-review" [shape=box];
         "Mark task complete in TodoWrite" [shape=box];
     }
 
@@ -78,7 +82,11 @@ digraph process {
     "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" -> "Code quality reviewer subagent approves?";
     "Code quality reviewer subagent approves?" -> "Implementer subagent fixes quality issues" [label="no"];
     "Implementer subagent fixes quality issues" -> "Dispatch code quality reviewer subagent (./code-quality-reviewer-prompt.md)" [label="re-review"];
-    "Code quality reviewer subagent approves?" -> "Mark task complete in TodoWrite" [label="yes"];
+    "Code quality reviewer subagent approves?" -> "Ask Codex for external step review (codex skill)" [label="yes"];
+    "Ask Codex for external step review (codex skill)" -> "Codex approves?";
+    "Codex approves?" -> "Fix Codex findings and re-review" [label="no / concerns"];
+    "Fix Codex findings and re-review" -> "Dispatch spec reviewer subagent (./spec-reviewer-prompt.md)";
+    "Codex approves?" -> "Mark task complete in TodoWrite" [label="yes"];
     "Mark task complete in TodoWrite" -> "More tasks remain?";
     "More tasks remain?" -> "Dispatch implementer subagent (./implementer-prompt.md)" [label="yes"];
     "More tasks remain?" -> "Dispatch final code reviewer subagent for entire implementation" [label="no"];
@@ -100,6 +108,19 @@ Use the least powerful model that can handle each role to conserve cost and incr
 - Touches 1-2 files with a complete spec → cheap model
 - Touches multiple files with integration concerns → standard model
 - Requires design judgment or broad codebase understanding → most capable model
+
+## Codex External Step Review
+
+When a Codex CLI pane is available, use the `codex` skill after the spec reviewer and code quality reviewer both approve each task. This is an independent, step-by-step review by the adjacent tmux reviewer, not a replacement for subagent reviews.
+
+Send Codex:
+- Task name and plan section
+- Implementer summary and commit/diff range
+- Spec-review and code-quality-review outcomes
+- Verification commands and results
+- Explicit question: "次の task に進んでよいか？ BLOCK/CONCERN があれば具体的に指摘してください。"
+
+Proceed only on `✅ APPROVED`. For `⚠️` or `❌`, dispatch fixes or explicitly resolve the concern, run verification, repeat spec/code-quality review as needed, then ask Codex again until it returns `✅ APPROVED`.
 
 ## Handling Implementer Status
 
@@ -156,6 +177,9 @@ Spec reviewer: ✅ Spec compliant - all requirements met, nothing extra
 [Get git SHAs, dispatch code quality reviewer]
 Code reviewer: Strengths: Good test coverage, clean. Issues: None. Approved.
 
+[Ask Codex for external step review]
+Codex: ✅ APPROVED - next task may proceed
+
 [Mark Task 1 complete]
 
 Task 2: Recovery modes
@@ -189,6 +213,9 @@ Implementer: Extracted PROGRESS_INTERVAL constant
 
 [Code reviewer reviews again]
 Code reviewer: ✅ Approved
+
+[Ask Codex for external step review]
+Codex: ✅ APPROVED - next task may proceed
 
 [Mark Task 2 complete]
 
@@ -270,6 +297,7 @@ Done!
 - **using-git-worktrees** - Ensures isolated workspace (creates one or verifies existing)
 - **writing-plans** - Creates the plan this skill executes
 - **requesting-code-review** - Code review template for reviewer subagents
+- **codex** - External step-by-step review in the adjacent tmux pane
 - **finishing-a-development-branch** - Complete development after all tasks
 
 **Subagents should use:**

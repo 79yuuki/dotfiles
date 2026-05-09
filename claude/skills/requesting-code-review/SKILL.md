@@ -13,6 +13,7 @@ Dispatch a code reviewer subagent to catch issues before they cascade. The revie
 
 **Mandatory:**
 - After each task in subagent-driven development
+- When Codex step review is part of the tmux workflow, after each task/commit before proceeding
 - After completing major feature
 - Before merge to main
 
@@ -39,7 +40,11 @@ Use Task tool with `general-purpose` type, fill template at `code-reviewer.md`
 - `{BASE_SHA}` - Starting commit
 - `{HEAD_SHA}` - Ending commit
 
-**3. Act on feedback:**
+**3. Optional Codex cross-check (recommended in tmux split workflow):**
+
+After reviewer subagent approval, use the `codex` skill to send the same commit range plus reviewer verdict to the Codex CLI pane. Ask whether the next step can proceed. Codex is an external reviewer and can catch issues the in-session subagent missed.
+
+**4. Act on feedback:**
 - Fix Critical issues immediately
 - Fix Important issues before proceeding
 - Note Minor issues for later
@@ -78,6 +83,7 @@ You: [Fix progress indicators]
 - Review after EACH task
 - Catch issues before they compound
 - Fix before moving to next task
+- Then ask Codex for an independent step review when the adjacent tmux pane is available
 
 **Executing Plans:**
 - Review after each task or at natural checkpoints

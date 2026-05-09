@@ -27,7 +27,12 @@ For each task:
 1. Mark as in_progress
 2. Follow each step exactly (plan has bite-sized steps)
 3. Run verifications as specified
-4. Mark as completed
+4. Use Codex Step Review (Step 2.5) before marking complete
+5. Mark as completed only after Codex returns `✅ APPROVED`
+
+### Step 2.5: Codex Step Review
+
+After each task or meaningful commit, use the `codex` skill to ask the right tmux pane for a step-by-step review before continuing. Send: task summary, changed files, diff/commit range, verification results, and the question "次の task に進んでよいか？". Do not continue on `❌ NEEDS FIXES` or `⚠️ APPROVED WITH CONCERNS`; fix/resolve the concern and re-review until Codex returns `✅ APPROVED`.
 
 ### Step 3: Complete Development
 
@@ -59,6 +64,7 @@ After all tasks complete and verified:
 - Follow plan steps exactly
 - Don't skip verifications
 - Reference skills when plan says to
+- Use Codex step review at each checkpoint when the `codex` skill/tmux pane is available
 - Stop when blocked, don't guess
 - Never start implementation on main/master branch without explicit user consent
 
@@ -68,3 +74,4 @@ After all tasks complete and verified:
 - **using-git-worktrees** - Ensures isolated workspace (creates one or verifies existing)
 - **writing-plans** - Creates the plan this skill executes
 - **finishing-a-development-branch** - Complete development after all tasks
+- **codex** - Step-by-step review in the adjacent tmux pane
