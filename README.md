@@ -28,7 +28,7 @@
 - `claude/settings.json` -> `~/.claude/settings.json`
 - `claude/skills/` -> `~/.claude/skills/`
 - `claude/plugins/manifest.json` -> Claude plugin 利用状況のスナップショット
-- `codex/config.toml` -> `~/.codex/config.toml`
+- `codex/config.base.toml` -> `~/.codex/config.toml` の managed base
 - `codex/AGENTS.md` -> `~/.codex/AGENTS.md`
 - `codex/browser/config.toml` -> `~/.codex/browser/config.toml`
 
@@ -95,9 +95,10 @@
 
 ### Codex 設定
 
-- `codex/config.toml`: Codex CLI のポータブルなグローバル設定です。model、reasoning、plugin 有効化だけを管理します。
+- `codex/config.base.toml`: Codex CLI のポータブルな managed 設定です。model、reasoning、plugin 有効化だけを管理します。
 - `codex/AGENTS.md`: Codex へのグローバル指示です。日本語優先などの運用ルールを置いています。
 - `codex/browser/config.toml`: Codex browser plugin の挙動設定です。現状は approval mode だけを持ちます。
+- `scripts/sync-codex-config.sh`: `codex/config.base.toml` から `~/.codex/config.toml` を生成・更新するスクリプトです。machine-local runtime state はできるだけ保持します。
 
 ### Node / nvm 管理
 
@@ -139,9 +140,9 @@ ln -snf "$PWD/vimrc" ~/.vimrc
 ln -snf "$PWD/vim" ~/.vim
 ln -snf "$PWD/claude/settings.json" ~/.claude/settings.json
 ln -snf "$PWD/claude/skills" ~/.claude/skills
-ln -snf "$PWD/codex/config.toml" ~/.codex/config.toml
 ln -snf "$PWD/codex/AGENTS.md" ~/.codex/AGENTS.md
 ln -snf "$PWD/codex/browser/config.toml" ~/.codex/browser/config.toml
+"$PWD/scripts/sync-codex-config.sh"
 ```
 
 または、バックアップ付きで一括反映するなら:
@@ -189,6 +190,7 @@ cd ~/Development/dotfiles
 ```
 
 これで既存ファイルを `~/.dotfiles-backups/<timestamp>/` に退避しながら、必要な symlink を張ります。
+`Codex` の `config.toml` だけは symlink ではなく、managed base からローカル生成します。
 
 ### 5. Node.js / nvm を戻す
 
@@ -271,6 +273,16 @@ exec zsh
 これらは `node/default-version`、`node/versions.txt`、`node/default-packages`、`scripts/setup-node.sh` で移行しやすい形に寄せています。
 
 Homebrew 由来のツール群は `Brewfile` と `scripts/setup-homebrew.sh` で復元できます。Node 本体は Homebrew ではなく `nvm` 側で復元する方針です。
+
+## Codex 設定の扱い
+
+`Codex` は `~/.codex/config.toml` に project trust や UI 状態のような machine-local runtime state を自動追記します。そのため、この repo では `codex/config.base.toml` だけを管理し、実際の `~/.codex/config.toml` は `scripts/sync-codex-config.sh` で生成します。
+
+通常は `./install.sh` が自動で同期します。managed な base を編集したあとだけ、必要に応じて次を実行してください。
+
+```bash
+./scripts/sync-codex-config.sh
+```
 
 ## Secrets 運用
 

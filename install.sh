@@ -56,9 +56,9 @@ main() {
   link_file "${REPO_ROOT}/vim" "${HOME}/.vim"
   link_file "${REPO_ROOT}/claude/settings.json" "${HOME}/.claude/settings.json"
   link_file "${REPO_ROOT}/claude/skills" "${HOME}/.claude/skills"
-  link_file "${REPO_ROOT}/codex/config.toml" "${HOME}/.codex/config.toml"
   link_file "${REPO_ROOT}/codex/AGENTS.md" "${HOME}/.codex/AGENTS.md"
   link_file "${REPO_ROOT}/codex/browser/config.toml" "${HOME}/.codex/browser/config.toml"
+  "${REPO_ROOT}/scripts/sync-codex-config.sh"
 
   if [[ ! -f "${HOME}/.zshrc.local" ]]; then
     cp "${REPO_ROOT}/local/zshrc.local.example" "${HOME}/.zshrc.local"
@@ -74,7 +74,8 @@ main() {
   printf '1. ./scripts/setup-homebrew.sh\n'
   printf '2. ./scripts/setup-node.sh\n'
   printf '3. edit ~/.config/secrets/ai-tools/.env and ~/.config/secrets/ai-tools/.env.keys\n'
-  printf '4. source ~/.zshrc or restart your shell\n'
+  printf '4. rerun ./scripts/sync-codex-config.sh if codex base settings change\n'
+  printf '5. source ~/.zshrc or restart your shell\n'
 }
 
 main "$@"

@@ -1,6 +1,6 @@
 # Portable global Codex settings.
-# Project trust lists, auth state, marketplace cache metadata, and other
-# machine-local runtime state are intentionally excluded from version control.
+# This file is version-controlled and should contain only machine-portable config.
+# Runtime state such as project trust or UI hints belongs in ~/.codex/config.toml.
 
 model = "gpt-5.4"
 model_reasoning_effort = "high"
