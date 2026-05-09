@@ -1,8 +1,9 @@
-# Interactive Bash settings.
-case $- in
-  *i*) ;;
-  *) return ;;
-esac
+[[ -o interactive ]] || return
+
+setopt auto_cd
+setopt hist_ignore_all_dups
+setopt interactive_comments
+setopt share_history
 
 export LANG="${LANG:-ja_JP.UTF-8}"
 export EDITOR="${EDITOR:-vim}"
@@ -31,23 +32,16 @@ path_prepend "$HOME/.claude/local"
 path_append "$HOME/.turso"
 path_append "$HOME/.antigravity/antigravity/bin"
 
-if [ -f "$HOME/.cargo/env" ]; then
-  . "$HOME/.cargo/env"
-fi
-
 export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
 if [ -s "$NVM_DIR/nvm.sh" ]; then
   . "$NVM_DIR/nvm.sh"
 fi
-if [ -s "$NVM_DIR/bash_completion" ]; then
-  . "$NVM_DIR/bash_completion"
-fi
 
-if [ -f "$HOME/Development/google-cloud-sdk/path.bash.inc" ]; then
-  . "$HOME/Development/google-cloud-sdk/path.bash.inc"
+if [ -f "$HOME/Development/google-cloud-sdk/path.zsh.inc" ]; then
+  . "$HOME/Development/google-cloud-sdk/path.zsh.inc"
 fi
-if [ -f "$HOME/Development/google-cloud-sdk/completion.bash.inc" ]; then
-  . "$HOME/Development/google-cloud-sdk/completion.bash.inc"
+if [ -f "$HOME/Development/google-cloud-sdk/completion.zsh.inc" ]; then
+  . "$HOME/Development/google-cloud-sdk/completion.zsh.inc"
 fi
 
 alias ll='ls -lah'
@@ -59,6 +53,6 @@ alias taskmaster='task-master'
 
 ulimit -n 10240 2>/dev/null || true
 
-if [ -f "$HOME/.bashrc.local" ]; then
-  . "$HOME/.bashrc.local"
+if [ -f "$HOME/.zshrc.local" ]; then
+  . "$HOME/.zshrc.local"
 fi

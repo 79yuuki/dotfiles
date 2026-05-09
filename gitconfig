@@ -1,13 +1,52 @@
 [user]
-	name = Yuuki Shichiku
+	name = Yuki Shichiku
 	email = yuuki.79@gmail.com
+
 [core]
-	excludesfile = /Users/shichiku_yuki/.gitignore_global
-[difftool "sourcetree"]
-	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-	path = 
-[mergetool "sourcetree"]
-	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
-	trustExitCode = true
+	excludesfile = ~/.config/git/ignore
+	editor = vim
+
+[init]
+	defaultBranch = main
+
+[fetch]
+	prune = true
+	pruneTags = true
+
+[pull]
+	ff = only
+
 [push]
 	default = simple
+	autoSetupRemote = true
+
+[rebase]
+	autoStash = true
+
+[merge]
+	conflictstyle = zdiff3
+
+[rerere]
+	enabled = true
+	autoupdate = true
+
+[diff]
+	colorMoved = default
+
+[branch]
+	sort = -committerdate
+
+[tag]
+	sort = version:refname
+
+[help]
+	autocorrect = prompt
+
+[safe]
+	bareRepository = explicit
+
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true

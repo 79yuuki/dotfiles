@@ -1,0 +1,20 @@
+{
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": {
+      "version": "5.0.7"
+    },
+    "frontend-design@claude-plugins-official": {
+      "version": "0742692199b4"
+    },
+    "code-simplifier@claude-plugins-official": {
+      "version": "1.0.0"
+    },
+    "superpowers@superpowers-marketplace": {
+      "version": "5.0.7"
+    }
+  },
+  "notes": [
+    "これは移植用の簡易 manifest です。",
+    "plugin cache 本体や installPath のようなマシン依存情報は含めていません。"
+  ]
+}
