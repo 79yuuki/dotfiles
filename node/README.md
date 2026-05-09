@@ -6,6 +6,7 @@
 
 - `nvm` は `~/.nvm` にインストールする
 - shell では `~/.zshrc` / `~/.bashrc` から `nvm.sh` を読む
+- Homebrew の `node` / `yarn` ではなく `nvm` を正とする
 - default Node は `node/default-version`
 - 追加で入れておきたい Node 版は `node/versions.txt`
 - 新しい Node 版へ自動で入れたいグローバル npm パッケージは `node/default-packages`

@@ -37,6 +37,7 @@
 ### ルート設定ファイル
 
 - `README.md`: このリポジトリの方針、配置先、各ファイルの役割を説明するドキュメントです。
+- `Brewfile`: Homebrew / cask / VSCode extension / Go / Cargo ツールの復元元です。Node 本体はここではなく `nvm` で復元します。
 - `install.sh`: 既存ファイルをバックアップしながら dotfiles を一括で symlink する移行用スクリプトです。
 - `gitconfig`: `~/.gitconfig` 用の共通 Git 設定です。`pull.ff=only`、`fetch.prune=true`、`rerere` 有効化など、事故を減らす方向に寄せています。
 - `gitignore`: `~/.config/git/ignore` 用のグローバル ignore です。OS 依存ファイルや一時ファイルを Git 管理から外します。
@@ -104,6 +105,7 @@
 - `node/default-version`: 新しいマシンで default alias にする Node.js の版です。
 - `node/versions.txt`: 復元対象としてまとめて install する Node.js の一覧です。
 - `node/default-packages`: 新しい Node 版を入れたとき自動で入れるグローバル npm パッケージ一覧です。
+- `scripts/setup-homebrew.sh`: `Brewfile` を使って Homebrew 系ツールを復元するスクリプトです。
 - `scripts/setup-node.sh`: `nvm` 導入、Node 版 install、default alias 設定、`corepack enable` をまとめて行うスクリプトです。
 
 ### 旧 Vim 資産
@@ -156,8 +158,8 @@ ln -snf "$PWD/codex/browser/config.toml" ~/.codex/browser/config.toml
 
 1. Homebrew を入れる
 2. このリポジトリを clone する
-3. `./install.sh` を実行する
-4. `brew install dotenvx/brew/dotenvx` を実行する
+3. `./scripts/setup-homebrew.sh` を実行する
+4. `./install.sh` を実行する
 5. `./scripts/setup-node.sh` を実行する
 6. `~/.config/secrets/ai-tools/.env.keys` を 1Password などから復元する
 7. `~/.config/secrets/ai-tools/.env` と `~/.config/secrets/gcloud/adc.json` を配置する
@@ -179,6 +181,8 @@ ln -snf "$PWD/codex/browser/config.toml" ~/.codex/browser/config.toml
 - `@mermaid-js/mermaid-cli`
 
 これらは `node/default-version`、`node/versions.txt`、`node/default-packages`、`scripts/setup-node.sh` で移行しやすい形に寄せています。
+
+Homebrew 由来のツール群は `Brewfile` と `scripts/setup-homebrew.sh` で復元できます。Node 本体は Homebrew ではなく `nvm` 側で復元する方針です。
 
 ## Secrets 運用
 

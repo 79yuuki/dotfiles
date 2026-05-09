@@ -71,7 +71,7 @@ main() {
   fi
 
   printf '\nnext steps:\n'
-  printf '1. brew install dotenvx/brew/dotenvx\n'
+  printf '1. ./scripts/setup-homebrew.sh\n'
   printf '2. ./scripts/setup-node.sh\n'
   printf '3. edit ~/.config/secrets/ai-tools/.env and ~/.config/secrets/ai-tools/.env.keys\n'
   printf '4. source ~/.zshrc or restart your shell\n'
