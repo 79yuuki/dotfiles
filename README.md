@@ -9,6 +9,7 @@
 - `Vim 9` で素直に動く最小構成に寄せる
 - 旧世代の `JSHint` / `JSCS` / `.eslintrc` はやめて `eslint.config.mjs` に寄せる
 - `Claude` / `Codex` は認証・履歴・キャッシュを除いた再現可能な設定だけを管理する
+- Claude/Codex の開発ワークフローは Superpowers 由来の汎用 skill 名で管理し、個別プロジェクト prefix は付けない
 
 ## 管理ファイル
 
