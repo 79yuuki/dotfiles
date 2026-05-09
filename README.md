@@ -25,7 +25,7 @@
 - `vimrc` -> `~/.vimrc`
 - `vim/` -> `~/.vim`
 - `eslint.config.mjs` -> プロジェクト側で参照する共有テンプレート
-- `claude/settings.json` -> `~/.claude/settings.json`
+- `claude/settings.base.json` -> `~/.claude/settings.json` の managed base
 - `claude/skills/` -> `~/.claude/skills/`
 - `claude/plugins/manifest.json` -> Claude plugin 利用状況のスナップショット
 - `codex/config.base.toml` -> `~/.codex/config.toml` の managed base
@@ -54,8 +54,9 @@
 
 ### Claude 設定
 
-- `claude/settings.json`: Claude Code のグローバル設定です。通知 hook、status line、言語、enabled plugin を持ちます。
+- `claude/settings.base.json`: Claude Code の managed base 設定です。通知 hook、status line、言語、enabled plugin を持ちます。
 - `claude/plugins/manifest.json`: 利用中 plugin の移植用スナップショットです。cache 実体ではなく、どの plugin を使っていたかを残します。
+- `scripts/sync-claude-settings.sh`: `claude/settings.base.json` と `~/.claude/settings.local.json` から `~/.claude/settings.json` を生成するスクリプトです。
 
 ### Claude skills
 
@@ -138,10 +139,10 @@ ln -snf "$PWD/zshenv" ~/.zshenv
 ln -snf "$PWD/tmux.conf" ~/.tmux.conf
 ln -snf "$PWD/vimrc" ~/.vimrc
 ln -snf "$PWD/vim" ~/.vim
-ln -snf "$PWD/claude/settings.json" ~/.claude/settings.json
 ln -snf "$PWD/claude/skills" ~/.claude/skills
 ln -snf "$PWD/codex/AGENTS.md" ~/.codex/AGENTS.md
 ln -snf "$PWD/codex/browser/config.toml" ~/.codex/browser/config.toml
+"$PWD/scripts/sync-claude-settings.sh"
 "$PWD/scripts/sync-codex-config.sh"
 ```
 
@@ -152,6 +153,7 @@ ln -snf "$PWD/codex/browser/config.toml" ~/.codex/browser/config.toml
 ```
 
 `install.sh` は既存ファイルを `~/.dotfiles-backups/<timestamp>/` へ退避してから symlink を張ります。
+`Claude` の `settings.json` と `Codex` の `config.toml` だけは symlink ではなく、managed base からローカル生成します。
 
 ## 新マシン移行
 
@@ -284,6 +286,16 @@ Homebrew 由来のツール群は `Brewfile` と `scripts/setup-homebrew.sh` で
 ./scripts/sync-codex-config.sh
 ```
 
+## Claude 設定の扱い
+
+`Claude` の runtime state は主に `~/.claude/history.jsonl`、`sessions/`、`tasks/`、`todos/`、`plugins/cache/` などへ書かれます。`settings.json` 自体は大きく汚れにくいですが、repo 側の managed base と machine-local override を分けるため、この repo では `claude/settings.base.json` だけを管理し、実際の `~/.claude/settings.json` は `scripts/sync-claude-settings.sh` で生成します。
+
+ローカル固有の差分を足したい場合は `~/.claude/settings.local.json` に書きます。managed base を編集したあとだけ、必要に応じて次を実行してください。
+
+```bash
+./scripts/sync-claude-settings.sh
+```
+
 ## Secrets 運用
 
 `Claude` / `Codex` などの資格情報は、repo には置かず `dotenvx` でローカル管理します。詳細は [secrets/README.md](/Users/yuki_shichiku/Development/dotfiles/secrets/README.md:1) を参照してください。
@@ -291,6 +303,7 @@ Homebrew 由来のツール群は `Brewfile` と `scripts/setup-homebrew.sh` で
 主なファイル:
 
 - `local/zshrc.local.example`: マシン固有の上書き例です。`claude-sec` / `codex-sec` alias もここで定義しています。
+- `local/claude.settings.local.example.json`: Claude の machine-local settings override 例です。
 - `secrets/ai-tools/.env.example`: AI ツール向け env テンプレートです。
 - `secrets/ai-tools/.env.keys.example`: `dotenvx` の鍵ファイルの雛形です。
 

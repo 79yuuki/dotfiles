@@ -54,8 +54,8 @@ main() {
   link_file "${REPO_ROOT}/tmux.conf" "${HOME}/.tmux.conf"
   link_file "${REPO_ROOT}/vimrc" "${HOME}/.vimrc"
   link_file "${REPO_ROOT}/vim" "${HOME}/.vim"
-  link_file "${REPO_ROOT}/claude/settings.json" "${HOME}/.claude/settings.json"
   link_file "${REPO_ROOT}/claude/skills" "${HOME}/.claude/skills"
+  "${REPO_ROOT}/scripts/sync-claude-settings.sh"
   link_file "${REPO_ROOT}/codex/AGENTS.md" "${HOME}/.codex/AGENTS.md"
   link_file "${REPO_ROOT}/codex/browser/config.toml" "${HOME}/.codex/browser/config.toml"
   "${REPO_ROOT}/scripts/sync-codex-config.sh"
@@ -63,6 +63,11 @@ main() {
   if [[ ! -f "${HOME}/.zshrc.local" ]]; then
     cp "${REPO_ROOT}/local/zshrc.local.example" "${HOME}/.zshrc.local"
     printf 'create %s\n' "${HOME}/.zshrc.local"
+  fi
+
+  if [[ ! -f "${HOME}/.claude/settings.local.json" ]]; then
+    cp "${REPO_ROOT}/local/claude.settings.local.example.json" "${HOME}/.claude/settings.local.json"
+    printf 'create %s\n' "${HOME}/.claude/settings.local.json"
   fi
 
   if [[ ! -f "${HOME}/.config/secrets/ai-tools/.env.example" ]]; then
@@ -74,7 +79,7 @@ main() {
   printf '1. ./scripts/setup-homebrew.sh\n'
   printf '2. ./scripts/setup-node.sh\n'
   printf '3. edit ~/.config/secrets/ai-tools/.env and ~/.config/secrets/ai-tools/.env.keys\n'
-  printf '4. rerun ./scripts/sync-codex-config.sh if codex base settings change\n'
+  printf '4. rerun ./scripts/sync-claude-settings.sh or ./scripts/sync-codex-config.sh if base settings change\n'
   printf '5. source ~/.zshrc or restart your shell\n'
 }
 
