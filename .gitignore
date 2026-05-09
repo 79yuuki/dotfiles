@@ -1,3 +1,13 @@
 .DS_Store
 vim/bundle/*
 bash_private
+.env
+.env.*
+!.env.example
+secrets/**/*.env
+secrets/**/*.env.*
+!secrets/**/*.env.example
+!secrets/**/*.env.keys.example
+secrets/**/*.keys
+secrets/**/*.json
+*.local

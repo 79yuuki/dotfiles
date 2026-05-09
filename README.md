@@ -37,6 +37,7 @@
 ### ルート設定ファイル
 
 - `README.md`: このリポジトリの方針、配置先、各ファイルの役割を説明するドキュメントです。
+- `install.sh`: 既存ファイルをバックアップしながら dotfiles を一括で symlink する移行用スクリプトです。
 - `gitconfig`: `~/.gitconfig` 用の共通 Git 設定です。`pull.ff=only`、`fetch.prune=true`、`rerere` 有効化など、事故を減らす方向に寄せています。
 - `gitignore`: `~/.config/git/ignore` 用のグローバル ignore です。OS 依存ファイルや一時ファイルを Git 管理から外します。
 - `editorconfig`: エディタ共通の基本整形ルールです。UTF-8、LF、末尾改行、通常はスペース 2、`Makefile`/`Go` はタブにしています。
@@ -97,6 +98,14 @@
 - `codex/AGENTS.md`: Codex へのグローバル指示です。日本語優先などの運用ルールを置いています。
 - `codex/browser/config.toml`: Codex browser plugin の挙動設定です。現状は approval mode だけを持ちます。
 
+### Node / nvm 管理
+
+- `node/README.md`: `nvm` / Node.js 移行の方針と復元手順です。
+- `node/default-version`: 新しいマシンで default alias にする Node.js の版です。
+- `node/versions.txt`: 復元対象としてまとめて install する Node.js の一覧です。
+- `node/default-packages`: 新しい Node 版を入れたとき自動で入れるグローバル npm パッケージ一覧です。
+- `scripts/setup-node.sh`: `nvm` 導入、Node 版 install、default alias 設定、`corepack enable` をまとめて行うスクリプトです。
+
 ### 旧 Vim 資産
 
 - `vim/.netrwhist`: netrw の履歴ファイルです。現状は歴史的な残存物です。
@@ -132,6 +141,54 @@ ln -snf "$PWD/codex/config.toml" ~/.codex/config.toml
 ln -snf "$PWD/codex/AGENTS.md" ~/.codex/AGENTS.md
 ln -snf "$PWD/codex/browser/config.toml" ~/.codex/browser/config.toml
 ```
+
+または、バックアップ付きで一括反映するなら:
+
+```bash
+./install.sh
+```
+
+`install.sh` は既存ファイルを `~/.dotfiles-backups/<timestamp>/` へ退避してから symlink を張ります。
+
+## 新マシン移行
+
+新しい Mac では、最低限この順で進めると再現が楽です。
+
+1. Homebrew を入れる
+2. このリポジトリを clone する
+3. `./install.sh` を実行する
+4. `brew install dotenvx/brew/dotenvx` を実行する
+5. `./scripts/setup-node.sh` を実行する
+6. `~/.config/secrets/ai-tools/.env.keys` を 1Password などから復元する
+7. `~/.config/secrets/ai-tools/.env` と `~/.config/secrets/gcloud/adc.json` を配置する
+8. shell を再起動する
+
+## 現在の zsh / Node.js 管理
+
+この Mac では、`zsh` は `~/.zprofile` で Homebrew 初期化、`~/.zshenv` で Cargo、`~/.zshrc` で対話設定を読む構成です。Node.js は `nvm` を `~/.nvm` に置いて管理しており、現在の default alias は `22.14.0`、追加で `16.19.0` と `24.4.0` も入っています。
+
+グローバル npm パッケージは、少なくとも次を常用しています。
+
+- `@openai/codex`
+- `claude`
+- `@google/gemini-cli`
+- `task-master-ai`
+- `agent-browser`
+- `pnpm`
+- `safe-rm`
+- `@mermaid-js/mermaid-cli`
+
+これらは `node/default-version`、`node/versions.txt`、`node/default-packages`、`scripts/setup-node.sh` で移行しやすい形に寄せています。
+
+## Secrets 運用
+
+`Claude` / `Codex` などの資格情報は、repo には置かず `dotenvx` でローカル管理します。詳細は [secrets/README.md](/Users/yuki_shichiku/Development/dotfiles/secrets/README.md:1) を参照してください。
+
+主なファイル:
+
+- `local/zshrc.local.example`: マシン固有の上書き例です。`claude-sec` / `codex-sec` alias もここで定義しています。
+- `secrets/ai-tools/.env.example`: AI ツール向け env テンプレートです。
+- `secrets/ai-tools/.env.keys.example`: `dotenvx` の鍵ファイルの雛形です。
 
 ## ローカル上書き
 

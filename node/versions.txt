@@ -1,0 +1,4 @@
+# Install these Node.js versions on a new machine.
+16.19.0
+22.14.0
+24.4.0

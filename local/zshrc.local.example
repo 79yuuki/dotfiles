@@ -1,0 +1,10 @@
+# Machine-local overrides. Do not commit real secrets here.
+
+export GOOGLE_APPLICATION_CREDENTIALS="$HOME/.config/secrets/gcloud/adc.json"
+
+# Load AI tool secrets only when launching the tool.
+alias claude-sec='dotenvx run -f "$HOME/.config/secrets/ai-tools/.env" -- claude'
+alias codex-sec='dotenvx run -f "$HOME/.config/secrets/ai-tools/.env" -- codex'
+
+# Example machine-local PATH additions:
+# export PATH="$HOME/.local/bin:$PATH"
