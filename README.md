@@ -154,16 +154,104 @@ ln -snf "$PWD/codex/browser/config.toml" ~/.codex/browser/config.toml
 
 ## 新マシン移行
 
-新しい Mac では、最低限この順で進めると再現が楽です。
+新しい Mac では、次の順で進めるのが一番楽です。
 
-1. Homebrew を入れる
-2. このリポジトリを clone する
-3. `./scripts/setup-homebrew.sh` を実行する
-4. `./install.sh` を実行する
-5. `./scripts/setup-node.sh` を実行する
-6. `~/.config/secrets/ai-tools/.env.keys` を 1Password などから復元する
-7. `~/.config/secrets/ai-tools/.env` と `~/.config/secrets/gcloud/adc.json` を配置する
-8. shell を再起動する
+### 0. 事前に用意するもの
+
+- GitHub にアクセスできる SSH キーまたは token
+- 1Password などに保存した `~/.config/secrets/ai-tools/.env.keys`
+- 必要なら `~/.config/secrets/ai-tools/.env`
+- 必要なら `~/.config/secrets/gcloud/adc.json`
+
+### 1. Homebrew を入れる
+
+Homebrew 未導入なら先に入れます。
+
+### 2. この repo を clone する
+
+```bash
+git clone git@github.com:79yuuki/dotfiles.git ~/Development/dotfiles
+cd ~/Development/dotfiles
+```
+
+### 3. Homebrew 系ツールを戻す
+
+```bash
+./scripts/setup-homebrew.sh
+```
+
+これで `Brewfile` に入っている formula / cask / VSCode extension / Go / Cargo ツールをまとめて復元します。
+
+### 4. dotfiles を反映する
+
+```bash
+./install.sh
+```
+
+これで既存ファイルを `~/.dotfiles-backups/<timestamp>/` に退避しながら、必要な symlink を張ります。
+
+### 5. Node.js / nvm を戻す
+
+```bash
+./scripts/setup-node.sh
+```
+
+これで次をまとめて行います。
+
+- `nvm` の導入
+- `node/versions.txt` の各 Node 版 install
+- `node/default-version` の default alias 設定
+- `node/default-packages` のグローバル npm パッケージ導入
+- `corepack enable`
+
+### 6. secrets を戻す
+
+以下をローカルに配置します。
+
+- `~/.config/secrets/ai-tools/.env.keys`
+- `~/.config/secrets/ai-tools/.env`
+- `~/.config/secrets/gcloud/adc.json`
+
+### 7. shell を再起動する
+
+ターミナルを開き直すか、以下を実行します。
+
+```bash
+exec zsh
+```
+
+### 8. 動作確認
+
+最低限ここまで通れば移行成功です。
+
+```bash
+brew --version
+node -v
+pnpm -v
+tmux -V
+claude --version
+codex --version
+```
+
+必要なら secrets 経由での起動も確認します。
+
+```bash
+claude-sec --help
+codex-sec --help
+```
+
+### 最短コマンド列
+
+すでに Homebrew が入っている新マシンなら、実質これです。
+
+```bash
+git clone git@github.com:79yuuki/dotfiles.git ~/Development/dotfiles
+cd ~/Development/dotfiles
+./scripts/setup-homebrew.sh
+./install.sh
+./scripts/setup-node.sh
+exec zsh
+```
 
 ## 現在の zsh / Node.js 管理
 
