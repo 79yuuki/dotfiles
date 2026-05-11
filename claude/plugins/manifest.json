@@ -8,6 +8,26 @@
     },
     "code-simplifier@claude-plugins-official": {
       "version": "1.0.0"
+    },
+    "financial-analysis@claude-for-financial-services": {
+      "version": "0.1.0",
+      "source": "GitHub (anthropics/financial-services)",
+      "note": "空 hooks.json が現行 Claude Code でロードエラーになったため、ローカル cache/marketplace の hooks.json を {\"hooks\":{}} に補正済み。"
+    },
+    "equity-research@claude-for-financial-services": {
+      "version": "0.1.0",
+      "source": "GitHub (anthropics/financial-services)",
+      "note": "空 hooks.json が現行 Claude Code でロードエラーになったため、ローカル cache/marketplace の hooks.json を {\"hooks\":{}} に補正済み。"
+    },
+    "market-researcher@claude-for-financial-services": {
+      "version": "0.1.0",
+      "source": "GitHub (anthropics/financial-services)",
+      "note": "セクター/テーマ調査、競合分析、アイデアショートリスト用途。"
+    }
+  },
+  "marketplaces": {
+    "claude-for-financial-services": {
+      "source": "GitHub (anthropics/financial-services)"
     }
   },
   "notes": [
