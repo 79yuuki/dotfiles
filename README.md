@@ -10,6 +10,7 @@
 - 旧世代の `JSHint` / `JSCS` / `.eslintrc` はやめて `eslint.config.mjs` に寄せる
 - `Claude` / `Codex` は認証・履歴・キャッシュを除いた再現可能な設定だけを管理する
 - Claude/Codex の開発ワークフローは Superpowers 由来の汎用 skill 名で管理し、個別プロジェクト prefix は付けない
+- Trading / finance / skill portfolio の運用Tipsは、RaindropやAnthropic公式skillsを見て reusable skill と Codex AGENTS.md に昇格する
 
 ## 管理ファイル
 
@@ -65,6 +66,12 @@
 - `claude/skills/executing-plans/SKILL.md`: 既存の実行計画を実装フェーズへ落とし込むための skill です。
 - `claude/skills/finishing-a-development-branch/SKILL.md`: 作業ブランチの仕上げ、検証、commit、PR 前確認を支援する skill です。
 - `claude/skills/parallel-orchestrator/SKILL.md`: 独立タスクを見つけて並列実行計画を組み、Codex レビューも絡めて進行する skill です。
+- `claude/skills/quant-research-workflow/SKILL.md`: クオンツ調査で価格予測ではなくリターン分布・自己相関・ボラ・ファクターを先に検証する skill です。
+- `claude/skills/strategy-validation-gate/SKILL.md`: トレード戦略を本番投入前にバックテスト/WFO/ドライラン/Go Live gate で判定する skill です。
+- `claude/skills/trading-risk-controls/SKILL.md`: トレードbotの sizing、DD、相関、停止条件、破産回避を設計する skill です。
+- `claude/skills/market-microstructure-execution/SKILL.md`: 板、スプレッド、約定、order flow、DEX/CEX執行を検証する skill です。
+- `claude/skills/trading-ai-agent-ops/SKILL.md`: AIエージェントをトレード研究/監視に使う際の権限境界と監査ログを定義する skill です。
+- `claude/skills/skill-portfolio-evolution/SKILL.md`: RaindropやAnthropic公式GitHubからskills/plugins/AGENTS.mdを改善する skill です。
 - `claude/skills/receiving-code-review/SKILL.md`: 受け取ったコードレビュー指摘を整理し、対応方針を詰める skill です。
 - `claude/skills/requesting-code-review/SKILL.md`: レビュー依頼時の観点整理や依頼文構成を支援する skill です。
 - `claude/skills/requesting-code-review/code-reviewer.md`: 上記 skill がレビュー依頼文を作る際に使う reviewer 向け補助プロンプトです。
