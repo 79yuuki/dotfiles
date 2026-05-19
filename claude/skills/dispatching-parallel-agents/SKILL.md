@@ -1,6 +1,6 @@
 ---
 name: dispatching-parallel-agents
-description: Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies
+description: Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies. Use ALSO when noticing: 3つ以上の独立な調査/実装/レビュータスクが直列で進行している, 同じパターンの作業を複数ファイル/複数ターゲットで繰り返している, コンテキストが大きすぎて Orchestrator が混乱しそうな時, sub-agent に切り出せば context firewall として効きそうな反復タスク. Proactively propose parallel dispatch even if user did not explicitly ask.
 ---
 
 # Dispatching Parallel Agents
