@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0.0",
+  "context": {
+    "project": "",
+    "artifact_type": "",
+    "locale": "ja-JP",
+    "timezone": "Asia/Tokyo"
+  },
+  "facts": [],
+  "unknowns": [],
+  "policies": {
+    "no_guess_categories": ["domain", "url", "price", "person", "date", "product"],
+    "fail_on_missing": true,
+    "strict_match_categories": ["domain", "url", "price", "date"]
+  },
+  "signoff": {
+    "prepared_by": "agent",
+    "approved_by": null,
+    "approved_at": null
+  }
+}

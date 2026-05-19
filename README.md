@@ -10,6 +10,7 @@
 - 旧世代の `JSHint` / `JSCS` / `.eslintrc` はやめて `eslint.config.mjs` に寄せる
 - `Claude` / `Codex` は認証・履歴・キャッシュを除いた再現可能な設定だけを管理する
 - Claude/Codex の開発ワークフローは Superpowers 由来の汎用 skill 名で管理し、個別プロジェクト prefix は付けない
+- Trading / finance / skill portfolio の運用Tipsは、RaindropやAnthropic公式skillsを見て reusable skill と Codex AGENTS.md に昇格する
 
 ## 管理ファイル
 
@@ -26,10 +27,10 @@
 - `vim/` -> `~/.vim`
 - `eslint.config.mjs` -> プロジェクト側で参照する共有テンプレート
 - `claude/settings.base.json` -> `~/.claude/settings.json` の managed base
-- `claude/skills/` -> `~/.claude/skills/`
+- `claude/skills/` -> `~/.claude/skills/`。Claude Code が skill を自動発見するための symlink
 - `claude/plugins/manifest.json` -> Claude plugin 利用状況のスナップショット
 - `codex/config.base.toml` -> `~/.codex/config.toml` の managed base
-- `codex/AGENTS.md` -> `~/.codex/AGENTS.md`
+- `codex/AGENTS.md` -> `~/.codex/AGENTS.md`。Claude skill のうち Codex にも必要な運用ルールを短く移植する場所
 - `codex/browser/config.toml` -> `~/.codex/browser/config.toml`
 
 ## ファイル説明
@@ -60,39 +61,56 @@
 
 ### Claude skills
 
-- `claude/skills/codex/SKILL.md`: tmux 上の Codex CLI と連携して相談・レビュー・設計議論を進める skill です。
-- `claude/skills/dispatching-parallel-agents/SKILL.md`: Claude 側で複数 agent へ安全に仕事を分配するための skill です。
-- `claude/skills/executing-plans/SKILL.md`: 既存の実行計画を実装フェーズへ落とし込むための skill です。
-- `claude/skills/finishing-a-development-branch/SKILL.md`: 作業ブランチの仕上げ、検証、commit、PR 前確認を支援する skill です。
-- `claude/skills/parallel-orchestrator/SKILL.md`: 独立タスクを見つけて並列実行計画を組み、Codex レビューも絡めて進行する skill です。
-- `claude/skills/receiving-code-review/SKILL.md`: 受け取ったコードレビュー指摘を整理し、対応方針を詰める skill です。
-- `claude/skills/requesting-code-review/SKILL.md`: レビュー依頼時の観点整理や依頼文構成を支援する skill です。
-- `claude/skills/requesting-code-review/code-reviewer.md`: 上記 skill がレビュー依頼文を作る際に使う reviewer 向け補助プロンプトです。
-- `claude/skills/subagent-driven-development/SKILL.md`: subagent を前提に実装を分割し、役割分担して進める skill です。
-- `claude/skills/subagent-driven-development/code-quality-reviewer-prompt.md`: subagent 実装の品質観点レビュー用プロンプトです。
-- `claude/skills/subagent-driven-development/implementer-prompt.md`: subagent 実装担当向けプロンプトです。
-- `claude/skills/subagent-driven-development/spec-reviewer-prompt.md`: 実装前の仕様レビュー用プロンプトです。
-- `claude/skills/systematic-debugging/SKILL.md`: 再現、切り分け、原因特定を系統立てて進めるデバッグ skill です。
-- `claude/skills/systematic-debugging/CREATION-LOG.md`: systematic-debugging skill を作る過程のメモです。
-- `claude/skills/systematic-debugging/condition-based-waiting-example.ts`: 条件待ちの実装例です。
-- `claude/skills/systematic-debugging/condition-based-waiting.md`: 条件待ち戦略の解説です。
-- `claude/skills/systematic-debugging/defense-in-depth.md`: 多層防御的なデバッグ観点のメモです。
-- `claude/skills/systematic-debugging/find-polluter.sh`: テスト汚染源の探索補助スクリプトです。
-- `claude/skills/systematic-debugging/root-cause-tracing.md`: 根本原因追跡の手順メモです。
-- `claude/skills/systematic-debugging/test-academic.md`: デバッグ観点の補助ノートです。
-- `claude/skills/systematic-debugging/test-pressure-1.md`: デバッグ skill の検証メモ 1 です。
-- `claude/skills/systematic-debugging/test-pressure-2.md`: デバッグ skill の検証メモ 2 です。
-- `claude/skills/systematic-debugging/test-pressure-3.md`: デバッグ skill の検証メモ 3 です。
-- `claude/skills/test-driven-development/SKILL.md`: TDD ベースで実装を進めるための skill です。
-- `claude/skills/test-driven-development/testing-anti-patterns.md`: TDD/テスト設計で避けるべきパターン集です。
-- `claude/skills/using-git-worktrees/SKILL.md`: Git worktree を使った並行作業のやり方をまとめた skill です。
-- `claude/skills/using-superpowers/SKILL.md`: Claude plugin `superpowers` を使う前提の運用 skill です。
-- `claude/skills/using-superpowers/references/codex-tools.md`: `superpowers` から見た Codex 系ツールの参照メモです。
-- `claude/skills/using-superpowers/references/copilot-tools.md`: `superpowers` から見た Copilot 系ツールの参照メモです。
-- `claude/skills/using-superpowers/references/gemini-tools.md`: `superpowers` から見た Gemini 系ツールの参照メモです。
-- `claude/skills/verification-before-completion/SKILL.md`: 完了報告前に何を検証すべきかを定義する skill です。
-- `claude/skills/writing-plans/SKILL.md`: 実装前の計画書を構造化して書くための skill です。
-- `claude/skills/writing-plans/plan-document-reviewer-prompt.md`: 計画書レビュー用の補助プロンプトです。
+`claude/skills/` は `install.sh` で `~/.claude/skills` へ symlink します。Claude Code はこの配下の各 `SKILL.md` を自動発見するため、新しい skill を追加するときに `settings.json` や `install.sh` へ個別登録する必要はありません。
+
+Claude Code では skill の `description` と `when_to_use` が常にコンテキストへ入ります。ただし長い場合は 1536 文字で切られるため、frontmatter は「いつ使うか」が伝わる短い説明に留めます。補助プロンプト、参照メモ、スクリプトなどの supporting files は `SKILL.md` から明示的に参照します。Claude 専用 skill の運用ルールを Codex CLI にも効かせたい場合は、`codex/AGENTS.md` に要点だけミラーします。
+
+- `claude/skills/agent-friendly-publishing/SKILL.md`: Design and improve publishing surfaces so AI agents and humans can reliably discover, read, cite, and act on them. Use for docs, pub…
+- `claude/skills/clarity-gate/SKILL.md`: Review writing, UI copy, docs, proposals, and public content for plain-language clarity and accessibility. Use when the output must…
+- `claude/skills/codebase-indexing/SKILL.md`: Improve repository discoverability for AI coding agents and humans by adding code maps, repo manifests, indexes, and retrieval workf…
+- `claude/skills/codex/SKILL.md`: Collaborate with Codex CLI for implementation planning, code review, and architectural decisions. Use when: discussing design approa…
+- `claude/skills/coding-agent/SKILL.md`: Run short coding tasks, one-off scripts, small utilities, and focused code changes with a lightweight agent workflow plus review and…
+- `claude/skills/component-gallery/SKILL.md`: Choose and specify UI component patterns using a gallery of proven design-system structures. Use when asking an agent to build or im…
+- `claude/skills/crypto-counterparty-security/SKILL.md`: Assess crypto, wallet, exchange, market-making, DeFi, vendor, and AI-agent collaboration workflows for counterparty, social-engineer…
+- `claude/skills/dispatching-parallel-agents/SKILL.md`: Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies
+- `claude/skills/empirical-prompt-tuning/SKILL.md`: Empirically improve agent-facing instructions such as skills, AGENTS.md, CLAUDE.md, slash commands, task prompts, routing descriptio…
+- `claude/skills/executing-plans/SKILL.md`: Use when you have a written implementation plan to execute in a separate session with review checkpoints
+- `claude/skills/fact-check-gate/SKILL.md`: Verify factual claims before publishing or sending outputs: URLs, domains, dates, prices, product names, people, legal/compliance st…
+- `claude/skills/finishing-a-development-branch/SKILL.md`: Use when implementation is complete, all tests pass, and you need to decide how to integrate the work - guides completion of develop…
+- `claude/skills/geo-seo/SKILL.md`: Optimize content and sites for AI search and generative engine visibility across ChatGPT, Perplexity, Claude, Gemini, Google AI Over…
+- `claude/skills/gtm-content-ops/SKILL.md`: Design and run small-team content operations: source monitoring, social posts, articles, newsletters, press releases, repurposing lo…
+- `claude/skills/harness-engineering/SKILL.md`: Design and improve AI-agent harnesses: context loading, routing, verification gates, safety boundaries, skill/tool packaging, monito…
+- `claude/skills/market-microstructure-execution/SKILL.md`: トレードbotの注文執行、板情報、スプレッド、スリッページ、約定可能性、CEX/DEXアービトラージ、マーケットメイク、funding rate、オーダーフロー、レイテンシを設計・検証する時に使う。
+- `claude/skills/marketing-skills/SKILL.md`: Use a compact library of marketing playbooks for CRO, SEO, positioning, copywriting, analytics, experiments, pricing, launches, ads,…
+- `claude/skills/parallel-orchestrator/SKILL.md`: Automatically estimates task complexity and orchestrates parallel subagent execution with Codex review. Triggers on: complex impleme…
+- `claude/skills/pentest/SKILL.md`: Run authorized web, API, and infrastructure penetration-test planning and safe verification using tiered tools and evidence capture.…
+- `claude/skills/playwright-e2e/SKILL.md`: Implement and run Playwright end-to-end tests and browser UI verification efficiently. Use for web app flows, regression tests, scre…
+- `claude/skills/project-account-architecture/SKILL.md`: Design account, channel, brand, and ownership architecture across projects so audiences, permissions, content formats, and operating…
+- `claude/skills/prompt-design/SKILL.md`: Design and review long agent-facing prompts such as AGENTS.md, CLAUDE.md, SKILL.md, subagent tasks, system prompts, and cron prompts…
+- `claude/skills/public-site-stack-decision/SKILL.md`: Choose a stack for public-facing sites such as landing pages, docs, blogs, corporate sites, campaign pages, and help centers. Use to…
+- `claude/skills/quant-research-workflow/SKILL.md`: クオンツトレードやbot戦略の初期調査で、価格予測ではなくリターン、分布、ボラティリティ、自己相関、レジーム、エッジを検証する時に使う。ランダムウォーク、時系列分析、特徴量設計、ファクター調査、モメンタムや平均回帰の調査にも使う。
+- `claude/skills/receiving-code-review/SKILL.md`: Use when receiving code review feedback, before implementing suggestions, especially if feedback seems unclear or technically questi…
+- `claude/skills/requesting-code-review/SKILL.md`: Use when completing tasks, implementing major features, or before merging to verify work meets requirements
+- `claude/skills/sales-gtm-os/SKILL.md`: Build and operate a reusable sales and go-to-market system: lead intake, qualification, outreach, follow-up, proposal flow, CRM tagg…
+- `claude/skills/skill-creator/SKILL.md`: Create, update, audit, and package Agent Skills / Claude Code skills with clear routing, concise SKILL.md bodies, supporting files,…
+- `claude/skills/skill-portfolio-evolution/SKILL.md`: Agent Skills / Claude Code plugins / Codex AGENTS.md を更新する時に使う。Raindrop・Anthropic公式GitHub・外部workflow bundleから reusable skill 改善を抽出し、…
+- `claude/skills/slide-deck/SKILL.md`: Plan, write, and review slide decks, proposals, business explainers, technical presentations, and pitch materials. Use when creating…
+- `claude/skills/smart-contract-audit/SKILL.md`: Audit Solidity smart contracts for loss-of-funds vulnerabilities, access-control bugs, economic attacks, upgradeability risks, and i…
+- `claude/skills/strategy-validation-gate/SKILL.md`: トレード戦略やbotを本番投入する前に、バックテスト、ウォークフォワード、リプレイ、ドライラン、実弾投入のゲートを設計・実行する時に使う。過学習、リーク、単一バックテスト依存、WFO、go live 判定、回帰テストにも使う。
+- `claude/skills/subagent-driven-development/SKILL.md`: Use when executing implementation plans with independent tasks in the current session
+- `claude/skills/systematic-debugging/SKILL.md`: Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes
+- `claude/skills/test-driven-development/SKILL.md`: Use when implementing any feature or bugfix, before writing implementation code
+- `claude/skills/trading-ai-agent-ops/SKILL.md`: Claude Code やLLMエージェントでトレードbot、マーケット分析、戦略生成、運用監視、AIOpsを行う時に使う。AIに投資判断を丸投げせず、ログ、可視化、レビュー、監視、権限境界を設計する。
+- `claude/skills/trading-risk-controls/SKILL.md`: トレードbotの資金管理、ポジションサイズ、損切り、ATR、Kelly基準、ドローダウン制限、レバレッジ制限、日次停止、破産確率、リスク監査を設計・レビューする時に使う。
+- `claude/skills/trust-privacy-pack/SKILL.md`: Create and review trust, privacy, safety, retention, compliance, and customer-assurance artifacts for products and internal operatio…
+- `claude/skills/ui-accessibility-design/SKILL.md`: Review and improve UI/UX information architecture and accessibility. Use for WCAG-oriented audits, forms, navigation, error messages…
+- `claude/skills/ui-design-system/SKILL.md`: Design, critique, and refine high-quality UI systems for web apps, landing pages, dashboards, and mobile interfaces. Use for layout,…
+- `claude/skills/unit-economics-gate/SKILL.md`: Evaluate opportunities, proposals, hires, tools, campaigns, and operating moves using unit economics, gross margin, fixed costs, cas…
+- `claude/skills/using-git-worktrees/SKILL.md`: Use when starting feature work that needs isolation from current workspace or before executing implementation plans - ensures an iso…
+- `claude/skills/using-superpowers/SKILL.md`: Use when starting any conversation - establishes how to find and use skills, requiring Skill tool invocation before ANY response inc…
+- `claude/skills/verification-before-completion/SKILL.md`: Use when about to claim work is complete, fixed, or passing, before committing or creating PRs - requires running verification comma…
+- `claude/skills/winning-proposal/SKILL.md`: Structure proposals and business documents so decision-makers can approve them: problem, stakes, options, budget logic, risks, proof…
+- `claude/skills/writing-plans/SKILL.md`: Use when you have a spec or requirements for a multi-step task, before touching code
 
 ### Codex 設定
 
@@ -299,6 +317,19 @@ runtime section が空なら、まだ machine-local な project trust や UI 状
 ```bash
 ./scripts/sync-claude-settings.sh
 ```
+
+
+Claude skills は `settings.json` ではなく `~/.claude/skills` 配下で管理します。`install.sh` によって `claude/skills/` が symlink されるので、repo に新しい `claude/skills/<skill-name>/SKILL.md` を追加すれば Claude Code 側で自然に発見されます。
+
+新しい skill を追加・更新するときの確認事項:
+
+1. `SKILL.md` の frontmatter に `name` と短い `description` を置く。
+2. `description` / `when_to_use` は常時コンテキストに入る前提で、合計 1536 文字以内を目安に簡潔にする。
+3. 長い手順、補助プロンプト、スクリプト、参照メモは supporting files に分け、`SKILL.md` からファイル名を明示して参照する。
+4. Claude Code 専用ではない運用ルールは `codex/AGENTS.md` に要点だけ移植する。
+5. README の `Claude skills` 一覧へ新しい skill と supporting files を追加する。
+
+`disable-model-invocation` を使う skill は自動呼び出し前提にしません。その場合も、人間や agent が見つけやすいように README と必要に応じて AGENTS.md に使いどころを残します。
 
 ## Secrets 運用
 

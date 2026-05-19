@@ -27,12 +27,28 @@
   },
   "marketplaces": {
     "claude-for-financial-services": {
-      "source": "GitHub (anthropics/financial-services)"
+      "source": "GitHub (anthropics/financial-services)",
+      "pinned_commit": "853f755a61f7"
+    },
+    "anthropic-agent-skills": {
+      "source": "GitHub (anthropics/skills)",
+      "pinned_commit": "f458cee31a75",
+      "note": "Official Agent Skills examples/spec/template; install via Claude Code plugin marketplace when needed."
     }
   },
   "notes": [
     "これは移植用の簡易 manifest です。",
     "plugin cache 本体や installPath のようなマシン依存情報は含めていません。",
-    "Superpowers は公式 marketplace 版を正とし、重複発火を避けるため marketplace fork との二重 enable はしません。"
-  ]
+    "Superpowers は公式 marketplace 版を正とし、重複発火を避けるため marketplace fork との二重 enable はしません。",
+    "Anthropic Agent Skills marketplace can be added in Claude Code with: /plugin marketplace add anthropics/skills",
+    "Official external skills are introduced by provenance/pinned manifest first; machine-local plugin cache paths are intentionally excluded."
+  ],
+  "referencedPlugins": {
+    "example-skills@anthropic-agent-skills": {
+      "version": "f458cee31a75",
+      "source": "GitHub (anthropics/skills)",
+      "note": "Reference-only official example skills; install explicitly via Claude Code if needed. Official example skills used as reference for skill-creator/webapp-testing/design patterns; portable manifest intent, not local cache.",
+      "enabled": false
+    }
+  }
 }
