@@ -1,7 +1,7 @@
 ---
 name: prompt-design
 description: >-
-  Design and review long agent-facing prompts such as AGENTS.md, CLAUDE.md, SKILL.md, subagent tasks, system prompts, and cron prompts. Use when writing or improving instructions for Claude Code, Codex CLI, or other coding agents.
+  Design and review long agent-facing prompts such as AGENTS.md, CLAUDE.md, SKILL.md, subagent tasks, system prompts, and cron prompts. Use when writing or improving instructions for Claude Code, Codex CLI, or other coding agents. Use ALSO when noticing: CLAUDE.md/AGENTS.md/SKILL.md が 200行 or 150指示 を超えている, 矛盾指示や MUST/ALWAYS/CRITICAL の過剰使用で primacy bias / attention希釈 が起きそう, 「現在のシステムはこう」型の説明文がコードと乖離している, モデル更新後に旧モデル向け制約が残っている時. Proactively propose 剪定 / 再構成 / pointer 化 even if user did not explicitly ask.
 ---
 
 # Prompt Design — エージェント向けプロンプト設計スキル

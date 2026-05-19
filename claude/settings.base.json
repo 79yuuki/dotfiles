@@ -19,6 +19,14 @@
             "command": "osascript -e 'display notification \"タスクが完了しました\" with title \"Claude Code\" subtitle \"作業完了\" sound name \"Hero\"'"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -x \"$HOME/.claude/hooks/harness-reflection.sh\" ] && \"$HOME/.claude/hooks/harness-reflection.sh\" || true"
+          }
+        ]
       }
     ]
   },

@@ -1,7 +1,7 @@
 ---
 name: coding-agent
 description: >-
-  Run short coding tasks, one-off scripts, small utilities, and focused code changes with a lightweight agent workflow plus review and verification gates. Use when work is too small for a full multi-agent plan but still needs tests and review.
+  Run short coding tasks, one-off scripts, small utilities, and focused code changes with a lightweight agent workflow plus review and verification gates. Use when work is too small for a full multi-agent plan but still needs tests and review. Use ALSO when noticing: 同じ修正パターンを別ファイルで 2回以上 繰り返している, テスト/lint/typecheck なしで commit/PR に進もうとしている, 「手で全部直していく」と言いつつ対象が 5箇所以上 ある場合, 反復タスクなのに 1ターンで一気にやろうとしている時. Proactively propose a coding-agent slice + verification gate even if user did not explicitly ask.
 metadata:
   {
     "agent-runtime": { "emoji": "🧩", "requires": { "anyBins": ["claude", "codex", "opencode", "pi"] } },
