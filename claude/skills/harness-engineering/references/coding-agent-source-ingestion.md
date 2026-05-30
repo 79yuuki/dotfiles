@@ -31,6 +31,16 @@ For each source item:
 4. **Land rough if safe** — if the change is internal, reversible, and security-scannable, prefer a small landed update over leaving everything queued.
 5. **Escalate to eval** — if the item proposes changing core harness behavior, model routing, or agent autonomy, convert it into scenario/hold-out/evaluation first.
 
+## System-over-models signal
+
+When model labs publicly shift toward agents/harnesses, treat it as a **system benchmark** signal, not just vendor news:
+
+- Compare `model + harness + workflow + UI + memory + economics`, not model scores alone.
+- Watch for closed-harness lock-in: a model may be post-trained to work best inside one proprietary agent surface, reducing API/model portability.
+- For Muser routing, prefer reversible internal patterns first (eval corpus, reference checklist, routing note) before changing default agent autonomy or vendor/model selection.
+- Seed Muser evals from `references/agent-system-benchmark-golden-tasks.md`; measure bookmark follow-up, coding-agent implementation, and cron/runtime triage as agent-system tasks.
+- Connect the signal to active projects as: x402/Hermes = provider-neutral agent ops positioning; M79 ops = harness/pruning/eval cadence; GTM = “agents are systems, not models” narrative.
+
 ## Rough landed update standard
 
 A rough update is acceptable when it has:

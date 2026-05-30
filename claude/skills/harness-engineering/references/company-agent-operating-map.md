@@ -44,4 +44,14 @@ Use this to describe a lightweight agent-operated company or project OS without 
 - Never automated: [...]
 ```
 
+## 7. Adoption-as-product gate
+
+When introducing AI/agent workflows to a team, do not measure success by “tool is available” or pilot count. Define adoption as the product:
+
+- name the user-facing promise in operational terms (for example “time back”, fewer rework cycles, or faster turnaround);
+- track one routine usage KPI and one workflow KPI using system data where possible, not only self-reported estimates;
+- seed adoption through domain peer groups and reusable examples, not only centralized training;
+- keep the human accountable for final judgment in regulated/high-stakes workflows;
+- feed measured friction back into skills/templates/routines instead of blaming users for non-use.
+
 Design principle: Company Brain is shared context, Orchestrator is judgment/routing, Workers are scoped execution, Routines are scheduled sensing. If a rule appears in all four layers, extract it into a skill/reference instead of copying it.
