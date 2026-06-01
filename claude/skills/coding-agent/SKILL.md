@@ -120,6 +120,15 @@ cd <project-dir>
 **まだ測れていない改善は、すぐ常設ルール扱いしない。**
 作業中の安全策は `coding-agent` に入れ、昇格判断は `agent-runtime-self-improvement` 側でやる。
 
+### Guided adoption for review agents
+
+Codex/Claude/managed review agent を初めてチームやrepoに入れる時は、いきなり「必須ゲート化」しない。
+
+- 初回は人間が横について、何を見てほしいか・どの指摘を採用/棄却したかを短く記録する
+- success は「使った」ではなく `ship velocity / code quality / review_loops / escaped defects` のどれが改善したかで見る
+- 誤検知・見落とし・使いにくさは vendor/tool feedback loop か skill/reference 更新に戻す
+- 2〜3本の小さなPRで信頼ができてから、必須 review gate や自動routingへ昇格する
+
 → 詳細: [references/measurement-and-isolation.md](references/measurement-and-isolation.md)
 → benchmark候補: [references/benchmark-corpus-shortlist.md](references/benchmark-corpus-shortlist.md)
 → ブラウザ常駐/Chrome拡張型エージェントの導入検証: [references/browser-native-agent-evaluation.md](references/browser-native-agent-evaluation.md)
@@ -131,6 +140,10 @@ cd <project-dir>
 - artifact に `Benchmark bundle` を残す
 - 3本とも見ずに standing rule 化しない
 - まず 3 asset で1回回し、足りない時だけ shortlist を広げる
+
+### Cloudflare Workers probe slice
+
+Cloudflare Workers に小さな疎通確認Workerを追加する時は `references/cloudflare-workers-probe.md` を参照。`/health` + `/probe`、`wrangler deploy --dry-run`、`CLOUDFLARE_API_TOKEN` セット後の実デプロイ、既存lint debtと変更ファイルlintの切り分けまで含む。
 
 ---
 
