@@ -54,6 +54,7 @@ main() {
   link_file "${REPO_ROOT}/tmux.conf" "${HOME}/.tmux.conf"
   link_file "${REPO_ROOT}/vimrc" "${HOME}/.vimrc"
   link_file "${REPO_ROOT}/vim" "${HOME}/.vim"
+  link_file "${REPO_ROOT}/claude/CLAUDE.md" "${HOME}/.claude/CLAUDE.md"
   link_file "${REPO_ROOT}/claude/skills" "${HOME}/.claude/skills"
   link_file "${REPO_ROOT}/claude/hooks" "${HOME}/.claude/hooks"
   "${REPO_ROOT}/scripts/sync-claude-settings.sh"
