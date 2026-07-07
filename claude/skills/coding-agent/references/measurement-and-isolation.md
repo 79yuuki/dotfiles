@@ -1,6 +1,6 @@
 # Measurement + Worktree Isolation
 
-`WORKSPACE_ROOT` は現在のランタイムが使う共有workspace root（agent runtime workspace / Hermes workspace / 任意の共有workspace）に読み替える。
+`WORKSPACE_ROOT` は現在のランタイムが使う共有workspace root（agent runtime workspace / 任意の共有workspace）に読み替える。
 
 harness改善を「なんか良さそう」で広げず、**衝突防止** と **軽い計測** を最低限セットで回すための実務メモ。
 
@@ -76,7 +76,7 @@ git -C "$BASE" worktree remove "$WT_ROOT/issue-99"
 
 ## 3. 昇格の考え方
 - `coding-agent` に入れるのは **現場で毎回効く実務ルール**
-- `agent-runtime-self-improvement` に残すのは **複数runを見てから昇格させる判断ルール**
+- `skill-portfolio-evolution` に残すのは **複数runを見てから昇格させる判断ルール**
 - まだ測れていない改善は `hot.md` / `routines.md` に即昇格させない
 
-要するに、**作業中の安全策は coding-agent、常設ルール化の判定は self-improvement 側** で持つ。
+要するに、**作業中の安全策は coding-agent、常設ルール化の判定は skill-portfolio-evolution 側** で持つ。

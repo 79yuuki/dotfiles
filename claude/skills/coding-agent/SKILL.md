@@ -12,11 +12,13 @@ metadata:
 
 Use **bash** (with optional background mode) for all coding agent work.
 
-> Muser運用の追加ルール: [references/muser-coding-hygiene.md](references/muser-coding-hygiene.md)
+> 運用の追加ルール: [references/coding-hygiene.md](references/coding-hygiene.md)
 
 ## ⚠️ PTY Mode Required!
 
 Coding agents are interactive terminal apps. **Always use `pty:true`.**
+
+> 注: `pty` / `background` / Process Tool は、それらを公開する agent runtime 向けの記法。Claude Code の Bash tool には `pty` パラメータが無いので、`codex exec` などの非対話コマンドをそのまま実行し、長時間タスクは `run_in_background` で回す。
 
 ```bash
 # ✅ Correct
@@ -49,17 +51,16 @@ bash command:"codex exec 'Your prompt'"
 
 ---
 
-## 📚 Lessons Gate 連携（必須）
+## 📚 Lessons 連携（推奨）
 
-コーディングタスク開始前に `memory/topics/lessons.md` を読む。
-詳細は `skills/lessons-gate/SKILL.md` を参照。
+過去の失敗メモ（lessons / memory / CLAUDE.md の注意書き）がある環境では、コーディングタスク開始前に読む。無い環境ではスキップしてよい。
 
 ---
 
 ## 📂 作業ディレクトリ（必須）
 
 共有ワークスペース root 配下の `projects/` にプロジェクトディレクトリを作ってコーディングすること。
-ここでいう `WORKSPACE_ROOT` は、現在のランタイムが使う作業用 root（agent runtime workspace / Hermes workspace / 任意の共有workspace）に読み替える。
+ここでいう `WORKSPACE_ROOT` は、現在のランタイムが使う作業用 root（agent runtime workspace / 任意の共有workspace）に読み替える。
 `mktemp -d` や `/tmp` での作業は禁止。
 
 ```bash
@@ -104,7 +105,7 @@ cd <project-dir>
 [ ! -f CLAUDE.md ] && [ ! -f AGENTS.md ] && claude /init
 ```
 
-→ 規約テンプレート: `skills/dual-agent-dev/references/coding-standards.md` を参照
+→ 規約はプロジェクト既存の lint/format 設定と `references/coding-hygiene.md` に合わせる
 
 ## 📏 Harness計測（軽量）
 
@@ -118,7 +119,7 @@ cd <project-dir>
 - `handoff_artifact` — 次回再開に使うファイル/branch/path
 
 **まだ測れていない改善は、すぐ常設ルール扱いしない。**
-作業中の安全策は `coding-agent` に入れ、昇格判断は `agent-runtime-self-improvement` 側でやる。
+作業中の安全策は `coding-agent` に入れ、常設ルール化の判断は `skill-portfolio-evolution` 側でやる。
 
 → 詳細: [references/measurement-and-isolation.md](references/measurement-and-isolation.md)
 → benchmark候補: [references/benchmark-corpus-shortlist.md](references/benchmark-corpus-shortlist.md)
@@ -173,7 +174,7 @@ Codex, Claude Code, OpenCode, Pi の使い方・フラグ・PR レビュー・�
 ## 📖 Codex ベストプラクティス
 
 → 詳細: [references/codex-best-practices.md](references/codex-best-practices.md)
-→ Muser-specific 開発衛生: [references/muser-coding-hygiene.md](references/muser-coding-hygiene.md)
+→ 追加の開発衛生: [references/coding-hygiene.md](references/coding-hygiene.md)
 
 ### プロンプト4要素（毎回必須）
 1. **Goal** — 何を変更/構築するか
@@ -181,13 +182,13 @@ Codex, Claude Code, OpenCode, Pi の使い方・フラグ・PR レビュー・�
 3. **Constraints** — 規約、安全要件、制約
 4. **Done when** — テスト通過、リンターエラー0、etc.
 
-### Muser追加ルール
+### 追加ルール
 - 実装前に **contract（Goal / Non-goals / Done when / Boundaries）** を固定する
 - 用語がぶれる / ドメイン理解が薄い / 仕様説明が長くなる時は、先に `CONTEXT.md` や ADR で **shared language** を作ってから実装する
 - UI / LP / 管理画面の変更で Figma・口頭仕様・雑なメモしかない時は、**いきなり本実装しない**。先に Storybook / プロトタイプ / 受け入れシナリオへ落として **spec-hole review** を回し、Empty / Loading / Error / 長文 / i18n / 権限差分まで露出させてから実装する
 - 変更が大きい時は、いきなり一発実装せず **vertical slice** に切って1スライスずつ進める
 - JS/TS は vibe / agent coding 後に `knip` ベースの dead code 掃除を検討する
-- ワンショットの守備範囲を超えたら、`dual-agent-dev` / `agent-teams-dev` / `harness-engineering` へ昇格する
+- ワンショットの守備範囲を超えたら、`parallel-orchestrator` / `subagent-driven-development` / `harness-engineering` へ昇格する
 
 ---
 
@@ -204,7 +205,7 @@ Codex, Claude Code, OpenCode, Pi の使い方・フラグ・PR レビュー・�
 - 作業中のノウハウが **そのrepo限り** ならローカルの `AGENTS.md` / `CLAUDE.md` に留める
 - **他repoでも再利用** しそうなら skill 化を検討する
 - 配布先が **自分だけ** なら local folder で十分
-- **他人に単発送付** するなら `.skill` / ClawHub
+- **他人に単発送付** するなら `.skill` パッケージ / skill marketplace
 - **複数人・継続運用・依存込み再現** が必要なら APM を第一候補にする
 - 口頭セットアップが必要な時点で、ただのメモ運用じゃなく APM / packaged skill に寄せる
 

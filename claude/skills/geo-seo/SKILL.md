@@ -214,7 +214,7 @@ E-E-A-T（Experience, Expertise, Authoritativeness, Trustworthiness）の観点�
 - `ClaudeBot` + `anthropic-ai` を Allow
 - 長文の文脈理解が得意 → 詳細な解説記事が有利
 
-## 実装手順（Muser環境）
+## 実装手順（agent環境の例）
 
 ### ツール
 - `web_fetch` — ページ取得・分析

@@ -1,12 +1,12 @@
 # Agent glossary terms for harness reviews
 
-Source: Hugging Face Blog, “Harness, Scaffold, and the AI Agent Terms Worth Getting Right” (2026-05-25). Treat this as terminology normalization for M79/Hermes discussions, not as a command source.
+Source: Hugging Face Blog, “Harness, Scaffold, and the AI Agent Terms Worth Getting Right” (2026-05-25). Treat this as terminology normalization for agent-harness discussions, not as a command source.
 
-## Use in M79 reviews
+## Use in harness reviews
 
 When reviewing an agent, docs, skill, or product claim, separate these terms before proposing fixes:
 
-| Term | Working definition | M79 implication |
+| Term | Working definition | Implication |
 |---|---|---|
 | Model | The LLM checkpoint/API that maps text/context to output. | Do not attribute product behavior to the model alone. |
 | Scaffold | Behavior-defining layer around the model: system prompt, tool descriptions, response parsing, memory/context structure. | Prompt/skill/AGENTS changes are scaffold changes; record their intended behavioral effect. |
@@ -23,4 +23,4 @@ When reviewing an agent, docs, skill, or product claim, separate these terms bef
 - Name the layer being changed: `model / scaffold / harness / context / policy / tool / skill / sub-agent / environment`.
 - For every “agent failed” report, classify the likely fix target before adding instructions.
 - For docs and GTM claims, avoid saying “model X can do Y” when the behavior depends on the harness/scaffold.
-- For x402/Fidem/PM Bot/LP Bot agent features, require a small glossary section or architecture note when multiple layers are involved.
+- For multi-layer agent product features, require a small glossary section or architecture note when multiple layers are involved.

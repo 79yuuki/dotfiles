@@ -55,7 +55,7 @@ For AI-assisted product QA, trust pages, policies, onboarding flows, or review s
 - evidence source (screen, policy text, log, data-flow note)
 - owner for legal/founder sign-off when judgement is required
 
-Use this for the product / the product review flows and trust/privacy artifacts before launch. It is not a substitute for counsel; it is a way to surface missing decisions early.
+Use this for product review flows and trust/privacy artifacts before launch. It is not a substitute for counsel; it is a way to surface missing decisions early.
 
 ### 2.6. Apply the legal-output review gate
 

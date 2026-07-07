@@ -17,14 +17,16 @@ Use this when turning an external development-methodology bundle (for example, S
 
 ```bash
 # per-skill scan loop
+SKILL_SCANNER="<path-to-your-skill-security-scan-script>"
 for d in claude/skills/*; do
   [ -f "$d/SKILL.md" ] || continue
-  /Users/angoya-claw/.agent-runtime/workspace/scripts/skill-security-scan.sh "$PWD/$d" > "/tmp/scan-$(basename "$d").log"
+  "$SKILL_SCANNER" "$PWD/$d" > "/tmp/scan-$(basename "$d").log"
 done
 
 grep -RHiE "Max Severity: (CRITICAL|HIGH)|suspicious pattern\\(s\\) detected|Error loading skill" /tmp/scan-*.log || true
 
-grep -RIn "muser\\|Muser\\|superpowers:" README.md codex claude 2>/dev/null || true
+# replace with the old prefixes/org names you are migrating away from
+grep -RIn "<old-prefix>\\|superpowers:" README.md codex claude 2>/dev/null || true
 ```
 
 ## Pitfalls

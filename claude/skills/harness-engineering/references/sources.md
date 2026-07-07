@@ -73,9 +73,8 @@
     - URL: https://ghuntley.com/ralph/
     - 要点: hooks/scriptsでエージェントを継続的反復サイクルに入れる手法
 
-## Muser固有の知見
+## 環境固有の知見
 
-14. **AGENTS.md** — Muser環境のハーネス設計そのもの
-15. **memory/topics/dev-workflow.md** — MCP排除・CLI重視の設計方針
-16. **memory/topics/lessons.md** — Boris Cherny式自己改善ログ（= Hashimoto's "engineer the harness"の実践）
-17. **skills/lessons-gate/SKILL.md** — ミス再発防止の確定的ゲート
+14. **AGENTS.md / CLAUDE.md** — 自環境のハーネス設計そのもの
+15. **local lessons / memory notes** — 失敗再発防止ログ（= Hashimoto's "engineer the harness"の実践）
+16. **verification-before-completion / skill-portfolio-evolution** — 完了宣言前の確定的ゲートと常設化判断

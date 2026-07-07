@@ -12,7 +12,7 @@ Turn ad hoc founder-led selling into a reusable operating system. Optimize for v
 
 Read `references/os-template.md` when you need the object model and pipeline template.
 Read `references/decision-trace-template.md` when the user needs rationale / override / outcome logging around proposals, follow-ups, or account decisions.
-Read `references/small-business-ai-ops-template.md` when packaging agent-assisted billing, monthly close, CRM follow-up, sales/ad creation, or workspace-doc operations for small businesses, creator businesses, agencies, the product, or the product.
+Read `references/small-business-ai-ops-template.md` when packaging agent-assisted billing, monthly close, CRM follow-up, sales/ad creation, or workspace-doc operations for small businesses, creator businesses, agencies, or product teams.
 
 When strategy depends on a technical edge, add the **distribution / user-relationship gate** before proposal or prioritization: verify who owns the audience, channel, default surface, trust relationship, and charging point.
 
@@ -143,4 +143,4 @@ Return:
 - required templates/assets
 - decision-trace schema if judgement logging matters
 - immediate cleanup tasks
-- how the OS can generalize across x402, the company, the product, Avenir, and future work
+- how the OS can generalize across current products and future work

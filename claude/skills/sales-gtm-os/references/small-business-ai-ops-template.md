@@ -1,6 +1,6 @@
 # Small Business AI Ops Package Template
 
-Use this when a project needs a concrete AI-ops offer for small businesses, creator businesses, agencies, or the product/the product-style backoffice-heavy teams.
+Use this when a project needs a concrete AI-ops offer for small businesses, creator businesses, agencies, or backoffice-heavy teams.
 
 ## Positioning
 
@@ -19,7 +19,7 @@ Turn scattered admin work into an agent-assisted operating layer. Do not sell "A
 
 ## Business router skeleton
 
-Use this when packaging a Claude/Hermes-style SMB onboarding offer or internal Muser/the product ops router.
+Use this when packaging an agent-assisted SMB onboarding offer or an internal ops router.
 
 ```md
 # /smb-onboard Router

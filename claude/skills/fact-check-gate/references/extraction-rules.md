@@ -27,7 +27,7 @@
 
 ### person
 - 人名（漢字、アルファベット）
-- 役職 + 名前: 「CTO 紫竹佑騎」
+- 役職 + 名前: 「CTO 山田太郎」
 - SNSハンドル: `@example_account`
 
 ### product
@@ -36,7 +36,7 @@
 - SDK名: `@x402relay/sdk`
 
 ### org
-- 会社名: 「合同会社the company」
+- 会社名: 「サンプル株式会社」
 - ブランド名: 「x402」
 
 ### stat

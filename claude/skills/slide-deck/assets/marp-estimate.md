@@ -32,7 +32,7 @@ style: |
 
 株式会社○○ 御中
 
-**the company株式会社**
+**〇〇株式会社**
 YYYY年MM月DD日
 有効期限: YYYY年MM月DD日
 

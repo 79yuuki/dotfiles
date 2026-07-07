@@ -1,7 +1,7 @@
-# Muser Harness Operating Patterns
+# Harness Operating Patterns
 
 `memory/topics/harness.md` と `memory/topics/dev-workflow.md` から、
-Muser環境で繰り返し使うハーネス運用パターンだけを抽出したもの。
+自環境で繰り返し使うハーネス運用パターンだけを抽出したもの。
 
 ## 1. Default loop = Plan → Execute → Evaluate → Learn
 - **Plan:** ゴール・制約・合格条件を固定

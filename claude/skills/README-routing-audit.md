@@ -1,6 +1,6 @@
 # Claude/Codex skill routing audit
 
-Date: 2026-05-19
+Date: 2026-05-19 (updated 2026-07-07)
 
 ## Sources checked
 
@@ -20,7 +20,7 @@ Date: 2026-05-19
 
 ## Copied / upgraded skills
 
-Copied from the Hermes/OpenClaw-trained skill library into `claude/skills/` and normalized for generic dotfiles reuse:
+Copied from a private agent-runtime skill library into `claude/skills/` and normalized for generic dotfiles reuse:
 
 - `agent-friendly-publishing`
 - `clarity-gate`
@@ -51,7 +51,7 @@ Copied from the Hermes/OpenClaw-trained skill library into `claude/skills/` and 
 
 ## Intentionally not copied as-is
 
-These were left out because they are too personal, product-specific, account-specific, adult-platform-specific, OpenClaw-runtime-specific, or incomplete:
+These were left out because they are too personal, product-specific, account-specific, adult-platform-specific, runtime-specific, or incomplete:
 
 - account-specific social posting skills
 - bookmark-to-task personal interpretation skills
@@ -71,3 +71,12 @@ If any excluded skill becomes needed in dotfiles, first rewrite it as a generic 
 - `codex/AGENTS.md` now mirrors the important routing/gate behavior for Codex CLI: prompt design, empirical prompt tuning, harness engineering, Playwright verification, codebase indexing, fact-checking, clarity, UI/slides/security, and GTM decision gates.
 - Copied skill descriptions were normalized to be concise and natural-invocation friendly.
 - Obvious local/private identifiers in copied skills were scrubbed or generalized.
+
+## 2026-07-07 re-audit
+
+- The runtime-prefixed security response skill was renamed to `security-response-policy` and rewritten as a generic pre-flight guard (untrusted input, Rule of Two, impersonation, scoped outbound approval). Its account-specific operational references (dated incident logs, channel IDs, runtime cron notes) were deleted; that content belongs in the private runtime, not in reusable dotfiles.
+- Remaining personal/org codenames (runtime nicknames, org abbreviations, personal domains, machine-local absolute paths) in `harness-engineering`, `coding-agent`, `skill-creator`, `blogwatcher`, `sales-gtm-os`, `fact-check-gate`, `README.md`, and `codex/AGENTS.md` were generalized.
+- Broken relative links fixed: `harness-engineering` → `references/org-operating-patterns.md`, `coding-agent` → `references/coding-hygiene.md`.
+- Routing pointers to skills that do not exist in this repo (`dual-agent-dev`, `agent-teams-dev`, `lessons-gate`, `sessions_spawn`, `agent-runtime-self-improvement`) were remapped to existing skills (`codex`, `parallel-orchestrator`, `subagent-driven-development`, `skill-portfolio-evolution`, `verification-before-completion`).
+- `blogwatcher` runtime-split notes (installed-copy vs active-copy patching) were removed as runtime-specific; CLI examples normalized to the `blogwatcher-cli` binary name.
+- Known validator false positives (not defects): example links inside fenced code blocks in `skill-creator` and `prompt-design`; `[名前](URL)` template placeholders in `geo-seo`; placeholder emails like `name@example.com` in playbooks and tests.

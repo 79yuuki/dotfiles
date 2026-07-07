@@ -1,6 +1,6 @@
 # Managed Agent Execution Policy
 
-Use this when evaluating hosted/managed agent runners (for example cloud/browser/IDE agents that execute tasks in a provider-controlled sandbox) or when comparing internal Hermes/Codex/Claude execution against vendor-managed agents.
+Use this when evaluating hosted/managed agent runners (for example cloud/browser/IDE agents that execute tasks in a provider-controlled sandbox) or when comparing local Claude/Codex execution against vendor-managed agents.
 
 ## Default stance
 
@@ -11,7 +11,7 @@ Treat managed agents as a sandbox/runtime choice, not just a model feature. Do n
 For each candidate, record:
 
 - **Runtime boundary:** where code/browser actions run, network/egress limits, file persistence, and whether secrets are mounted.
-- **Identity boundary:** whether actions appear as Hermes, a service account, or a human user; human-account operation requires approval.
+- **Identity boundary:** whether actions appear as the agent, a service account, or a human user; human-account operation requires approval.
 - **Evidence export:** logs, screenshots, diffs, test output, trace IDs, and whether fresh-context review can inspect them without the original session.
 - **Agent-safe fork / preview environment:** whether the runner can create isolated branches, preview deployments, or production-like forks without touching shared prod state.
 - **Rollback / kill switch:** how to cancel, revert, disable credentials, tear down preview/fork resources, and prevent repeated queued actions after a failure.
@@ -46,8 +46,8 @@ For Datasette-style data assistants or BI agents, require:
 - truncated-result disclosure so users know when an answer is based on partial data;
 - plugin/tool provenance and sandboxing for code execution or chart rendering.
 
-Use this to route Fidem/x402/GTM dashboard ideas: prototype against non-sensitive sample data first, then add metric definitions, owner, Golden Queries, and evaluation harness before connecting production data.
+Use this to route product/GTM dashboard ideas: prototype against non-sensitive sample data first, then add metric definitions, owner, Golden Queries, and evaluation harness before connecting production data.
 
-## Muser routing note
+## Routing note
 
-Cloud/browser managed-agent announcements are relevant to x402, DeFi ops, Fidem QA, and general M79 operations, but the reusable asset is this policy gate. Project-specific adoption should receive a brief containing candidate runner, allowed task class, forbidden task class, evidence path, and rollback command before any external install or permission grant.
+Cloud/browser managed-agent announcements are relevant to product QA, DeFi ops, and general operations, but the reusable asset is this policy gate. Project-specific adoption should receive a brief containing candidate runner, allowed task class, forbidden task class, evidence path, and rollback command before any external install or permission grant.

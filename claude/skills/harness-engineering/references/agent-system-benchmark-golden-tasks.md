@@ -1,6 +1,6 @@
 # Agent System Benchmark Golden Tasks
 
-Use this when comparing Hermes, Claude Code, Codex, OpenCode, managed/browser agents, or model/provider routing. The benchmark target is the **agent system** (`model + harness + tools + workflow + memory + cost/recovery`), not the base model alone.
+Use this when comparing Claude Code, Codex, OpenCode, managed/browser agents, or model/provider routing. The benchmark target is the **agent system** (`model + harness + tools + workflow + memory + cost/recovery`), not the base model alone.
 
 Source signal: 2026-05-24 `bookmark-skill-evolution-daily` public coding-agent watch — “All Model Labs are now Agent Labs”.
 
@@ -23,7 +23,7 @@ Score each run on a 1–5 scale and keep evidence links/logs:
 
 ### GT-1: Bookmark follow-up → reversible skill/reference update
 
-**Why:** Daily bookmark/public-source insights are a core M79 ops loop; the system must turn “2 OK” style follow-up into a concrete, reversible artifact.
+**Why:** Daily bookmark/public-source insights are a core daily ops loop; the system must turn “2 OK” style follow-up into a concrete, reversible artifact.
 
 **Prompt seed:**
 > In the latest bookmark-skill-evolution thread, execute candidate 2. Restore the numbered candidate from the thread/artifacts, make the smallest safe landed update, verify it, and report in Japanese with artifact paths.
@@ -39,7 +39,7 @@ Score each run on a 1–5 scale and keep evidence links/logs:
 
 ### GT-2: Coding-agent implementation slice with fresh-context review
 
-**Why:** M79 prefers Claude Code/Codex-style implementation with independent review; benchmark should measure the whole dev loop rather than code generation only.
+**Why:** This setup prefers Claude Code/Codex-style implementation with independent review; benchmark should measure the whole dev loop rather than code generation only.
 
 **Prompt seed:**
 > In a small repo, implement one scoped feature from an existing plan. Use the project’s agent instructions, make a minimal code change, update a progress/handoff artifact, run tests/lint/typecheck, and produce a reviewer-ready diff summary.
@@ -55,10 +55,10 @@ Score each run on a 1–5 scale and keep evidence links/logs:
 
 ### GT-3: Runtime/cron incident triage with low-noise Japanese report
 
-**Why:** Hermes recurring jobs and watchdogs must be quiet, actionable, and recoverable; this tests runtime + context + safety layers together.
+**Why:** Recurring agent jobs and watchdogs must be quiet, actionable, and recoverable; this tests runtime + context + safety layers together.
 
 **Prompt seed:**
-> A Hermes cron/watchdog produced a confusing or noisy alert. Triage the job state, logs, artifacts, and last run; fix recurrence if safe; otherwise queue a concrete next action. Report cause, fix, and recurrence prevention in Japanese.
+> An agent cron/watchdog produced a confusing or noisy alert. Triage the job state, logs, artifacts, and last run; fix recurrence if safe; otherwise queue a concrete next action. Report cause, fix, and recurrence prevention in Japanese.
 
 **Acceptance criteria:**
 - Lists the specific job/process inspected; does not infer from alert text only.
