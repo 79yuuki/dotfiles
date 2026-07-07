@@ -1,10 +1,10 @@
 # Coding-Agent Source Ingestion Pattern
 
-Use this when public articles/news about coding agents, agent harnesses, IDE agents, browser agents, Claude Code/Codex, or evaluation tooling should become reusable Muser operating knowledge.
+Use this when public articles/news about coding agents, agent harnesses, IDE agents, browser agents, Claude Code/Codex, or evaluation tooling should become reusable operating knowledge.
 
 ## Why this exists
 
-Raindrop bookmarks show user's explicit interest, but the coding-agent field moves fast. Hermes should also watch public sources and convert useful patterns into small, reversible skill updates instead of waiting for manual bookmarking.
+Bookmarks show the user's explicit interest, but the coding-agent field moves fast. The agent should also watch public sources and convert useful patterns into small, reversible skill updates instead of waiting for manual bookmarking.
 
 ## Source classes
 
@@ -37,9 +37,9 @@ When model labs publicly shift toward agents/harnesses, treat it as a **system b
 
 - Compare `model + harness + workflow + UI + memory + economics`, not model scores alone.
 - Watch for closed-harness lock-in: a model may be post-trained to work best inside one proprietary agent surface, reducing API/model portability.
-- For Muser routing, prefer reversible internal patterns first (eval corpus, reference checklist, routing note) before changing default agent autonomy or vendor/model selection.
-- Seed Muser evals from `references/agent-system-benchmark-golden-tasks.md`; measure bookmark follow-up, coding-agent implementation, and cron/runtime triage as agent-system tasks.
-- Connect the signal to active projects as: x402/Hermes = provider-neutral agent ops positioning; M79 ops = harness/pruning/eval cadence; GTM = “agents are systems, not models” narrative.
+- For routing, prefer reversible internal patterns first (eval corpus, reference checklist, routing note) before changing default agent autonomy or vendor/model selection.
+- Seed your evals from `references/agent-system-benchmark-golden-tasks.md`; measure bookmark follow-up, coding-agent implementation, and cron/runtime triage as agent-system tasks.
+- Connect the signal to active projects (for example: platform ops = provider-neutral agent ops positioning; org ops = harness/pruning/eval cadence; GTM = “agents are systems, not models” narrative).
 
 ## Rough landed update standard
 
@@ -62,7 +62,7 @@ In Bookmark → Skill Evolution reports, public coding-agent discoveries belong 
 Include only:
 
 - 1–3 useful items;
-- why it matters to Muser;
+- why it matters to your environment;
 - landed/queued/blocked status;
 - target skill/reference path if landed.
 

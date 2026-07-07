@@ -62,7 +62,7 @@
 | Hootsuite | 主要SNS全般 | エンタープライズ向け |
 | SocialBee | X, LinkedIn, Instagram, Facebook | カテゴリ別ローテーション |
 | カスタムスクリプト | 任意 | API直叩き、完全自動化 |
-| agent runtime + sessions_spawn | X（browser操作） | Muser環境で直接投稿可 |
+| agent runtime + browser 操作 | X（browser操作） | 承認付き自動投稿の例。外部送信は人間承認必須 |
 
 ## エンゲージメント計測
 

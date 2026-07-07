@@ -1,6 +1,6 @@
 # Shared Browser / WebBridge Policy
 
-Use this before adopting a shared-browser, WebBridge, or agent-visible browser state across Claude, Codex, Hermes, agent runtime, or project agents.
+Use this before adopting a shared-browser, WebBridge, or agent-visible browser state across Claude, Codex, or other agent runtimes and project agents.
 
 ## Default stance
 
@@ -30,7 +30,7 @@ Keep separate profiles when possible:
 | `read-public` | Public source recovery / DOM extraction | no |
 | `qa-sandbox` | Local/dev UI testing | only local/dev state |
 | `project-auth-readonly` | Approved project dashboards | no external sends |
-| `human-account` | user or human-owned sessions | Hermes does not operate |
+| `human-account` | user or human-owned sessions | the agent does not operate |
 
 ## Reporting requirement
 

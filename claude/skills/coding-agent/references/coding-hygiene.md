@@ -1,4 +1,4 @@
-# Muser Coding Hygiene
+# Coding Hygiene
 
 `memory/topics/dev-workflow.md` から、再利用価値の高い手順だけを抽出した運用ルール。
 
@@ -17,7 +17,7 @@
 - agent runtimeスキルも self-contained scripts を優先する
 
 ## 3. ワンショットの守備範囲を超えたら昇格する
-次に当てはまるなら `coding-agent` に留めず、`dual-agent-dev` / `agent-teams-dev` / `harness-engineering` を検討する:
+次に当てはまるなら `coding-agent` に留めず、`parallel-orchestrator` / `subagent-driven-development` / `harness-engineering` を検討する:
 - 複数ファイルをまたぐ
 - 設計判断が大きい
 - 長時間自走が必要

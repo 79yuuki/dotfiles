@@ -50,7 +50,7 @@ description だけ強くて body が弱い状態でテストすると、読者�
 
 詳しい起動契約は [references/blank-executor-contract.md](references/blank-executor-contract.md)、
 レポート雛形は [references/report-template.md](references/report-template.md) を使う。
-Latest local gate summaries may be mirrored in [references/latest.md](references/latest.md) / [references/latest.json](references/latest.json) when the environment is updating this skill package directly.
+Latest local gate summaries may be mirrored in `references/latest.md` / `references/latest.json` when the environment is updating this skill package directly (these files exist only in that case).
 
 
 

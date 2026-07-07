@@ -6,9 +6,8 @@ author: JulienTant (fork of Hyaxia/blogwatcher)
 license: MIT
 platforms: [linux, macos, windows]
 metadata:
-  hermes:
-    tags: [RSS, Blogs, Feed-Reader, Monitoring]
-    homepage: https://github.com/JulienTant/blogwatcher-cli
+  tags: [RSS, Blogs, Feed-Reader, Monitoring]
+  homepage: https://github.com/JulienTant/blogwatcher-cli
 prerequisites:
   commands: [blogwatcher-cli]
 ---
@@ -133,9 +132,8 @@ Unread articles (2):
 - Falls back to HTML scraping if RSS fails and `--scrape-selector` is configured.
 - Categories from RSS/Atom feeds are stored and can be used to filter articles.
 - Import blogs in bulk from OPML files exported by Feedly, Inoreader, NewsBlur, etc.
-Notes
-- Use `blogwatcher <command> --help` to discover flags and options.
+- Use `blogwatcher-cli <command> --help` to discover flags and options.
 - For guarded cron jobs and mark-read verification, see `references/cron-safe-usage.md`.
-- `blogwatcher articles` lists unread articles by default; do not invent `--unread` unless `blogwatcher articles --help` shows it in the installed version.
-- In guarded cron environments, avoid `blogwatcher ... | python3` or other pipe-to-interpreter checks; the guard may block it as HIGH risk. Use Python `subprocess.check_output(['blogwatcher', ...])` and parse the returned text instead.
-- For daily scanners, mark articles read only after durable artifacts/reports are written, then verify with a fresh `blogwatcher articles` call that processed IDs disappeared from the unread list.
+- `blogwatcher-cli articles` lists unread articles by default; do not invent `--unread` unless `blogwatcher-cli articles --help` shows it in the installed version.
+- In sandboxed/guarded cron environments, avoid `blogwatcher-cli ... | python3` or other pipe-to-interpreter checks; a command guard may block it as HIGH risk. Use Python `subprocess.check_output(['blogwatcher-cli', ...])` and parse the returned text instead.
+- For daily scanners, mark articles read only after durable artifacts/reports are written, then verify with a fresh `blogwatcher-cli articles` call that processed IDs disappeared from the unread list.

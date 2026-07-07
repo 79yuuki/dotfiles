@@ -6,11 +6,11 @@ Use this before adopting cost/quality routers, new models, IDE agent releases, o
 
 Do not change the standing model/router config only because a benchmark looks good. Run a bounded experiment with a small task corpus and hold-out cases.
 
-For frontier “long-reasoning breakthrough” claims (for example low-cost theorem proving, research-agent discoveries, or very long autonomous runs), treat the source as a market signal rather than an adoption trigger. Convert the claim into one reproducible golden task, record cost/wall-clock/evidence artifacts, and keep routing manual until the result is independently repeatable on Muser-relevant work.
+For frontier “long-reasoning breakthrough” claims (for example low-cost theorem proving, research-agent discoveries, or very long autonomous runs), treat the source as a market signal rather than an adoption trigger. Convert the claim into one reproducible golden task, record cost/wall-clock/evidence artifacts, and keep routing manual until the result is independently repeatable on your own representative work.
 
 ## Minimal evaluation set
 
-Include 5-10 real Muser tasks:
+Include 5-10 real tasks from your own workload:
 - simple edit / mechanical refactor
 - medium feature with tests
 - debugging from logs
@@ -30,7 +30,7 @@ Record:
 - test/lint/typecheck evidence
 - reviewer verdict
 - whether context/security boundaries were respected
-- claim reproducibility: source evidence, independent reproduction attempt, and whether the task maps to a real Muser workflow rather than a publicity benchmark
+- claim reproducibility: source evidence, independent reproduction attempt, and whether the task maps to a real workflow you run rather than a publicity benchmark
 
 ## Routing rule template
 

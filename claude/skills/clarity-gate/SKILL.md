@@ -22,9 +22,9 @@ description: >-
 - ✅ 実装内容の説明・提案書・見積書
 - ✅ 戦略ドキュメント・decision memo・方針判断メモ
 - ✅ team chat報告・ブリーフィング（社内でもわかりやすさは重要）
-- ✅ マーケティングコピー全般（muser-marketingと連携）
+- ✅ マーケティングコピー全般（marketing-skillsと連携）
 - ❌ 内部の技術メモ・調査ノート（読者が限定的）
-- ❌ コードそのもの（→ code-review）
+- ❌ コードそのもの（→ requesting-code-review）
 - ❌ UI/UXのビジュアル面（→ ui-accessibility-design）
 
 ## フロー（3ステップ）
@@ -129,11 +129,11 @@ description: >-
 
 ## 他スキルとの連携
 
-### muser-marketing との連携
-マーケティングコピー生成時、muser-marketing → clarity-gate の順で適用。
+### marketing-skills との連携
+マーケティングコピー生成時、marketing-skills → clarity-gate の順で適用。
 - LP/広告コピーは自動で 🔴最厳格 基準を適用
 - CTA の明確さチェックはこのスキルが担当
-- コピーライティングの「刺さる表現」は muser-marketing が担当（わかりやすさと別軸）
+- コピーライティングの「刺さる表現」は marketing-skills が担当（わかりやすさと別軸）
 
 ### fact-check-gate との連携
 - fact-check-gate → 事実の正確さ

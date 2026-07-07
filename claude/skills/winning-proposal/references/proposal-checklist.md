@@ -42,5 +42,5 @@
    - C(Complication) ← 要素2「やらないコスト」
    - Q(Question) ← 暗黙（どうすればいいか）
    - A(Answer) ← 要素3-6（Before/After、差別化、ROI、Next）
-2. **ビジュアルスライド** → `visual-slides` で画像生成
+2. **ビジュアルスライド** → slide-deck / design 系の出力スキルで画像化
 3. **Word/PDF** → テンプレートに流し込み

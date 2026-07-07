@@ -80,7 +80,7 @@ Pick one of these modules and read the matching file:
 - Never invent metrics or keyword volumes. If missing, label assumptions.
 - When possible: include copy/paste drafts and an implementation checklist.
 
-## Muser GTM engineer loop
+## GTM engineer loop
 
 When a request involves one-person marketing teams, GTM engineers, sales automation, CRM context layers, LinkedIn/X launch loops, or AI-assisted campaign operations, do not produce isolated copy only. Design the loop:
 
@@ -90,9 +90,9 @@ When a request involves one-person marketing teams, GTM engineers, sales automat
 4. experiment log: record impressions, CTR, CVR, replies, meetings, sales, CAC, complaints, and risk signals
 5. learning reflection: feed winning copy, objections, FAQs, and proof back into skills/templates/pitches
 
-For the product and x402, reusable template first; project-specific injection second.
+For your own products, reusable template first; project-specific injection second.
 
-## Muser AI-era brand and persuasion gates
+## AI-era brand and persuasion gates
 
 Use these as quick overlays before shipping AI-assisted LPs, proposals, SNS, ads, or launch narratives.
 

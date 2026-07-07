@@ -54,7 +54,7 @@ codex exec 'あなたは事実監査人（Factual Auditor）です。
 
 | severity | 基準 | 例 |
 |---|---|---|
-| **blocker** | 公開不可。ドメイン・URL・価格の不一致 | `x402-relay.angoya.io` ≠ `x402-relay.com` |
+| **blocker** | 公開不可。ドメイン・URL・価格の不一致 | `api.example.io` ≠ `api.example.com` |
 | **major** | 誤解を招く。製品名・人名・日付の不一致 | 「CTO 田中」≠「COO 伊藤」 |
 | **minor** | 軽微。説明文のニュアンス差 | 「3ステップ」vs「3行のコード」 |
 

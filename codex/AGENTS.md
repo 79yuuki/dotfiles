@@ -55,7 +55,7 @@ Claude skill を追加・更新した場合、Codex にも必要な判断基準�
 ## Before completion
 
 - `verification-before-completion` 相当で、実際にテスト・lint・typecheck・ビルドなど該当する検証を実行してから完了宣言する。実行していない検証は PASS と書かない。
-- 変更が大きい時は `requesting-code-review` / `code-review` 相当で、差分を品質・セキュリティ・性能・テスト観点から自己レビューする。
+- 変更が大きい時は `requesting-code-review` 相当で、差分を品質・セキュリティ・性能・テスト観点から自己レビューする。
 - レビュー指摘を受けたら `receiving-code-review` 相当で、指摘ごとに修正/保留/不採用理由を明確にし、必要な検証を再実行する。
 - 作業完了時は `finishing-a-development-branch` 相当で、git status、差分要約、検証結果、未完了事項、次の選択肢（merge/PR/保留）をまとめる。
 
@@ -63,7 +63,7 @@ Claude skill を追加・更新した場合、Codex にも必要な判断基準�
 
 - `SKILL.md`、AGENTS.md、CLAUDE.md、subagent prompt、cron prompt など agent-facing instruction を作る・直す時は `prompt-design` 相当を使い、何をするか、いつ使うか、検証方法を具体化する。
 - 高頻度または routing-sensitive な skill / prompt は `empirical-prompt-tuning` 相当で、固定シナリオと白紙実行者による実測を最低1回行う。
-- Claude / Codex / Hermes の運用設計、context loading、tool routing、検証 gate、monitoring、feedback loop を直す時は `harness-engineering` 相当で考える。
+- Claude / Codex などの agent 運用設計、context loading、tool routing、検証 gate、monitoring、feedback loop を直す時は `harness-engineering` 相当で考える。
 - 新しい skill を追加・更新する時は `skill-creator` 相当で、短い `description`、supporting files、security scan、Codex への要点移植を確認する。
 
 ## Session-end harness self-review (Codex)

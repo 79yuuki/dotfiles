@@ -58,9 +58,9 @@
 | `url` | https://docs.x402-relay.com/setup | 🔴 高 | ❌ 絶対禁止 |
 | `price` | $0.001/call, ¥980/月 | 🔴 高 | ❌ 絶対禁止 |
 | `date` | 2026年3月15日リリース | 🔴 高 | ❌ 絶対禁止 |
-| `person` | 紫竹佑騎, CTO | 🟡 中 | ❌ 禁止 |
+| `person` | 山田太郎, CTO | 🟡 中 | ❌ 禁止 |
 | `product` | x402-relay, VWBL | 🟡 中 | ❌ 禁止 |
-| `org` | 合同会社the company | 🟡 中 | ❌ 禁止 |
+| `org` | サンプル株式会社 | 🟡 中 | ❌ 禁止 |
 | `stat` | 「99.9% uptime」 | 🟡 中 | ❌ 禁止 |
 | `feature` | 「EIP-3009対応」 | 🟢 低 | ⚠️ コードで検証可 |
 | `description` | 製品説明文 | 🟢 低 | ✅ 要レビュー |

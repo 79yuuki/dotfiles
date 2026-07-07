@@ -13,7 +13,7 @@
 | **Constraints** | 規約、安全要件、制約 | 「public APIは変更しない」 |
 | **Done when** | 完了条件 | 「テスト通過、リンター0エラー」 |
 
-**Muserでの適用:** orchestrator から投げる task や coding-agent の prompt に必ずこの4要素を入れる。
+**適用:** orchestrator から投げる task や coding-agent の prompt に必ずこの4要素を入れる。
 
 ## 2. 計画先行（Plan-first）
 
@@ -23,7 +23,7 @@
 - **インタビュー方式:** 「私のアイデアに質問して、前提を崩してから具体化してくれ」
 - **PLANS.md テンプレート:** 長期タスクには実行計画テンプレートを使う
 
-**Muserでの適用:** dual-agent-dev / agent-teams-dev のブレインストーミングステップで活用。
+**適用:** マルチエージェント構成（parallel-orchestrator 等）のブレインストーミングステップで活用。
 
 ## 3. 自律性と持続性（Autonomy & Persistence）
 
@@ -58,7 +58,7 @@ Codex公式プロンプトのコア思想：
 
 **禁止:** ファイルを一つずつ逐次読み込み（論理的に不可避な場合を除く）
 
-**Muserでの適用:** agent-teams-dev の探索フェーズで特に重要。各チームメイトに「並列読み込みで探索しろ」と明示指示する。
+**適用:** 並列 sub-agent の探索フェーズで特に重要。各 agent に「並列読み込みで探索しろ」と明示指示する。
 
 ## 6. 検証ループ（Verify before done）
 
@@ -70,7 +70,7 @@ Codex公式プロンプトのコア思想：
 4. 最終動作が要件と一致するか確認
 5. diff でバグ・リグレッション・リスクパターンを確認
 
-**Muserでの適用:** Codex Review Gate の前段として、コーディングエージェント自身にもこのループを回させる。
+**適用:** Codex Review Gate の前段として、コーディングエージェント自身にもこのループを回させる。
 
 ## 7. AGENTS.md 設計（公式ガイドライン）
 
@@ -159,11 +159,11 @@ Deliverables:
 - モバイルでも良く見えること
 ```
 
-## Muserスキルへの反映ポイント
+## 関連スキルへの反映ポイント
 
 | 既存スキル | 反映すべき内容 |
 |-----------|--------------|
 | coding-agent | プロンプト4要素テンプレート、Git安全規則、検証ループ |
-| dual-agent-dev | Plan-first、自律性と持続性の指示、AGENTS.md設計 |
-| agent-teams-dev | 並列探索パターン、フロントエンド品質、Reasoning Level |
+| codex (レビュー連携) | Plan-first、自律性と持続性の指示、AGENTS.md設計 |
+| parallel-orchestrator | 並列探索パターン、フロントエンド品質、Reasoning Level |
 | 全共通 | DRY/検索ファースト、エラーハンドリング、型安全 |
