@@ -1,6 +1,6 @@
 ---
 name: orchestrate-with-advisory
-description: Fable 5 をオーケストレーター、Sonnet 5 を実装者とする Workflow ツール多エージェント開発パターン。実装・修正・調査など複数ステップの作業を開始する時に毎回使う。タスク分割（ファイル所有権の排他）、構造化返却（done/blocked）、統合検証エージェント、blocked 時のアドバイザリーループ（Fable が助言を ADVICE 欄に追記して resumeFromRunId で再開）を提供する。NOT for: 会話的な応答や1ファイルの軽微な修正（workflow 化しない）、Codex CLI とのレビュー対話（→ codex スキル）、Agent ツール単発の軽量タスク（→ coding-agent / dispatching-parallel-agents）。
+description: "Fable 5 をオーケストレーター、Sonnet 5 を実装者とする Workflow ツール多エージェント開発パターン。実装・修正・調査など複数ステップの作業を開始する時に毎回使う。タスク分割（ファイル所有権の排他）、構造化返却（done/blocked）、統合検証エージェント、blocked 時のアドバイザリーループ（Fable が助言を ADVICE 欄に追記して resumeFromRunId で再開）を提供する。使わない場面（NOT for）: 会話的な応答や1ファイルの軽微な修正（workflow 化しない）、Codex CLI とのレビュー対話（→ codex スキル）、Agent ツール単発の軽量タスク（→ coding-agent / dispatching-parallel-agents）。"
 ---
 
 # Orchestrate with Advisory
@@ -75,7 +75,7 @@ journal / 成果を読んで判断してから次ステージの Workflow を起
 ### 7. Codex レビューゲート（ステージ完了ごと）
 
 ステージ（サブタスクのまとまり）が完了するたびに、`codex` スキル経由で Codex CLI
-（gpt-5.5 xhigh）にレビューを依頼する。依頼には対象コミット範囲・実施済み検証・
+（設定済みの高精度レビュー構成）にレビューを依頼する。依頼には対象コミット範囲・実施済み検証・
 重点観点・出力フォーマット（✅ APPROVED / ⚠️ APPROVED WITH CONCERNS / ❌ NEEDS FIXES）を含める。
 **✅ APPROVED が出るまで修正 → 再レビューを繰り返し、未承認のまま次ステージへ進まない。**
 指摘は鵜呑みにせず、コード・仕様と突き合わせて技術検証してから適用する
