@@ -64,6 +64,10 @@ Claude skill を追加・更新した場合、Codex にも必要な判断基準�
 - `SKILL.md`、AGENTS.md、CLAUDE.md、subagent prompt、cron prompt など agent-facing instruction を作る・直す時は `prompt-design` 相当を使い、何をするか、いつ使うか、検証方法を具体化する。
 - 高頻度または routing-sensitive な skill / prompt は `empirical-prompt-tuning` 相当で、固定シナリオと白紙実行者による実測を最低1回行う。
 - Claude / Codex などの agent 運用設計、context loading、tool routing、検証 gate、monitoring、feedback loop を直す時は `harness-engineering` 相当で考える。
+- 自走タスクの完了は、作業台帳の全項目の合格条件/証拠、例外の処置/担当、回帰検証で判定する。一部の成功や進捗ログだけで全体完了にしない。
+- 再開用の正本と実際に読み込むフィールド（state / owner / next_action / blocker / last_verified_evidence）を指定し、状態遷移の証拠を残す。記録失敗は未完了として扱う。
+- 人間へのreview packetは、判断事項・動作変更・反証可能な証拠・未検証項目・最短の確認方法に絞る。高影響の変更は制作会話を引き継がない評価者が確認する。
+- skillの効果は、同じモデル/fixture/環境で旧版と候補を比較し、主指標・安全条件・コスト/レビュー負担・hold-outを事前固定する。安全検査合格と効果実証は別であり、権限は増やさない。
 - 新しい skill を追加・更新する時は `skill-creator` 相当で、短い `description`、supporting files、security scan、Codex への要点移植を確認する。
 
 ## Session-end harness self-review (Codex)
