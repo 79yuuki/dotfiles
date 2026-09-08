@@ -19,6 +19,16 @@ description: >-
 > 大規模codebase向け Stop hook / 剪定サイクル / CLAUDE.md lean rule: [references/large-codebase-harness-patterns.md](references/large-codebase-harness-patterns.md)
 > Proactive harness suggestion 設計: [../../../docs/superpowers/specs/2026-05-19-proactive-harness-suggestion-design.md](../../../docs/superpowers/specs/2026-05-19-proactive-harness-suggestion-design.md)
 
+## Evidence / resume / review contracts
+
+長時間の自走・再開・人間の承認が必要な作業では、該当する参照だけを読む。これらは手順の契約であり、hookや自動実行が導入済みであることの証明ではない。
+
+- **全項目の完了判定:** [references/goal-loop-evidence-convergence.md](references/goal-loop-evidence-convergence.md)。作業台帳の各項目に合格条件と証拠を対応させ、全項目の確認・例外の担当/処置・回帰検証が揃うまで全体を完了扱いにしない。
+- **再開と状態遷移:** [references/state-and-data-contracts.md](references/state-and-data-contracts.md)。次回実際に読む正本とフィールドを指定し、遷移の証拠を残す。記録に失敗した項目は未完了のままにする。
+- **人間の確認負担:** [references/human-attention-review-contract.md](references/human-attention-review-contract.md)。判断事項・動作変更・反証可能な証拠・未検証項目・最短の確認方法を小さなreview packetにする。
+
+検出→提案→承認→適用の既存導線は維持する。上記の契約は、公開・送信・権限変更・本番実行の許可を増やさない。
+
 ## コア概念
 
 **ハーネスエンジニアリング** = AIエージェントの「環境」を設計して品質・信頼性を上げる技術。
