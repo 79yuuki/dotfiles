@@ -56,3 +56,6 @@ ulimit -n 10240 2>/dev/null || true
 if [ -f "$HOME/.zshrc.local" ]; then
   . "$HOME/.zshrc.local"
 fi
+
+# Added by Antigravity IDE
+export PATH="/Users/yuki_shichiku/.antigravity-ide/antigravity-ide/bin:$PATH"
