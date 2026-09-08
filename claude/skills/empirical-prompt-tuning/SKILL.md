@@ -48,6 +48,8 @@ description だけ強くて body が弱い状態でテストすると、読者�
 
 先に固定し、評価の途中で都合よく変えない。
 
+スキル追加・改訂の効果を比較する場合は [references/decision-evaluation-and-skill-lift.md](references/decision-evaluation-and-skill-lift.md) を読む。同じモデル・fixture・環境で旧版/新版（または対象skillなし/あり）を比較し、主要な変更変数は1つに絞る。判断目的・主指標・安全条件・コスト/レビュー負担を先に固定し、安全検査の合格を有用性の証明にしない。
+
 詳しい起動契約は [references/blank-executor-contract.md](references/blank-executor-contract.md)、
 レポート雛形は [references/report-template.md](references/report-template.md) を使う。
 Latest local gate summaries may be mirrored in `references/latest.md` / `references/latest.json` when the environment is updating this skill package directly (these files exist only in that case).
