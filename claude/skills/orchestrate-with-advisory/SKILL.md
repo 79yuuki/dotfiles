@@ -1,12 +1,12 @@
 ---
 name: orchestrate-with-advisory
-description: "Fable 5 をオーケストレーター、Sonnet 5 を実装者とする Workflow ツール多エージェント開発パターン。実装・修正・調査など複数ステップの作業を開始する時に毎回使う。タスク分割（ファイル所有権の排他）、構造化返却（done/blocked）、統合検証エージェント、blocked 時のアドバイザリーループ（Fable が助言を ADVICE 欄に追記して resumeFromRunId で再開）を提供する。使わない場面（NOT for）: 会話的な応答や1ファイルの軽微な修正（workflow 化しない）、Codex CLI とのレビュー対話（→ codex スキル）、Agent ツール単発の軽量タスク（→ coding-agent / dispatching-parallel-agents）。"
+description: "Opus 5.5 をオーケストレーター、Sonnet 5 を実装者とする Workflow ツール多エージェント開発パターン。実装・修正・調査など複数ステップの作業を開始する時に毎回使う。タスク分割（ファイル所有権の排他）、構造化返却（done/blocked）、統合検証エージェント、blocked 時のアドバイザリーループ（Opus が助言を ADVICE 欄に追記して resumeFromRunId で再開）を提供する。使わない場面（NOT for）: 会話的な応答や1ファイルの軽微な修正（workflow 化しない）、Codex CLI とのレビュー対話（→ codex スキル）、Agent ツール単発の軽量タスク（→ coding-agent / dispatching-parallel-agents）。"
 ---
 
 # Orchestrate with Advisory
 
-Fable 5（メインループ）= 判断・統合・レビュー。Sonnet 5（サブエージェント）= 実装・調査・機械的作業。
-Workflow ツールで編成し、サブタスクが詰まったら **blocked → Fable が助言 → resume** で回す。
+Opus 5.5（メインループ）= 判断・統合・レビュー。Sonnet 5（サブエージェント）= 実装・調査・機械的作業。
+Workflow ツールで編成し、サブタスクが詰まったら **blocked → Opus が助言 → resume** で回す。
 
 本スキルは **メインループ（オーケストレーター）専用**。Workflow ツールはサブエージェントからは
 使えない。script は Workflow ツールの `script` パラメータにインラインで渡す（自動で
@@ -28,7 +28,7 @@ Workflow ツールで編成し、サブタスクが詰まったら **blocked →
   独立に検証・コミットできる単位。迷ったら「レビュアーが片方だけ却下できるか」で分ける。
   複数ファイルでも概ね直列で軽い作業（小さな機能修正）は Workflow 化せず
   Agent ツール 1 体（coding-agent 相当）+ 直接検証で済ませてよい。
-- 判断が必要な設計（セキュリティ境界・スキーマ・命名）は **投げる前に Fable が確定**し、
+- 判断が必要な設計（セキュリティ境界・スキーマ・命名）は **投げる前に Opus が確定**し、
   「この設計で実装せよ。設計を変えないこと」とプロンプトに固定する。
 
 ### 2. サブタスク契約（全エージェント共通）
@@ -45,7 +45,7 @@ Workflow ツールで編成し、サブタスクが詰まったら **blocked →
 ### 3. モデル選定
 
 - `model: 'sonnet'`: 仕様が確定している実装・転記・調査・検証・テスト作成（大半のサブタスク）。
-- 省略（Fable 継承）: 敵対的検証、広い裁量が必要な設計タスク（ただし原則は投げる前に Fable が設計を確定する）。
+- 省略（Opus 継承）: 敵対的検証、広い裁量が必要な設計タスク（ただし原則は投げる前に Opus が設計を確定する）。
 
 ### 4. 統合検証エージェント（ステージの締め）
 
@@ -59,16 +59,16 @@ Workflow ツールで編成し、サブタスクが詰まったら **blocked →
 1. Workflow script の冒頭に助言欄を用意しておく:
    `const ADVICE_<TASK> = ''` を宣言し、各プロンプト末尾に条件付きで埋め込む。
 2. サブタスクが blocked を返したら Workflow は途中 return する（`stoppedAt` を返す設計にする）。
-3. Fable が notes を読み、**判断**する: 助言して続行 / 設計変更 / タスク分割し直し / 自分で直接修正。
+3. Opus が notes を読み、**判断**する: 助言して続行 / 設計変更 / タスク分割し直し / 自分で直接修正。
 4. 助言する場合: ツール結果に出た script ファイルを Edit で開き、ADVICE 定数に助言を書き、
    `Workflow({ scriptPath, resumeFromRunId })` で再実行。**完了済みエージェントはキャッシュから
    即時再生され、プロンプトが変わった blocked タスク以降だけが再実行される。**
 5. Agent ツール単発で走らせたエージェントには `SendMessage`（agentId 宛）で対話継続できる。
    Workflow 内の agent() は途中対話不可 — blocked→resume がアドバイザリーの正規経路。
 
-### 6. ステージ間は Fable がレビュー
+### 6. ステージ間は Opus がレビュー
 
-Workflow はステージ（意味のあるまとまり）ごとに分け、完了通知のたびに Fable が
+Workflow はステージ（意味のあるまとまり）ごとに分け、完了通知のたびに Opus が
 journal / 成果を読んで判断してから次ステージの Workflow を起動する。
 1 本の script に全ステージを詰め込まない（途中判断を挟めなくなる）。
 
