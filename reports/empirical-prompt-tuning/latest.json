@@ -1,0 +1,15 @@
+{
+  "target": "ambition-lens",
+  "date": "2026-10-16",
+  "iteration": 3,
+  "status": "converged",
+  "scenarios": ["E1 explicit+no-questions", "E2 non-interactive", "E3 urgent doc", "E4 same-task follow-up"],
+  "holdOut": "E5 word-meaning question",
+  "success": {"E1": true, "E2": true, "E3": true, "E4": true, "E5": true},
+  "accuracy": {"E1": 1.0, "E2": 1.0, "E3": 1.0, "E4": 1.0, "E5": 1.0},
+  "toolUses": 8,
+  "durationMs": 171562,
+  "newAmbiguities": ["Skip の意味（依頼の水準は下げない）", "緊急資料はシグナルがある時だけ先に聞く", "非対話の検知方法"],
+  "discretionaryFills": ["Skip 時も依頼文の『野心的に』を守る", "同一タスクでは選択済みの案の水準を引き継ぐ"],
+  "nextAction": "実セッションで hook 発火と起動率を観察し、1〜2週間後に Skip 条件と hook 語彙を見直す"
+}

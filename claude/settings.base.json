@@ -28,6 +28,17 @@
           }
         ]
       }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -x \"$HOME/.claude/hooks/ambition-lens-nudge.sh\" ] && \"$HOME/.claude/hooks/ambition-lens-nudge.sh\" || true",
+            "timeout": 5
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
