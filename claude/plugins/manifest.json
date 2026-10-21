@@ -23,6 +23,15 @@
       "version": "0.1.0",
       "source": "GitHub (anthropics/financial-services)",
       "note": "セクター/テーマ調査、競合分析、アイデアショートリスト用途。"
+    },
+    "ponytail@dotfiles-pinned": {
+      "version": "5.3.2",
+      "source": "GitHub (DietrichGebert/ponytail)",
+      "pinned_commit": "09c434ab73ca43761c5d8b0c5d341926c2fba710",
+      "status": "2026-10-21 導入、user scope。claude/settings.base.json の extraKnownMarketplaces（settings 型）で commit 固定、autoUpdate false",
+      "license": "MIT",
+      "note": "hooks: SessionStart（ルールとコードベースのマップを context に注入）・SubagentStart・UserPromptSubmit。band は ~/.config/ponytail/band/ にタスク名と費用の CSV を書く。webhookUrl は空のまま使う（空なら webhook 送信なし）。以上は 2026-10-21 に固定 commit のソースを読んで確認した（Claude と Codex のレビュー）。導入手順は README の「Claude 設定の扱い」。scripts/ponytail-sweep.py の定期監査がこの plugin を使う。/ponytail-help の自動更新の案内には従わない。",
+      "update": "未検証の手順: 上流の差分をレビュー → settings.base.json の sha を書き換え → sync → claude plugin uninstall ponytail@dotfiles-pinned と install でキャッシュを入れ直す（version が 5.3.2 のままだとキャッシュが置き換わらないことがあるため）。installed_plugins.json の gitCommitSha が新しい sha と一致しなければ更新完了としない。"
     }
   },
   "marketplaces": {
@@ -34,6 +43,10 @@
       "source": "GitHub (anthropics/skills)",
       "pinned_commit": "f458cee31a75",
       "note": "Official Agent Skills examples/spec/template; install via Claude Code plugin marketplace when needed."
+    },
+    "dotfiles-pinned": {
+      "source": "settings 型（claude/settings.base.json の extraKnownMarketplaces に inline）",
+      "note": "第三者 plugin をレビュー済み commit に固定するための marketplace。plugin source は github + sha。"
     }
   },
   "notes": [

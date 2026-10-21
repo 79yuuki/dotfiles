@@ -83,6 +83,7 @@ main() {
   printf '3. edit ~/.config/secrets/ai-tools/.env and ~/.config/secrets/ai-tools/.env.keys\n'
   printf '4. rerun ./scripts/sync-claude-settings.sh or ./scripts/sync-codex-config.sh if base settings change\n'
   printf '5. source ~/.zshrc or restart your shell\n'
+  printf '6. install pinned Claude plugins (README: Claude 設定の扱い), then optionally ./scripts/install-ponytail-sweep.sh for the daily ponytail audit\n'
 }
 
 main "$@"

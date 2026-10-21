@@ -51,7 +51,31 @@
     "code-simplifier@claude-plugins-official": true,
     "financial-analysis@claude-for-financial-services": true,
     "equity-research@claude-for-financial-services": true,
-    "market-researcher@claude-for-financial-services": true
+    "market-researcher@claude-for-financial-services": true,
+    "ponytail@dotfiles-pinned": true
+  },
+  "extraKnownMarketplaces": {
+    "dotfiles-pinned": {
+      "source": {
+        "source": "settings",
+        "name": "dotfiles-pinned",
+        "owner": {
+          "name": "79yuuki"
+        },
+        "plugins": [
+          {
+            "name": "ponytail",
+            "description": "Lazy senior dev mode (DietrichGebert/ponytail), pinned to a reviewed commit.",
+            "source": {
+              "source": "github",
+              "repo": "DietrichGebert/ponytail",
+              "sha": "09c434ab73ca43761c5d8b0c5d341926c2fba710"
+            }
+          }
+        ]
+      },
+      "autoUpdate": false
+    }
   },
   "language": "japanese",
   "skipDangerousModePermissionPrompt": true,

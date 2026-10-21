@@ -52,7 +52,15 @@ with base_path.open() as fh:
 if override_path.exists():
     with override_path.open() as fh:
         override = json.load(fh)
-    data = deep_merge(data, override)
+    merged = deep_merge(data, override)
+    # base で commit 固定した marketplace を local が書き換えたら知らせる（意図した上書きは止めない）
+    merged_markets = merged.get("extraKnownMarketplaces")
+    if not isinstance(merged_markets, dict):
+        merged_markets = {}
+    for name, entry in data.get("extraKnownMarketplaces", {}).items():
+        if merged_markets.get(name) != entry:
+            print(f"warning: {override_path} overrides pinned marketplace '{name}'", file=sys.stderr)
+    data = merged
 
 target_path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n")
 PY

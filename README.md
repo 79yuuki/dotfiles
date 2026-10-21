@@ -55,9 +55,11 @@
 
 ### Claude 設定
 
-- `claude/settings.base.json`: Claude Code の managed base 設定です。通知 hook、status line、言語、enabled plugin を持ちます。
+- `claude/settings.base.json`: Claude Code の managed base 設定です。通知 hook、status line、言語、enabled plugin、commit 固定した第三者 plugin の marketplace（`dotfiles-pinned`）を持ちます。
 - `claude/plugins/manifest.json`: 利用中 plugin の移植用スナップショットです。cache 実体ではなく、どの plugin を使っていたかを残します。
 - `scripts/sync-claude-settings.sh`: `claude/settings.base.json` と `~/.claude/settings.local.json` から `~/.claude/settings.json` を生成するスクリプトです。
+- `scripts/ponytail-sweep.py`: `~/Development` 以下のリポジトリのうち、テストかコードが増えたものだけを ponytail で毎日監査し、新しい Must fix をダイジェストにまとめるスクリプトです。テストは `scripts/tests/`。
+- `scripts/install-ponytail-sweep.sh`: `ponytail-sweep.py` を launchd に登録・解除するスクリプトです。
 
 ### Claude skills
 
@@ -321,6 +323,21 @@ runtime section が空なら、まだ machine-local な project trust や UI 状
 ./scripts/sync-claude-settings.sh
 ```
 
+第三者の plugin は、レビューした commit に固定して入れます。`claude/settings.base.json` の `extraKnownMarketplaces.dotfiles-pinned` は settings 型の marketplace で、plugin の source を `github` + `sha` で指定し、`autoUpdate` を `false` にしています（今は ponytail だけ）。`~/.claude/settings.local.json` がこの定義を上書きすると、sync が警告を出します。Claude Code 2.1.306 では `claude plugin install` が settings 型の marketplace を登録しないので、新しいマシンでは sync のあとに次を実行します（Claude Code にログイン済みであること）。
+
+```bash
+CLAUDE_CODE_SYNC_PLUGIN_INSTALL=1 claude -p "Reply with ok." --model haiku --no-session-persistence  # marketplace を登録させる
+claude plugin install ponytail@dotfiles-pinned
+jq -r '.plugins["ponytail@dotfiles-pinned"][0].gitCommitSha' ~/.claude/plugins/installed_plugins.json  # settings.base.json の sha と一致すること
+```
+
+`scripts/ponytail-sweep.py` は、`~/Development` 以下の git リポジトリを 1 日 1 回見て回り、前回の監査以降に自分のコミットがあって、テストが増えたか、テストが増えないままコードが増えたリポジトリだけを ponytail の `/ponytail:ponytail-audit` で監査します。監査は追跡済みファイルだけの一時 clone の中で、`claude -p --restricted` の読み取り専用ツールだけで動きます。前回までと同じ指摘は除き、新しい Must fix だけを `~/.local/state/ponytail-sweep/digests/<日付>.md` にまとめて macOS の通知で知らせます。初回の実行では各リポジトリの現状を記録するだけで、監査しません。1 日の件数と費用の上限（`max_audits_per_day` 既定 3、`budget_usd_per_day` 既定 15）、1 件の費用の上限（`budget_usd_per_audit` 既定 5）、対象のルートや除外は `~/.config/ponytail-sweep/config.json` で変えられます。費用の上限は `claude --max-budget-usd` の推定額で止める目安で、少し超えることがあります。3 回続けて失敗したリポジトリは、`run --only <path> --force` で手動実行するまで監査しません。launchd の PATH は登録時の claude と node の場所で固定されるので、それらを入れ替えたら `install-ponytail-sweep.sh` をもう一度実行します。
+
+```bash
+./scripts/install-ponytail-sweep.sh            # launchd に登録（毎日 12:30）
+python3 scripts/ponytail-sweep.py run --dry-run  # 何が監査されるかだけを見る
+python3 scripts/ponytail-sweep.py status         # 各リポジトリの状態と最新のダイジェスト
+```
 
 Claude skills は `settings.json` ではなく `~/.claude/skills` 配下で管理します。`install.sh` によって `claude/skills/` が symlink されるので、repo に新しい `claude/skills/<skill-name>/SKILL.md` を追加すれば Claude Code 側で自然に発見されます。
 
