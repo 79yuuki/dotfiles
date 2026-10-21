@@ -11,59 +11,58 @@
 # Detectors must:
 #   - never modify state outside stdout
 #   - never call the network
-#   - return quickly (grep / awk only, no LLM)
+#   - return quickly (one jq pass over the transcript, then grep / awk, no LLM)
+#   - require jq (the hook exits before running detectors when jq is missing)
 #   - emit one JSON object per line, no trailing comma
 
 emit_signal() {
   local ts="$1" project="$2" cwd="$3" session_id="$4"
   local signal="$5" evidence="$6" candidate="$7" layer="$8" confidence="$9"
 
-  # Escape double quotes in evidence/candidate.
-  local ev_esc cand_esc
-  ev_esc=$(printf '%s' "${evidence}" | sed 's/"/\\"/g')
-  cand_esc=$(printf '%s' "${candidate}" | sed 's/"/\\"/g')
+  # jq builds the JSON so every field is escaped correctly (quotes, backslashes, tabs).
+  jq -nc \
+    --arg ts "${ts}" --arg project "${project}" --arg cwd "${cwd}" \
+    --arg session_id "${session_id}" --arg signal "${signal}" \
+    --arg evidence "${evidence}" --arg candidate "${candidate}" \
+    --arg layer "${layer}" --arg confidence "${confidence}" \
+    '{ts:$ts,project:$project,cwd:$cwd,session_id:$session_id,signal:$signal,evidence:$evidence,candidate:$candidate,layer:$layer,confidence:$confidence}'
+}
 
-  printf '{"ts":"%s","project":"%s","cwd":"%s","session_id":"%s","signal":"%s","evidence":"%s","candidate":"%s","layer":"%s","confidence":"%s"}\n' \
-    "${ts}" "${project}" "${cwd}" "${session_id}" "${signal}" "${ev_esc}" "${cand_esc}" "${layer}" "${confidence}"
+# Read the transcript once with jq and cache the result in a variable.
+# Each output line is "<kind>\t<value>": B = Bash command, T = assistant text,
+# E = edited file path (Write/Edit/MultiEdit). Newlines inside values become spaces.
+# A transcript line looks like {"type":"assistant","message":{"content":[{"type":"tool_use",...}]}};
+# other line types (user / attachment / system) are skipped. Transcripts can reach
+# ~11MB, so reading them once instead of once per extractor keeps the Stop hook fast.
+# Call this from the main shell (not inside $(...)) so the cache survives.
+_TRANSCRIPT_CACHE_PATH=""
+_TRANSCRIPT_CACHE=""
+_load_transcript_events() {
+  local transcript="$1"
+  if [[ "${_TRANSCRIPT_CACHE_PATH}" == "${transcript}" ]]; then
+    return 0
+  fi
+  _TRANSCRIPT_CACHE="$(jq -rR 'fromjson? | select(type == "object" and .type == "assistant") | .message.content[]? | if .type == "tool_use" and .name == "Bash" then "B\t" + ((.input.command // "") | gsub("\n"; " ")) elif .type == "text" then "T\t" + ((.text // "") | gsub("\n"; " ")) elif .type == "tool_use" and (.name | IN("Write","Edit","MultiEdit")) then "E\t" + (.input.file_path // "") else empty end' \
+    "${transcript}" 2>/dev/null)"
+  _TRANSCRIPT_CACHE_PATH="${transcript}"
+}
+
+# Return the values of one kind (B/T/E) from the cached events.
+_events_of_kind() {
+  local transcript="$1" kind="$2"
+  _load_transcript_events "${transcript}"
+  [[ -z "${_TRANSCRIPT_CACHE}" ]] && return 0
+  printf '%s\n' "${_TRANSCRIPT_CACHE}" | grep "^${kind}"$'\t' | cut -f2-
 }
 
 # Extract Bash tool invocations from transcript. Returns command lines.
-_extract_bash_commands() {
-  local transcript="$1"
-  # transcript is jsonl. Look for tool_use entries where name == "Bash".
-  # Fallback to grep if jq missing.
-  if command -v jq >/dev/null 2>&1; then
-    jq -r 'select(.type? == "tool_use" and .name? == "Bash") | .input.command? // empty' \
-      "${transcript}" 2>/dev/null
-  else
-    grep -oE '"name":"Bash"[^}]*"command":"[^"]*"' "${transcript}" 2>/dev/null \
-      | sed -E 's/.*"command":"([^"]*)".*/\1/'
-  fi
-}
+_extract_bash_commands() { _events_of_kind "$1" B; }
 
 # Extract assistant text content from transcript.
-_extract_assistant_text() {
-  local transcript="$1"
-  if command -v jq >/dev/null 2>&1; then
-    jq -r 'select(.role? == "assistant") | .content? // empty | tostring' \
-      "${transcript}" 2>/dev/null
-  else
-    grep -oE '"role":"assistant"[^}]*"content":"[^"]*"' "${transcript}" 2>/dev/null \
-      | sed -E 's/.*"content":"([^"]*)".*/\1/'
-  fi
-}
+_extract_assistant_text() { _events_of_kind "$1" T; }
 
 # Extract Write/Edit/MultiEdit tool invocations.
-_extract_edits() {
-  local transcript="$1"
-  if command -v jq >/dev/null 2>&1; then
-    jq -r 'select(.type? == "tool_use" and (.name? | IN("Write","Edit","MultiEdit"))) | .input.file_path? // empty' \
-      "${transcript}" 2>/dev/null
-  else
-    grep -oE '"name":"(Write|Edit|MultiEdit)"[^}]*"file_path":"[^"]*"' "${transcript}" 2>/dev/null \
-      | sed -E 's/.*"file_path":"([^"]*)".*/\1/'
-  fi
-}
+_extract_edits() { _events_of_kind "$1" E; }
 
 # --- detectors -----------------------------------------------------------
 
@@ -76,7 +75,9 @@ detect_bash_repeat() {
 
   # Trim args after first word + first 40 chars to cluster similar commands.
   local clustered
-  clustered="$(echo "${cmds}" | awk '{ print substr($0,1,80) }' | sort | uniq -c | sort -rn)"
+  # Keep only 3+ repeats here: the loop below forks per line, and long sessions have
+  # thousands of distinct commands.
+  clustered="$(echo "${cmds}" | awk '{ print substr($0,1,80) }' | sort | uniq -c | sort -rn | awk '$1 >= 3')"
 
   while IFS= read -r line; do
     count=$(echo "${line}" | awk '{print $1}')
@@ -176,7 +177,7 @@ detect_instruction_bloat() {
       emit_signal "${ts}" "${project}" "${cwd}" "${session_id}" \
         "instruction_bloat" \
         "${f} (${lines} lines)" \
-        "Run prompt-design / harness-engineering lean rule: move long sections to references/, keep root file pointers + critical gotchas only" \
+        "Run prompt-design / harness-engineering lean rule on ${f}: move long sections to references/, keep root file pointers + critical gotchas only" \
         "context" "medium"
     fi
   done <<< "${edited_paths}"
