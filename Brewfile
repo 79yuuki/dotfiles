@@ -1,6 +1,8 @@
 tap "dotenvx/brew"
+tap "lambdalisue/cclens"
 
 brew "base64"
+brew "cclens"
 brew "docker"
 brew "dotenvx"
 brew "foundry"

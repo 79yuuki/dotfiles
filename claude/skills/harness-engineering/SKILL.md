@@ -342,7 +342,7 @@ AIプロダクト/agent機能/LLM出力を含むLP・QAでは、テストケー�
 - [ ] 評価基準が具体的か（「良いコード」ではなく「テスト通過 + lintクリア + 型安全」）
 - [ ] フィードバックループが回ってるか
 - [ ] 本番系の品質指標を置いているか（例: keep rate、unknown tool error rate、tool/model別 baseline からの異常検知）
-- [ ] 劣化を backlog / issue に戻す自動回収導線があるか（週次ログ監査・エラーログ分類など）
+- [ ] 劣化を backlog / issue に戻す自動回収導線があるか（週次ログ監査・エラーログ分類など。Claude Code なら `cclens failures --scope global` で横断のエラー分類が取れる）
 
 ### 5. Determinism層
 - [ ] 確定的にチェックできることをLLMに任せてないか

@@ -12,6 +12,7 @@ Official source snapshot: [references/anthropic-official-sources-2026-05-12.md](
 ## Source priority
 
 0. **Harness opportunity log**: `~/.claude/state/harness-opportunities.jsonl` を最優先で確認。Stop hook (`claude/hooks/harness-reflection.sh`) が検出した候補。直近 N 日 (default: 7) の新規エントリを `confidence` 順に最大 5 件処理する。
+   - **横断の実測 (cclens)**: `cclens` が PATH にあれば `cclens failures --scope global`（複数プロジェクトで繰り返す失敗）と `cclens waste --scope global`（未使用・重い設定）も見る。深掘りは `cclens sql "SELECT tool, project, excerpt FROM tool_errors WHERE category='<cat>'"`。注意: SessionStart hook 注入や skill 間参照で読まれる skill は「未使用」に出る誤検知があり、transcript は Claude Code が刈り込むため観測窓が短い。`waste` の UNUSED だけを削除根拠にしない。
 1. **Installed local skills**: 既存 `claude/skills/` を先に改善する。
 2. **Official marketplaces**: Anthropic公式は `anthropics/skills`、`anthropics/financial-services`、`anthropics/claude-plugins-official` を優先して確認する。
 3. **Partner/public skills**: Notion/Google等は provenance、license、権限、更新頻度を確認してから候補化する。
