@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# PreToolUse hook (matcher: Skill): skill 起動ログ。
+# PreToolUse (matcher: Skill) / UserPromptExpansion hook: skill 起動ログ。
 #
 # どの skill が実際に使われたかを記録し、skill-portfolio-evolution の剪定判断（長期間未使用の skill）の材料にする。
 #
@@ -9,7 +9,8 @@
 # - args は記録しない（秘匿情報が入りうる）。bash は 3.2 互換。
 #
 # Input: Claude Code passes JSON on stdin.
-#   - tool_input.skill（skill 名）、cwd
+#   - PreToolUse: tool_input.skill（Claude が Skill ツールで起動した時）、cwd
+#   - UserPromptExpansion: command_name（ユーザーが /skill を直接打った時。PreToolUse を通らない）、cwd
 #
 # Output: ~/.claude/state/skill-usage.jsonl に1行追記: {"ts":"ISO8601+TZ","skill":"...","cwd":"..."}
 
@@ -17,11 +18,11 @@ set -u
 set +e  # never break PreToolUse. exit 0 everywhere.
 
 JQ="$(command -v jq 2>/dev/null)"
-[[ -n "$JQ" ]] || exit 0
+[[ -n "$JQ" && -n "${HOME:-}" ]] || exit 0
 
 {
   INPUT="$(cat)"
-  SKILL="$(printf '%s' "$INPUT" | "$JQ" -r '.tool_input.skill | select(type == "string") // empty')"
+  SKILL="$(printf '%s' "$INPUT" | "$JQ" -r '(if .hook_event_name == "UserPromptExpansion" then (select(.expansion_type == "slash_command") | .command_name) else .tool_input.skill end) | select(type == "string") // empty')"
   [[ -n "$SKILL" ]] || exit 0
   CWD="$(printf '%s' "$INPUT" | "$JQ" -r '.cwd | select(type == "string") // empty')"
   TS="$(date +%Y-%m-%dT%H:%M:%S%z)"

@@ -38,6 +38,8 @@ check "git push +main"    DENY "$(j 'git push origin +main')"
 check "git -C push -f"    DENY "$(j 'git -C repo push -f')"
 check "psql drop table"   DENY "$(j 'psql -c "drop table users"')"
 check "DROP DATABASE"     DENY "$(j 'mysql -e "DROP DATABASE app;"')"
+check "subshell rm -rf"   DENY "$(j '(rm -rf build)')"
+check "quoted --force"    DENY "$(j 'git push "--force" origin main')"
 check "DROP SCHEMA"       DENY "$(j 'psql -c "Drop Schema public cascade"')"
 check "TRUNCATE TABLE"    DENY "$(j 'psql -c "TRUNCATE TABLE logs"')"
 # NONE

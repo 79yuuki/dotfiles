@@ -24,6 +24,7 @@ re_ws='[[:space:]]'
 re_rflag="(^|$re_ws)(-[a-zA-Z]*[rR][a-zA-Z]*|--recursive)($re_ws|\$)"
 re_fflag="(^|$re_ws)(-[a-zA-Z]*f[a-zA-Z]*|--force)($re_ws|\$)"
 while IFS= read -r seg; do
+  seg="${seg//[\"\'()]/ }"  # 引用符と括弧を空白に（"--force" や (rm -rf x) を拾う）
   if [[ "$seg" =~ (^|[[:space:]/])rm[[:space:]] && "$seg" =~ $re_rflag && "$seg" =~ $re_fflag ]]; then
     deny "rm -rf 系の再帰強制削除"
   fi

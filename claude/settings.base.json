@@ -51,6 +51,17 @@
           }
         ]
       }
+    ],
+    "UserPromptExpansion": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -x \"$HOME/.claude/hooks/skill-usage-log.sh\" ] && \"$HOME/.claude/hooks/skill-usage-log.sh\" || true",
+            "timeout": 5
+          }
+        ]
+      }
     ]
   },
   "statusLine": {

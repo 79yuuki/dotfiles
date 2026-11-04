@@ -86,11 +86,11 @@ const INTEGRATION_SCHEMA = {
 
 phase('Implement')
 const [a, b, c] = await parallel([
-  () => agent(taskPrompt('A', SPEC_A, ADVICE_A), { label: 'A', phase: 'Implement', schema: IMPL_SCHEMA, model: 'sonnet' }),
-  () => agent(taskPrompt('B', SPEC_B, ADVICE_B), { label: 'B', phase: 'Implement', schema: IMPL_SCHEMA, model: 'sonnet' }),
+  () => agent(taskPrompt('A', SPEC_A, ADVICE_A), { label: 'A', phase: 'Implement', schema: IMPL_SCHEMA, model: 'sonnet', effort: 'low' }),
+  () => agent(taskPrompt('B', SPEC_B, ADVICE_B), { label: 'B', phase: 'Implement', schema: IMPL_SCHEMA, model: 'sonnet', effort: 'low' }),
   // A の成果を使う後続がある場合はチェーンにする:
   // async () => { const a2 = await agent(...); if (a2?.status !== 'done') return a2; return agent(依存タスク, ...); }
-  () => agent(taskPrompt('C', SPEC_C, ''), { label: 'C', phase: 'Implement', schema: IMPL_SCHEMA, model: 'sonnet' }),
+  () => agent(taskPrompt('C', SPEC_C, ''), { label: 'C', phase: 'Implement', schema: IMPL_SCHEMA, model: 'sonnet', effort: 'low' }),
 ])
 
 const all = [a, b, c].filter(Boolean)
@@ -102,7 +102,7 @@ phase('Integrate')
 const integration = await agent('統合検証者。成果と申し送り:\n' +
   JSON.stringify(all.map(r => ({ task: r.task, files: r.filesChanged, deviations: r.deviations, notes: r.notes, commitMessage: r.commitMessage })), null, 2) +
   '\n手順: フルゲート → 成果物間の不整合を修正（設計は変えない）→ 実地スモーク → タスク別 commit（共有設定は帰属タスクへ）→ 統合修正は fix commit。',
-  { label: 'integrate', phase: 'Integrate', schema: INTEGRATION_SCHEMA })
+  { label: 'integrate', phase: 'Integrate', schema: INTEGRATION_SCHEMA, effort: 'high' })
 if (!integration || integration.status !== 'done') return { stoppedAt: 'Integrate', integration, results: all }
 return { stoppedAt: null, results: all, integration }
 ```

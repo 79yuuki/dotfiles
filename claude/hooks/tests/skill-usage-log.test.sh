@@ -61,6 +61,16 @@ rerun "$IN"
 ok "unwritable state dir" 0
 chmod 755 "$HOME_DIR/.claude/state"
 
+run_hook '{"cwd":"/w","hook_event_name":"UserPromptExpansion","expansion_type":"slash_command","command_name":"careful","command_args":"secret-arg","prompt":"/careful secret-arg"}'
+jq -e '.skill == "careful" and .cwd == "/w"' "$LOG" >/dev/null 2>&1 && ! grep -q 'secret-arg' "$LOG"
+ok "user-typed /skill via UserPromptExpansion" $?
+
+run_hook '{"cwd":"/w","hook_event_name":"UserPromptExpansion","expansion_type":"mcp_prompt","command_name":"srv:p"}'
+[[ ! -e "$LOG" ]]; ok "mcp prompt not recorded" $?
+
+OUT="$(printf '%s' "$IN" | env -u HOME bash "$HOOK" 2>"$TMP_ROOT/stderr")"; RC=$?; ERR="$(cat "$TMP_ROOT/stderr")"
+ok "HOME unset" 0
+
 echo "---"
 echo "PASS=$PASS FAIL=$FAIL"
 [[ "$FAIL" -eq 0 ]] || exit 1
