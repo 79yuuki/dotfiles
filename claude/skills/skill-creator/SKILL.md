@@ -333,6 +333,9 @@ Do not include any other fields in YAML frontmatter.
 
 Write instructions for using the skill and its bundled resources.
 
+- **Gotchas 節:** 実際に踏んだ失敗だけを1行ずつ書く（想像上の注意書きは書かない）。踏むたびに追記する。
+- **旧形式→現行の対応表:** モデルが古い API・旧形式を書きがちな領域の skill は、「旧形式 → 現行」の対応表を本文冒頭付近に置く。
+
 ### Step 5: Packaging a Skill
 
 Once development of the skill is complete, it must be packaged into a distributable .skill file that gets shared with the user. The packaging process automatically validates the skill first to ensure it meets all requirements:

@@ -44,7 +44,9 @@ description だけ強くて body が弱い状態でテストすると、読者�
 - **シナリオ 2-3本**: 中央値 1、本番で困りやすい edge 1-2
 - **要件チェックリスト 3-7項目**
 - **[critical] 項目を最低1つ**
-- **hold-out 1本**: 収束判定まで温存する境界ケース
+- **hold-out 1本**: 収束判定まで温存する境界ケース。ケースは train / holdout に分け、調整は train だけで行い、採用判定は holdout で下す
+- **ノイズ幅**: 修正前に同一プロンプトを複数回走らせてスコアのばらつきを測る。それ未満の差は改善と見なさない
+- **採点は二値ルーブリック**: 「〇〇を含む」「××をしない」のような検証可能な主張の二値項目で採点する。1〜5点尺度は使わない
 
 先に固定し、評価の途中で都合よく変えない。
 
@@ -74,19 +76,19 @@ Latest local gate summaries may be mirrored in `references/latest.md` / `referen
 
 最低限これを見る。
 - **success**: `[critical]` が全部通ったか
-- **accuracy**: checklist 達成率
+- **accuracy**: checklist 達成率（二値項目の合格率。judge は被検モデルと別のモデルにする）
 - **efficiency**: 無駄な探索・往復・過読が減ったか
 - **executor feedback**: 不明瞭点 / 裁量補完 / retries
 
 `tool_uses` / `duration_ms` が session metadata から取れるなら記録する。
 取れない環境では、**success / accuracy / executor feedback を優先**して続行する。
-時間短縮だけを最適化しない。
+時間短縮だけを最適化しない。ただしベースラインが約95%以上なら精度は天井なので、目標をコスト（トークン・時間）に切り替える。
 
 ### Step 4: 1 iteration 1 theme で直す
 
 1回で全部盛りしない。
 - 関連する微修正はまとめてよい
-- 無関係な修正は次の iteration に回す
+- 無関係な修正は次の iteration に回す（1ラウンド1変更が原則。複数変えると効いた要因が分からない）
 - 「この修正が checklist のどれを改善するか」を先に言語化してから直す
 
 ### Step 5: 再実行する
