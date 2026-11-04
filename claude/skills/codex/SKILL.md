@@ -29,6 +29,7 @@ Claude Code がメイン実装を進め、右ペインの Codex が独立 review
 - `❌ NEEDS FIXES` または BLOCK 相当の指摘が出たら、次ステップへ進まず修正して再レビューする。
 - `⚠️ APPROVED WITH CONCERNS` は、懸念を解消または明示的にスコープ外/後続TODOへ切り分け、同じステップを再レビューして `✅ APPROVED` を得るまで進まない。
 - `✅ APPROVED` なら次ステップへ進む。
+- 同じ変更で 3 ラウンド収束しなければ修正を重ねず、方針を見直してユーザーに相談する。2 回目以降に渡す範囲と対象外の指摘は requesting-code-review の「Avoiding review loops」に従う。
 
 ### Codexに渡す最小コンテキスト
 1. 現在の task 名 / plan ファイル / 直前の決定

@@ -56,7 +56,9 @@ After reviewer subagent approval, use the `codex` skill to send the same commit 
 The fix→re-review cycle can run away — an agent author and an agent reviewer
 keep each other busy (one real case at Anthropic hit 50+ rounds overnight),
 and most repeat flags are old code, not new bugs (~59% pre-existing in their
-data). Bound it:
+data). Bound it — this is the one place these rules live; the Codex
+`✅ APPROVED` loop (`codex` skill, CLAUDE.md, orchestrate-with-advisory §7)
+points here:
 
 - **Round cap.** After 3 fix→review rounds on the same change, stop and
   reconsider the approach with your human partner instead of patching further.
