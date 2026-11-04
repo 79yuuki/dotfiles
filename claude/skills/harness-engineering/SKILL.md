@@ -17,6 +17,7 @@ description: >-
 > Managed/cloud/browser agent 実行境界: [references/managed-agent-execution-policy.md](references/managed-agent-execution-policy.md)
 > Agent system benchmark golden tasks: [references/agent-system-benchmark-golden-tasks.md](references/agent-system-benchmark-golden-tasks.md)
 > 大規模codebase向け Stop hook / 剪定サイクル / CLAUDE.md lean rule: [references/large-codebase-harness-patterns.md](references/large-codebase-harness-patterns.md)
+> cron/定期自動化のチェックリスト: [references/scheduled-automation-checklist.md](references/scheduled-automation-checklist.md)
 > Proactive harness suggestion 設計: [../../../docs/superpowers/specs/2026-05-19-proactive-harness-suggestion-design.md](../../../docs/superpowers/specs/2026-05-19-proactive-harness-suggestion-design.md)
 
 ## Evidence / resume / review contracts

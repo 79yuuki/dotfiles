@@ -40,6 +40,9 @@ typed tool に昇格するのは、以下のように境界管理が必要な操
 - 静的なものを先、動的なものを後
 - system prompt を頻繁にいじるより、messages / reminder / skill 読み出しで更新
 - 長タスクほど model / tool set の頻繁な切替を避ける
+- cache を壊す操作: セッション途中のモデル切替、MCP サーバーの接続変更、長い休止後の compact（休止後は cache が切れており、compact や継続のコストが跳ねる）
+- 停滞したら effort を上げる前に検証手段（テスト・再現手順・期待値）を渡す
+- `/usage` で、どのセッション・モデル・cache read/write にコストが寄っているかを見てから対処を決める
 
 ## 7. zero-key / supervisor-first
 - credential は agent に直接渡さない
