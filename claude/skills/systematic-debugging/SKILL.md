@@ -188,6 +188,7 @@ You MUST complete each phase before proceeding to the next.
    - Test passes now?
    - No other tests broken?
    - Issue actually resolved?
+   - Flaky（間欠失敗）の場合: 修正前に N 回中で失敗が再現し、修正後に同条件で N 回連続成功して初めて完了
 
 4. **If Fix Doesn't Work**
    - STOP
