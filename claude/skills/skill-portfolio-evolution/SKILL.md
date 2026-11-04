@@ -37,6 +37,7 @@ In dotfiles, record portable intent in `claude/plugins/manifest.json`; do not co
 ## Improvement loop
 
 1. **Inventory**: list changed skills/plugins, **+ harness-opportunities.jsonl 新規エントリ**, and summarize what changed.
+   - `~/.claude/state/skill-usage.jsonl` で一定期間（例: 90日）使われていない skill を剪定候補に挙げる（ログ導入前の期間は判断材料にしない）。
 2. **Classify each candidate** into the 5 levers (Anthropic harness pattern):
    - `instruction` (SKILL.md / AGENTS.md / CLAUDE.md 改修)
    - `tool` (MCP / Bash / file I/O 追加・削除)
