@@ -108,6 +108,21 @@ class BookmarkDailyTest(unittest.TestCase):
         self.assertIn("<integer>19</integer>", plist)
         self.assertIn("<string>%s</string>" % self.task, plist)
 
+    def test_installer_refuses_while_running(self):
+        write_exe(os.path.join(self.bin, "codex"), "echo codex-cli 0.0\n")
+        calls = os.path.join(self.tmp.name, "launchctl-calls")
+        # large output so an early-exiting grep would SIGPIPE launchctl
+        write_exe(os.path.join(self.bin, "launchctl"), 'echo "$@" >> "%s"\n'
+                  'if [ "$1" = print ]; then echo "state = running"; yes "pad line" | head -n 200000; fi\n' % calls)
+        plist = os.path.join(self.home, "Library/LaunchAgents/local.dotfiles.bookmark-daily.plist")
+        os.makedirs(os.path.dirname(plist))
+        open(plist, "w").write("original")
+        r = subprocess.run(["bash", INSTALLER, "install"], env=self.env, capture_output=True, text=True)
+        self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
+        self.assertIn("running now", r.stderr)
+        self.assertEqual(open(plist).read(), "original")
+        self.assertNotIn("bootout", open(calls).read())
+
     def test_installer_rejects_bad_hour(self):
         env = dict(self.env, BOOKMARK_DAILY_HOUR="24", BOOKMARK_DAILY_PLIST_OUT=os.path.join(self.tmp.name, "x.plist"))
         r = subprocess.run(["bash", INSTALLER], env=env, capture_output=True, text=True)
