@@ -79,6 +79,8 @@ EOF_CODEX
     <string>ja_JP.UTF-8</string>
     <key>BOOKMARK_DAILY_STATE_DIR</key>
     <string>$(xml_escape "${STATE_DIR}")</string>
+    <key>BOOKMARK_DAILY_TASK_DIR</key>
+    <string>$(xml_escape "${BOOKMARK_DAILY_TASK_DIR:-${HOME}/.local/share/bookmark-skill-learning}")</string>
   </dict>
   <key>StandardOutPath</key>
   <string>$(xml_escape "${LOG_FILE}")</string>
@@ -103,6 +105,11 @@ EOF
 
   local uid
   uid="$(id -u)"
+  # bootout kills a run in progress, so refuse to re-register while it runs
+  if launchctl print "gui/${uid}/${LABEL}" 2>/dev/null | grep -q 'state = running'; then
+    printf 'error: %s is running now; re-run install after it finishes\n' "${LABEL}" >&2
+    exit 1
+  fi
   launchctl bootout "gui/${uid}/${LABEL}" >/dev/null 2>&1 || true
   launchctl bootstrap "gui/${uid}" "${PLIST}"
   printf 'registered %s (codex: %s)\n' "${LABEL}" "${codex}"

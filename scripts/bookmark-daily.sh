@@ -14,8 +14,17 @@ TODAY="$(date +%F)"
 
 log() { printf '%s %s\n' "$(date '+%F %T')" "$*"; }
 
-progress="${TASK_DIR}/reports/${TODAY}/progress.json"
-if [[ -f "${progress}" ]] && grep -q '"state" *: *"completed' "${progress}"; then
+report_dir="${TASK_DIR}/reports/${TODAY}"
+progress="${report_dir}/progress.json"
+# top-level "state" of progress.json, empty when missing or unparsable
+state_of() {
+  python3 -I -c 'import json,sys
+try: s = json.load(open(sys.argv[1])).get("state")
+except Exception: s = None
+print(s if isinstance(s, str) else "")' "$1" 2>/dev/null || true
+}
+
+if [[ "$(state_of "${progress}")" == completed* ]]; then
   log "skip: ${TODAY} already completed (${progress})"
   exit 0
 fi
@@ -28,7 +37,7 @@ for f in "${SKILL}" "${TASK_DIR}/sources.json"; do
 done
 
 # The prompt names the task only; sources, cursor and boundaries are read from files on every run.
-PROMPT="Run today's (${TODAY}) daily learning task of the bookmark-skill-learning skill: read ${SKILL} and follow it, including its boundaries (proposals only under ${REPO_ROOT}/claude/_proposed/, no commit/push, no read-state or schedule changes). Read the source settings from ${TASK_DIR}/sources.json now, not from memory. Read from where the processing ledger left off, not a fixed time window, so any days missed since the last report are covered. Also follow ${REPO_ROOT}/claude/skills/harness-engineering/references/scheduled-automation-checklist.md. Record each failed source as a failure, never as nothing new. Write reports/${TODAY}/ (report.md, summary.json, progress.json) and save the ledger."
+PROMPT="Run today's (${TODAY}) daily learning task of the bookmark-skill-learning skill: read ${SKILL} and follow it, including its boundaries (proposals only under ${REPO_ROOT}/claude/_proposed/, no commit/push, no read-state or schedule changes). Read the source settings from ${TASK_DIR}/sources.json now, not from memory. Read from where the processing ledger left off, not a fixed time window, so any days missed since the last report are covered. Also follow ${REPO_ROOT}/claude/skills/harness-engineering/references/scheduled-automation-checklist.md. Record each failed source as a failure, never as nothing new. Write reports/${TODAY}/ (report.md, summary.json, progress.json) and save the ledger. progress.json is {\"date\": ..., \"state\": ...}; set state to a value starting with completed only when the run finished, otherwise a value saying what is incomplete."
 
 mkdir -p "${STATE_DIR}" "${REPO_ROOT}/claude/_proposed"
 cmd=(codex exec --skip-git-repo-check
@@ -42,10 +51,15 @@ if [[ "${1:-}" == "--dry-run" ]]; then
 fi
 
 log "start ${TODAY}"
-if "${cmd[@]}" </dev/null; then
-  log "done ${TODAY}"
-else
+if "${cmd[@]}" </dev/null; then :; else
   rc=$?
   log "error: codex exec exited ${rc}"
   exit "${rc}"
 fi
+# exit 0 alone is not success: require the report and a completed state
+state="$(state_of "${progress}")"
+if [[ "${state}" != completed* || ! -s "${report_dir}/report.md" ]]; then
+  log "error: ${TODAY} not completed (state='${state}', report.md $([[ -s "${report_dir}/report.md" ]] && echo present || echo missing))"
+  exit 1
+fi
+log "done ${TODAY} (${state})"

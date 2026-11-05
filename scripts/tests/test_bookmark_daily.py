@@ -29,7 +29,10 @@ class BookmarkDailyTest(unittest.TestCase):
         open(os.path.join(skill_dir, "SKILL.md"), "w").close()
         open(os.path.join(self.task, "sources.json"), "w").write("{}")
         self.record = os.path.join(t, "codex-argv")
-        write_exe(os.path.join(self.bin, "codex"), 'printf "%s\\n" "$@" > "$FAKE_RECORD"\n')
+        # fake codex records argv and writes the report like a successful run
+        write_exe(os.path.join(self.bin, "codex"), 'printf "%s\\n" "$@" > "$FAKE_RECORD"\n'
+                  'd="$BOOKMARK_DAILY_TASK_DIR/reports/$(date +%F)"; mkdir -p "$d"\n'
+                  'echo "# r" > "$d/report.md"; echo \'{"state":"completed_no_change"}\' > "$d/progress.json"\n')
         self.env = dict(
             os.environ,
             HOME=self.home,
@@ -64,6 +67,22 @@ class BookmarkDailyTest(unittest.TestCase):
         self.assertIn("skip", r.stdout)
         self.assertFalse(os.path.exists(self.record))
 
+    def test_nested_or_truncated_completed_does_not_skip(self):
+        d = os.path.join(self.task, "reports", time.strftime("%Y-%m-%d"))
+        os.makedirs(d)
+        for body in ('{"state":"running","steps":[{"state":"completed"}]}', '{"state":"completed'):
+            open(os.path.join(d, "progress.json"), "w").write(body)
+            r = self.run_runner()
+            self.assertNotIn("skip", r.stdout)
+            self.assertTrue(os.path.exists(self.record))
+            os.remove(self.record)
+
+    def test_codex_exit0_without_report_fails(self):
+        write_exe(os.path.join(self.bin, "codex"), "exit 0\n")
+        r = self.run_runner()
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("not completed", r.stdout)
+
     def test_fails_without_sources(self):
         os.remove(os.path.join(self.task, "sources.json"))
         r = self.run_runner()
@@ -87,6 +106,7 @@ class BookmarkDailyTest(unittest.TestCase):
         self.assertIn("<string>%s:" % self.bin, plist)
         self.assertNotIn(broken, plist)
         self.assertIn("<integer>19</integer>", plist)
+        self.assertIn("<string>%s</string>" % self.task, plist)
 
     def test_installer_rejects_bad_hour(self):
         env = dict(self.env, BOOKMARK_DAILY_HOUR="24", BOOKMARK_DAILY_PLIST_OUT=os.path.join(self.tmp.name, "x.plist"))
