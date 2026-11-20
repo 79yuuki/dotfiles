@@ -264,7 +264,21 @@ def cmd_status(_args):
         print(f"  次にやること: {stage['next_action']}")
 
 
+def session_source():
+    """SessionStart hook の入力（JSON）の source。hook 以外から呼ばれた時は None。"""
+    if sys.stdin is None or sys.stdin.isatty():
+        return None
+    try:
+        return json.loads(sys.stdin.read() or "{}").get("source")
+    except (ValueError, AttributeError):
+        return None
+
+
 def cmd_remind(_args):
+    # SessionStart は再開・clear・compact の後にも走る。同じ知らせを何度も差し込まないように、
+    # 新しく始めたセッション（startup）と、hook 以外からの呼び出しでだけ出す。
+    if session_source() in ("resume", "clear", "compact", "fork"):
+        return
     ledger = load("ledger.json", {"plans": []})
     status = load("status.json", {"plans": {}})["plans"]
     cwd, items = os.getcwd(), []

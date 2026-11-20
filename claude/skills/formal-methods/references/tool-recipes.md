@@ -14,8 +14,8 @@
 ## TLA+（TLC / Apalache）
 
 - 導入確認: `command -v java`、tla2tools.jar の場所、`command -v apalache-mc`。
-- TLC（既存 JAR のみ）: `java -cp /existing/path/tla2tools.jar tlc2.TLC -config Spec.cfg Spec.tla`。定数領域・Init/Next/Spec・不変条件と、deadlock を意図的終端と区別して記録する。打切り/timeout を完走と扱わず、TLC の全状態検査と深さ制限付き探索を区別する。活性は safety の完走だけでは示せない。
-- Apalache: `apalache-mc check --inv=Inv Spec.tla`
+- TLC（既存 JAR のみ）: `java -cp /existing/path/tla2tools.jar tlc2.TLC -workers auto -config Spec.cfg Spec.tla`（コマンドラインの既定は 1 ワーカー）。定数領域・Init/Next/Spec・不変条件と、deadlock を意図的終端と区別して記録する。打切り/timeout を完走と扱わず、TLC の全状態検査と深さ制限付き探索を区別する。活性は safety の完走だけでは示せない。
+- Apalache: `apalache-mc check --length=<N> --inv=Inv Spec.tla`。上限つきの検査で、`--length` を省くと 10 ステップまでしか見ない。N を結果に書く。長さによらない保証が要る時は、帰納的な不変条件を別に検査する。
 - 骨格: `VARIABLES db, cache` / `Init` / `Next`（Write, Read, Invalidate の選択）/ `Inv == \A k \in Keys : cache[k] # NULL => cache[k] = db[k]`。Spec.cfg に `INIT Init` `NEXT Next` `INVARIANT Inv` を書く。この Inv は強い整合性（空でないキャッシュは常に DB と一致）を要求するので、Write と Invalidate を別の遷移にすると間に反例が出る。これは見つけたい不具合の典型で、意図した失敗例として使う。最終的整合性で十分な仕様なら、Inv ではなく「いずれ一致する」という活性（liveness）で書く。liveness には前提が要る: ある時点以降は書き込みが止まること（有限の休止では足りない）と、それ以降 Invalidate が不整合の解消まで連続して実行可能であること。弱公平性（例: `WF_vars(Invalidate)` を Spec に入れる）は、この連続して実行可能な条件のもとでのみ実行を保証する。前提はモデルと README に明記する。
 - 反例→テスト: エラートレースの各状態遷移を 1 操作として並べ、Next の各アクションを実装の API 呼び出しに対応づける。
 
@@ -24,9 +24,9 @@
 - 利用可否確認: `command -v quint`。見つからなければ実行しない。
 - 型検査: `quint typecheck spec.qnt`
 - ランダムシミュレーション: `quint run --invariant=inv spec.qnt`
-- Apalache による検査: `quint verify --invariant=inv spec.qnt`
+- Apalache による検査: `quint verify --invariant=inv --max-steps=<N> spec.qnt`（上限つき。`--max-steps` の既定は 10）
 - 骨格: `var` で状態を宣言し、`action init` / `action step` と `val inv = ...` を書く。
-- 反例→テスト: run が出す違反トレースの各ステップを操作列にする。まず run で素早く探し、verify で網羅側に寄せる。
+- 反例→テスト: run が出す違反トレースの各ステップを操作列にする。まず run で素早く探し、verify で確かめる。run は既定で 20 ステップ・10000 回のランダムな試行、verify は `--max-steps` までの上限つきで、どちらも網羅ではない。使った上限と乱数の種を結果に書く。
 
 ## Z3（SMT）
 
@@ -52,6 +52,27 @@ else:
 
 - 反例→テスト: model の値をそのまま入力にし、期待値は合意済みの意図から独立に書く。未確定なら期待値を固定せず判断待ちにする。エンコード漏れ（整数の範囲、未モデル化の入力）は Not verified に書く。
 
+## 空虚な合格を見分ける
+
+検査が通った時、検査が実際に何かを確かめたかを、道具ごとに見る。
+
+- **TLC / Quint**: 到達した状態の数と、各遷移が 1 回は起きたことを記録する。1 回も起きない遷移があれば、その遷移に関する性質は確かめられていない。不変条件が、前提のせいで常に真になっていないかを見る。
+- **Z3**: 前提だけで充足可能かを先に確かめる（上の節）。
+- **Foundry の invariant test**: 対象を直接呼ばせず、handler を通す。入力は `bound()` で絞り、`vm.assume` で捨てない。handler の各関数が呼ばれた回数を記録し、0 回の関数が無いことを見る。総入金・総出金のような集計は ghost 変数で持ち、実際の状態との差で保存則を書く。
+- **Certora**: `rule_sanity` を外さない。前提が矛盾していて到達できない rule を見つける検査が含まれる。
+
+## モデルと実装のずれを埋める
+
+モデルが通っても、実装がモデルどおりとは限らない。埋める手段は 3 つあり、使える条件が違う。
+
+| 手段 | 使える条件 | 限界 |
+|---|---|---|
+| 参照モデルとの差分テスト（同じ入力を両方に流す） | 単純な参照実装が書ける | 入力の生成が届く範囲だけ。迷ったらここから始める |
+| モデルからテストを生成する | 実装の非決定性を全部制御できる、小さく純粋なアルゴリズム | モデルの状態数が増えるとテストが爆発する |
+| 実行の記録（トレース）をモデルに照らす | 状態の変化を、一貫した形で記録できる | 並行するシステムでは、一貫した記録を取ること自体が難しい。モデルが実装より抽象的だと合わない |
+
+再現に必要な観測点が実コードに無い遷移は、再現できないものとして保留し、Not verified に書く。
+
 ## Alloy
 
 - 導入確認: Alloy Analyzer（GUI）が起動できるか。CLI の具体的なフラグは未確認: 公式 docs で確認。
@@ -69,6 +90,7 @@ else:
 - **命題が弱くないかを見る**: わざと役に立たない実装（常に 0 を返す、何も受け付けない）に差し替えても定理が成り立つなら、その命題は要件を表していない。証明が通ることと、要件が足りていることは別。
 - **何を証明したかを書く**: 証明の対象がモデルなのか、出荷するコードなのかを分ける。モデルを証明した時は、モデルと実装に同じ乱数の入力を流して結果を比べる差分テストで一致を確かめ、モデル・証明・差分テストの 3 つが最新でない限り「検証済み」と書かない。
 - **CI**: 通った証明の再検査（`lake build`）は速いので CI に載せられる。証明を探す作業は、終わる時間が読めないので載せない。
+- `native_decide` を使った証明は、コンパイラの正しさに依存する公理が `#print axioms` に出る。出たら、その証明がそれを必要とする理由を確かめる。
 
 ## property-based testing
 

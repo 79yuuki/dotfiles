@@ -57,6 +57,8 @@ Check the real thing. A proxy is not evidence: file timestamps, a self-report, c
 - **Do not hand the human a check you could run yourself.** Run it, then report.
 - **Say what each check does not tell you.** A run shows the result for the inputs you gave. A test shows the inputs it tries. A type check shows the kinds of values. A proof shows the property as written. Report what you verified and what you did not.
 - **When a check passes too easily, suspect the check first.** A regression test that never failed proves nothing.
+- **Your own closing summary is not evidence, and neither is another model's opinion of it.** A confident final message says nothing about the final state. Re-run the command and read its exit code; check each claim in your report (tests pass, file created, endpoint returns X) against the real thing before you send it.
+- **If you changed a test, an expected value or a fixture to get to green, say so first.** Put that diff at the top of the report. When the spec and a test disagree, do not edit one to match the other: stop and ask.
 - **After three failed fix rounds on the same check, stop and bring in a human.**
 
 ## Red Flags - STOP

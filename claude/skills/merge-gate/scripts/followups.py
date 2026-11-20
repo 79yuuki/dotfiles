@@ -10,11 +10,16 @@ so the rules can be scored against history without any verdicts.
 
 shortcut: a follow-up is "a later fix/revert PR touching one of the same files within the
 window". It does not prove the first PR caused it; read the pair before blaming the verdict.
+Files that a large share of all PRs touch (translation tables, manifests) are left out of the
+match, because two PRs sharing such a file says nothing; see --hub-share. A PR that touched only
+such files is reported as undetermined, and a revert that names a PR always counts.
 """
 import argparse
+import collections
 import datetime as dt
 import json
 import os
+import re
 import subprocess
 import sys
 import tomllib
@@ -23,7 +28,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from classify_diff import DEFAULT_PREFIXES, FILES_JQ, classify, matches, parse_files, title_kind  # noqa: E402
 
 VERDICTS = os.path.expanduser("~/.claude/state/merge-gate/verdicts.jsonl")
-DEFAULT_IGNORE = ["**/pnpm-lock.yaml", "**/package-lock.json", "**/yarn.lock", "**/Cargo.lock"]
+DEFAULT_IGNORE = ["**/pnpm-lock.yaml", "**/package-lock.json", "**/yarn.lock", "**/Cargo.lock", "**/package.json"]
 FOLLOWUP_KINDS = {"fix", "hotfix", "revert"}
 VERDICT_VALUES = {"high", "medium", "low"}
 PR_LIMIT = 1000
@@ -41,10 +46,28 @@ def is_followup(title):
     return title_kind(title)[0] in FOLLOWUP_KINDS or is_revert(title)
 
 
-def find_followups(prs, window_hours, prefixes, ignore, now):
+def hub_files(prs, share, floor=5):
+    """Files touched by at least `share` of the PRs (and at least `floor` PRs). share <= 0 turns it off."""
+    if share <= 0:
+        return set()
+    counts = collections.Counter(f for p in prs for f in set(p["files"]))
+    return {f for f, n in counts.items() if n >= max(floor, share * len(prs))}
+
+
+def names(revert_title, pr):
+    """Does a revert PR's title point at this PR (by number or by quoting its title)?"""
+    numbers = {int(n) for n in re.findall(r"#(\d+)", revert_title)}
+    return pr["number"] in numbers or pr["title"] in revert_title
+
+
+def find_followups(prs, window_hours, prefixes, ignore, now, hubs=frozenset()):
     """prs: [{number,title,mergedAt,files:[path]}]. One row per PR whose kind is in prefixes.
 
-    A PR merged less than window_hours ago is `pending`: its outcome is not known yet.
+    pending: merged less than window_hours ago, so the outcome is not known yet.
+    followups: later fix/revert PRs sharing a file that is not a hub, or a revert naming this PR.
+    hub_only: later fix/revert PRs sharing only hub files. Kept so a reader can check them.
+    undetermined: the PR touched nothing but hub or ignored files and no revert names it, so
+    file overlap cannot say anything about it. Counted apart, never as "no follow-up".
     """
     prs = sorted(prs, key=lambda p: p["mergedAt"])
     window = dt.timedelta(hours=window_hours)
@@ -52,19 +75,25 @@ def find_followups(prs, window_hours, prefixes, ignore, now):
     for i, p in enumerate(prs):
         if title_kind(p["title"])[0] not in prefixes:
             continue
-        mine = {f for f in p["files"] if not matches(f, ignore)}
-        later = []
+        counted = {f for f in p["files"] if not matches(f, ignore)}
+        mine, later, hub_only = counted - hubs, [], []
         for q in prs[i + 1:]:
             if ts(q["mergedAt"]) - ts(p["mergedAt"]) > window:
                 break
-            if is_followup(q["title"]) and mine & set(q["files"]):
+            if not is_followup(q["title"]):
+                continue
+            if mine & set(q["files"]) or (is_revert(q["title"]) and names(q["title"], p)):
                 later.append(q)
+            elif counted & set(q["files"]):
+                hub_only.append(q)
         rows.append({
             "number": p["number"],
             "head_sha": p.get("headRefOid"),
             "mergedAt": p["mergedAt"],
             "pending": now - ts(p["mergedAt"]) < window,
+            "undetermined": not mine and not later,
             "followups": [q["number"] for q in later],
+            "hub_only": [q["number"] for q in hub_only],
             "reverted": any(is_revert(q["title"]) for q in later),
         })
     return rows
@@ -105,12 +134,15 @@ def rule_ceiling(repo, pr, cfg, run=subprocess.run):
 
 
 def tally(rows, key):
-    """Counts per value of rows[key]. Pending rows are counted apart: no outcome yet."""
+    """Counts per value of rows[key]. Pending and undetermined rows are counted apart, not in n."""
     summary = {}
     for r in rows:
-        s = summary.setdefault(r[key], {"n": 0, "with_followup": 0, "reverted": 0, "pending": 0})
+        s = summary.setdefault(r[key], {"n": 0, "with_followup": 0, "reverted": 0, "pending": 0, "undetermined": 0})
         if r["pending"]:
             s["pending"] += 1
+            continue
+        if r["undetermined"]:
+            s["undetermined"] += 1
             continue
         s["n"] += 1
         s["with_followup"] += bool(r["followups"])
@@ -146,12 +178,38 @@ def self_test():
     assert list(feat) == [3] and feat[3]["followups"] == []
     feat2 = find_followups([prs[2], dict(prs[1], mergedAt="2026-01-01T12:00:00Z")], 48, ["feat"], DEFAULT_IGNORE, now)
     assert feat2[0]["followups"] == [2], feat2
+    # a file most PRs touch is not evidence of a follow-up
+    many = [{"number": i, "title": "fix: n%d" % i, "mergedAt": "2026-01-01T%02d:00:00Z" % i, "files": ["i18n/ja.ts", "f%d.ts" % i]}
+            for i in range(10)]
+    assert hub_files(many, 0.1) == {"i18n/ja.ts"} and hub_files(many, 0) == set() and hub_files(many[:3], 0.1) == set()
+    assert all(r["followups"] for r in find_followups(many, 48, ["fix"], [], now)[:-1])
+    assert not any(r["followups"] for r in find_followups(many, 48, ["fix"], [], now, hub_files(many, 0.1)))
+    # ...but dropping hubs must not turn "cannot tell" into "nothing happened", and must not hide a revert
+    hot = [{"number": i, "title": "fix: payment calculation" if i == 1 else "fix: p%d" % i,
+            "mergedAt": "2026-01-01T%02d:00:00Z" % i, "files": ["payment.ts"]} for i in range(1, 5)]
+    hot.append({"number": 5, "title": 'Revert "fix: payment calculation"', "mergedAt": "2026-01-01T05:00:00Z", "files": ["payment.ts"]})
+    hubs = hub_files(hot, 0.1)
+    assert hubs == {"payment.ts"}
+    by = {r["number"]: r for r in find_followups(hot, 48, ["fix"], [], now, hubs)}
+    assert by[1]["followups"] == [5] and by[1]["reverted"] and not by[1]["undetermined"], by[1]
+    assert by[2]["undetermined"] and by[2]["followups"] == [] and by[2]["hub_only"] == [3, 4, 5], by[2]
+    t = tally(list(by.values()), "pending")[False]
+    assert (t["n"], t["with_followup"], t["reverted"], t["undetermined"]) == (1, 1, 1, 3), t
+    # "Revert #10" names PR 10, not PR 1
+    pair = [{"number": n, "title": "fix: n%d" % n, "mergedAt": "2026-01-01T%02d:00:00Z" % h, "files": ["payment.ts"]}
+            for n, h in ((1, 1), (10, 2))]
+    pair.append({"number": 20, "title": "Revert #10", "mergedAt": "2026-01-01T03:00:00Z", "files": ["other.ts"]})
+    by = {r["number"]: r for r in find_followups(pair, 48, ["fix"], [], now, {"payment.ts"})}
+    assert by[10]["reverted"] and by[10]["followups"] == [20], by[10]
+    assert not by[1]["reverted"] and by[1]["followups"] == [] and by[1]["undetermined"], by[1]
+    assert names('Revert "fix: n1" (#31)', pair[0]) and not names("Revert #100", pair[1])
     # verdicts: only for the merged commit, never on a missing SHA
     values = list(rows.values())
     attach_verdicts(values, {(1, "s1"): "high", (2, "old"): "high", (6, None): "high"})
     s = tally(values, "verdict")
-    assert s["high"] == {"n": 1, "with_followup": 1, "reverted": 0, "pending": 0}, s
-    assert s["none"]["n"] == 2 and s["none"]["pending"] == 1, s
+    assert s["high"] == {"n": 1, "with_followup": 1, "reverted": 0, "pending": 0, "undetermined": 0}, s
+    # #4 touched only a lockfile: file overlap cannot say anything about it
+    assert (s["none"]["n"], s["none"]["pending"], s["none"]["undetermined"]) == (1, 1, 1), s
     import tempfile
     import types
     lines = [
@@ -195,6 +253,8 @@ def main():
     ap.add_argument("repo", nargs="?")
     ap.add_argument("--days", type=int, default=60)
     ap.add_argument("--window-hours", type=int, default=48)
+    ap.add_argument("--hub-share", type=float, default=0.1,
+                    help="leave out files touched by at least this share of the PRs (0 = keep all)")
     ap.add_argument("--config")
     ap.add_argument("--verdicts", default=VERDICTS)
     ap.add_argument("--json", action="store_true")
@@ -209,7 +269,7 @@ def main():
         with open(args.config, "rb") as f:
             cfg = tomllib.load(f)
     prefixes = cfg.get("target", {}).get("title_prefixes", DEFAULT_PREFIXES)
-    ignore = cfg.get("paths", {}).get("size_ignore", DEFAULT_IGNORE)
+    ignore = DEFAULT_IGNORE
     since = (dt.date.today() - dt.timedelta(days=args.days)).isoformat()
     raw = subprocess.run(
         ["gh", "pr", "list", "-R", args.repo, "--state", "merged", "--limit", str(PR_LIMIT),
@@ -224,12 +284,17 @@ def main():
     if len(fetched) >= PR_LIMIT:
         warnings.append(f"PR が {PR_LIMIT} 件で打ち切られた。--days を短くする")
     prs = [dict(p, files=[f["path"] for f in p["files"]]) for p in fetched]
-    rows = find_followups(prs, args.window_hours, prefixes, ignore, dt.datetime.now(dt.timezone.utc))
+    hubs = hub_files(prs, args.hub_share)
+    rows = find_followups(prs, args.window_hours, prefixes, ignore, dt.datetime.now(dt.timezone.utc), hubs)
     verdicts, bad = load_verdicts(args.verdicts, args.repo)
     if bad:
         warnings.append(f"判定の記録に読めない行が {bad} 行ある: {args.verdicts}")
     attach_verdicts(rows, verdicts)
     result = {"repo": args.repo, "since": since, "warnings": warnings, "summary": tally(rows, "verdict")}
+    # The base rate: what you get without selecting anything. A ceiling or verdict that does
+    # no better than this is not separating risky changes from safe ones.
+    result["overall"] = tally([dict(r, _all="全体") for r in rows], "_all").get("全体", {})
+    result["hubs"] = sorted(hubs)
     if cfg:
         by_number = {p["number"]: p for p in fetched}
         for r in rows:
@@ -249,8 +314,13 @@ def main():
     def show(title, summary):
         print(title)
         for k, s in sorted(summary.items()):
-            print(f"  {k:8} n={s['n']:<4} 後続の修正あり={s['with_followup']:<4} revert={s['reverted']:<3} 観測中={s['pending']}")
+            print(f"  {k:8} n={s['n']:<4} 後続の修正あり={s['with_followup']:<4} revert={s['reverted']:<3} "
+                  f"観測中={s['pending']:<3} 判定不能={s['undetermined']}")
 
+    if hubs:
+        print(f"多くの PR が触るファイル {len(hubs)} 件を、後続の判定から除いた: " + ", ".join(sorted(hubs)[:6]) + (" …" if len(hubs) > 6 else ""))
+        print("  そのファイルしか触っていない PR は「判定不能」に数える。除いた重なりは、各行の hub_only（--json）に残る")
+    show("基準（何も選ばなかった時）:", {"全体": result["overall"]} if result["overall"] else {})
     show("判定ごと（マージされたコミットに付いた判定だけ）:", result["summary"])
     if cfg:
         show("ルールだけの上限ごと:", result["by_ceiling"])

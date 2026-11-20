@@ -106,3 +106,10 @@ If any excluded skill becomes needed in dotfiles, first rewrite it as a generic 
 - Codex parity: `codex/AGENTS.md` carries short versions of the three new skills and the evidence rule. `claude/CLAUDE.md` gained a four-line entry section.
 - `skill-creator` Step 6 names `scripts/skill-security-scan.sh`, which is not in this repository. The new skills were checked with `quick_validate.py` and a manual pattern scan instead.
 - Follow-through for staged plans: `scripts/followthrough.py` (daily check, no model), `scripts/install-followthrough.sh` (launchd), `claude/hooks/followthrough-remind.sh` (SessionStart reminder). The hook is not registered in `claude/settings.base.json` yet; registration and the launchd install wait for the owner's approval.
+
+### 2026-11-20 second pass: outside sources and trials
+
+- Researched primary sources beyond the 19 given articles (official docs, engineering blogs, papers) in six areas and applied only what a source we opened supports. Each skill lists what it took. Facts written as commands (Playwright CLI names, `context.credentials`, Quint and Apalache defaults, GitHub check runs, SessionStart hook sources) were re-checked on the official pages.
+- Corrected stale content in `playwright-e2e`: the context-usage percentages had no traceable source and were removed, the CLI session flag and close commands were updated to the current docs, the config template no longer records video for every test.
+- Trials on a real repository fed the skills: a mutation run (109 mutants, 25 survivors, classified by hand) produced the StrykerJS recipe and its gotchas; a retro run of the merge-gate verifier on nine merged pull requests produced the merge-gate gotchas. In that run, none of the four pull requests that later needed a follow-up fix got `high` from evidence alone, and three of the five clean ones did.
+- Not applied: items backed only by search snippets or vendor claims (review-independence effect sizes, notification-fatigue numbers, a fixed sample-size threshold for enforcing). The tone of the vendored superpowers skills was left as upstream.

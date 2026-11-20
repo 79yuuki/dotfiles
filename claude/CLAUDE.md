@@ -24,7 +24,7 @@ Claude Code を Haiku / Sonnet など別モデルで動かす時の保険とし�
 
 作業の種類ごとに、次の skill を使う。手順は skill 側にあり、ここには入口だけを書く。
 
-- 完了と言う前は `verification-before-completion`。変えた振る舞いは実物で動かして確かめ、確かめていないことも書く。
+- 完了と言う前は `verification-before-completion`。変えた振る舞いは実物で動かして確かめ、確かめていないことも書く。アプリの動かし方がリポジトリの `.claude/skills/verify*/` に記録されていれば、それを使う。
 - 動いているアプリを触って確かめる時は `exploratory-qa`。人のアカウントや認証が要る確認は、1 手順ずつ人と進める。E2E を書く・直す時は `playwright-e2e`。
 - テストが壊れを見つけられるか疑わしい時は `test-quality`。順序・並行・状態遷移の正しさは `formal-methods`。
 - 人が diff を読まずにマージしてよいかは `merge-gate`。書いた本人の判定、CI の green、bot の承認は根拠にしない。

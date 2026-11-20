@@ -24,15 +24,44 @@
 
 ## StrykerJS（TypeScript / JavaScript）
 
-```bash
-# 対象を 1 ファイルに絞る例。設定ファイルを作らずに引数で渡す
-npx stryker run --mutate 'src/payment/payment-status.ts' --testRunner jest --reporters clear-text,progress
+設定ファイル（`stryker.config.json`）の例。pnpm の monorepo で Jest を使うリポジトリで動かしたもの（StrykerJS 10.1.1、2026-11-20）。
+
+```json
+{
+  "testRunner": "jest",
+  "plugins": ["@stryker-mutator/jest-runner"],
+  "jest": { "configFile": "jest.stryker.config.js", "enableFindRelatedTests": false },
+  "mutate": ["libs/domain/src/payment/payment-status.ts"],
+  "coverageAnalysis": "perTest",
+  "reporters": ["clear-text", "json"],
+  "tempDirName": ".stryker-tmp"
+}
 ```
 
-- 必要なパッケージは `@stryker-mutator/core` と、テスト基盤に合わせた runner（Jest なら `@stryker-mutator/jest-runner`）。
-- Jest の設定がリポジトリ独自の場所にある時は、Stryker の設定ファイル（`stryker.config.json` か `.mjs`）に `jest.configFile` を書く。既に設定ファイルがあれば、上書きせずにそれを使う。無ければ一時的に作り、測り終えたら自分が作ったものだけを消す。
+```bash
+pnpm exec stryker run
+```
+
+- 必要なパッケージは `@stryker-mutator/core` と、テスト基盤に合わせた runner（Jest なら `@stryker-mutator/jest-runner`）。使い捨ての worktree で入れ、測り終えたら worktree ごと捨てる。
+- 既に設定ファイルがあれば、上書きせずにそれを使う。無ければ一時的に作り、測り終えたら自分が作ったものだけを消す。
+- 走らせるテストは、Jest の設定を継いで `roots` だけを対象のディレクトリに差し替えた一時の設定ファイルで絞る。
+
+  ```js
+  // jest.stryker.config.js（一時ファイル）
+  const base = require('./jest.config.js');
+  module.exports = { ...base, roots: ['<rootDir>/libs/domain/src/payment'] };
+  ```
+
 - `coverageAnalysis` を `perTest` にすると、変種ごとに関係するテストだけを回す。
-- 出力の `Survived` が生き残り、`Killed` が検出、`Timeout` と `No coverage` は別に数える。
+- 出力の `Survived` が生き残り、`Killed` が検出、`Timeout` と `No coverage` は別に数える。JSON のレポート（`reports/mutation/mutation.json`）から、生き残りの場所と書き換えの内容を読める。
+
+踏んだこと:
+
+- pnpm では、runner のプラグインを自動で見つけられず「Cannot find TestRunner plugin」で止まる。`plugins` に明示する。
+- `enableFindRelatedTests` を有効にすると、対象を import するテストがリポジトリ全体から選ばれ、生成物（ORM のクライアントなど）が要るテストが最初の実行で落ちて、全体が止まる。走らせるテストは自分で絞る。
+- 文字列を空にする変種は、エラーの文言やログで大量に生き残る。その文言が仕様に関わらない（呼び出し側が分岐に使わず、利用者への約束でもない）と確かめたものは、読まない。呼び出し側が分岐に使うコード（エラーコード）の変種は読む。
+- 生き残りの中に、空の配列を別の値に差し替える変種があった。型の上で来ない値への差し替えで、外から観測できる振る舞いは変わらない。等価として、理由を書いて除く。
+- 3 ファイル・変種 109・テスト 144 本で、所要は約 40 秒だった（並列 3）。
 
 ## @mizchi/mutator（Vitest）
 
@@ -88,7 +117,7 @@ mvn test-compile org.pitest:pitest-maven:mutationCoverage
 
 ## 出典
 
-- StrykerJS https://github.com/stryker-mutator/stryker-js
+- StrykerJS https://github.com/stryker-mutator/stryker-js 、設定の一覧 https://stryker-mutator.io/docs/stryker-js/configuration/
 - @mizchi/mutator https://github.com/mizchi/mutator
 - cargo-mutants https://mutants.rs/
 - Google「State of Mutation Testing at Google」https://research.google/pubs/state-of-mutation-testing-at-google/

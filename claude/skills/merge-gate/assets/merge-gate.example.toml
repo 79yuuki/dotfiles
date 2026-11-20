@@ -24,13 +24,28 @@ sensitive = [
   "**/*.tf",
   "**/Dockerfile",
   "**/.env*",
+  "**/package.json",      # 依存の追加と更新
+  "**/pnpm-lock.yaml",    # lockfile だけの変更も、入る依存が変わる
+  "**/package-lock.json",
 ]
+# CODEOWNERS で持ち主のレビューを求めている path は、ここにも書く。
 # テストのファイル。コードを変えてテストを変えていない PR は、上限が medium になる。
 tests = ["**/*.spec.ts", "**/*.test.ts", "**/__tests__/**"]
 # 大きさに数えないファイル。
-size_ignore = ["**/pnpm-lock.yaml", "**/package-lock.json", "**/*.snap"]
+size_ignore = ["**/*.snap", "**/*.md"]
 
-# 差分から読める引き金と、その時に確かめること。過去の不具合から足し、効かなくなったら消す。
+# 判定役が証拠を実行し直す時の準備と実行のコマンド。スクリプトは読まない。判定役が読む。
+# [run]
+# setup = ["pnpm install --frozen-lockfile", "pnpm run build:schema"]
+# test = "pnpm exec jest <spec のパス>"
+# allowed_hosts = []   # 判定役が接続してよい外部のホスト。空なら、外部には接続しない
+
+# 差分から読める引き金と、その時に確かめること。path では拾えない種類の変更を、ここで拾う。
+# 過去の不具合から足し、効かなくなったら消す。
 # [[checks]]
 # when = ["**/payment/**"]
 # ask = "金額の丸めと通貨の単位は、変更の前後で同じか"
+#
+# [[checks]]
+# when = ["**/controllers/**"]
+# ask = "認証や署名に使う値（origin、RP ID、challenge、鍵の指定）を変えていないか。変えていれば人に回す"

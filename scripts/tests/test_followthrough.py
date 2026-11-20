@@ -50,6 +50,9 @@ class FollowthroughTest(unittest.TestCase):
         self._old = {k: os.environ.get(k) for k in list(self.env) + ["FAKE_FOLLOWUPS_JSON"]}
         os.environ.update(self.env)
         self.addCleanup(self._restore)
+        self._stdin = sys.stdin
+        sys.stdin = io.StringIO("")  # remind は hook の入力を stdin から読む。本物の stdin を読ませない
+        self.addCleanup(lambda: setattr(sys, "stdin", self._stdin))
         self.notified = []
         self.notify_ok = True
         self._notify = ft.notify
@@ -236,6 +239,13 @@ class FollowthroughTest(unittest.TestCase):
         r = subprocess.run(["bash", HOOK], input="{}", capture_output=True, text=True, env=env, cwd=inside)
         self.assertEqual(r.returncode, 0)
         self.assertIn("[followthrough]", r.stdout)
+        # SessionStart は再開・clear・compact の後にも走る。知らせるのは新しく始めた時だけ
+        for source, shown in (("startup", True), ("resume", False), ("clear", False), ("compact", False)):
+            r = subprocess.run(["bash", HOOK], input=json.dumps({"source": source}), capture_output=True,
+                               text=True, env=env, cwd=inside)
+            self.assertEqual((r.returncode, "[followthrough]" in r.stdout), (0, shown), source)
+        r = subprocess.run(["bash", HOOK], input="not json", capture_output=True, text=True, env=env, cwd=inside)
+        self.assertIn("[followthrough]", r.stdout)  # 読めない入力は、hook 以外からの呼び出しと同じに扱う
         with open(os.path.join(self.state, "status.json"), "w") as f:
             f.write("{broken")
         r = subprocess.run(["bash", HOOK], input="{}", capture_output=True, text=True, env=env, cwd=inside)
