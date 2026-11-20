@@ -127,6 +127,10 @@ In the PR body, include a Summary, a "Behavior changes" section (E2E/test names 
 
 If the diff touches DB schema/migrations, IaC (Terraform etc.), authentication/authorization/permissions, secrets, or CI/CD configuration, say so at the top of the PR body and require human review (do not route it to auto-merge).
 
+In the verification section of the PR body, write the head commit SHA the evidence was produced on, the commands you ran with their results, and what you did not verify. Evidence for an older commit does not cover a newer one.
+
+Your own verification is not the merge verdict. If the repository has a `.github/merge-gate.toml`, start a fresh agent with the `merge-gate` skill after the PR is open, and pass it only the repository, the PR number, and the head SHA. A merge-gate verdict only changes whether a human needs to read the diff. It never gives you permission to merge: merging stays your human partner's decision, or the project's written merge rule.
+
 Keep the worktree — your human partner iterates on PR feedback there.
 
 ### Option 3: Keep As-Is

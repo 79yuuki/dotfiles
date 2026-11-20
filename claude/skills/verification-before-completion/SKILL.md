@@ -46,6 +46,18 @@ Skip any step = lying, not verifying
 | Regression test works | Red-green cycle verified | Test passes once |
 | Agent completed | VCS diff shows changes | Agent reports "success" |
 | Requirements met | Line-by-line checklist | Tests passing |
+| Behavior changed (UI, API, CLI) | Drove the real app on the surface that changed and saw the new behavior | Unit tests pass, build green, "it compiles" |
+| PR can merge without a human reading it | Verdict from an agent that did not write it, bound to the head commit (`merge-gate`) | Green CI, approving bot review, your own confidence |
+
+## What Counts as Evidence
+
+Check the real thing. A proxy is not evidence: file timestamps, a self-report, cached output, a green build, or a run on a different surface from the one that changed.
+
+- **Inconclusive is not a pass.** If you could not run the check (missing key, external service down, wrong environment), say "not verified" and why.
+- **Do not hand the human a check you could run yourself.** Run it, then report.
+- **Say what each check does not tell you.** A run shows the result for the inputs you gave. A test shows the inputs it tries. A type check shows the kinds of values. A proof shows the property as written. Report what you verified and what you did not.
+- **When a check passes too easily, suspect the check first.** A regression test that never failed proves nothing.
+- **After three failed fix rounds on the same check, stop and bring in a human.**
 
 ## Red Flags - STOP
 
@@ -104,6 +116,8 @@ Skip any step = lying, not verifying
 ```
 
 ## When To Apply
+
+**Where to go for more than a command:** `test-quality` when you doubt the tests would catch a break, `exploratory-qa` or `playwright-e2e` to drive a running app, `formal-methods` for ordering and state-space properties, `merge-gate` for the merge verdict.
 
 **ALWAYS before:**
 - ANY variation of success/completion claims

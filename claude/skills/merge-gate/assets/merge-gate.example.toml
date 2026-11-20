@@ -1,0 +1,36 @@
+# merge-gate の設定。リポジトリの .github/merge-gate.toml に置く。
+# 判定は、PR のブランチではなく base ブランチにある版を読む。
+# .github/ 以下に触れる PR は、ここに書かなくても必ず low になる（判定の決まりと CI を、判定される変更が書き換えられないようにするため）。
+# path の書き方: `*` は 1 階層の中の任意の文字列、`**` は階層をまたぐ任意の文字列、`?` は 1 文字。`[]` と `{}` は使えない。
+
+# observe: 記録するだけ / advise: PR に書いて人に促す / enforce: high だけ人が読まずに入れてよい
+stage = "observe"
+
+[target]
+# 判定の対象にする PR の題名の種別（conventional commits の type）。それ以外は対象外で low。
+title_prefixes = ["fix"]
+
+[simple]
+# 「単純な変更」の大きさ。超えると上限が medium になる。size_ignore に当たるファイルは数えない。
+max_files = 5
+max_changed_lines = 150
+
+[paths]
+# 触れたら上限が low になる（人が読む）。モデルの評価では上がらない。
+sensitive = [
+  "**/migrations/**",
+  "**/*.sql",
+  "**/auth/**",
+  "**/*.tf",
+  "**/Dockerfile",
+  "**/.env*",
+]
+# テストのファイル。コードを変えてテストを変えていない PR は、上限が medium になる。
+tests = ["**/*.spec.ts", "**/*.test.ts", "**/__tests__/**"]
+# 大きさに数えないファイル。
+size_ignore = ["**/pnpm-lock.yaml", "**/package-lock.json", "**/*.snap"]
+
+# 差分から読める引き金と、その時に確かめること。過去の不具合から足し、効かなくなったら消す。
+# [[checks]]
+# when = ["**/payment/**"]
+# ask = "金額の丸めと通貨の単位は、変更の前後で同じか"

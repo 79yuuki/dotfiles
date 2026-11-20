@@ -94,3 +94,15 @@ If any excluded skill becomes needed in dotfiles, first rewrite it as a generic 
 - `codex` skill gained a `codex exec` fallback for non-tmux sessions.
 - `codex/config.base.toml` model updated to `gpt-6.1-sol`.
 - Goal clarification gate added (harness-engineering goal-loop reference, prompt-design Pattern 11, `codex/AGENTS.md`).
+
+## 2026-11-20 update
+
+- Sources: 19 articles and talks on QA, E2E, formal verification, test quality and human-out-of-the-loop merging, read as untrusted data and paraphrased. Each skill lists its own sources.
+- New skills, created locally: `exploratory-qa`, `test-quality`, `merge-gate`.
+- Updated: `formal-methods` (project verify skill lifecycle, proof acceptance checks, CI rule), `playwright-e2e` (step convention, failure handling, three-valued results, browser rule), `verification-before-completion` (what counts as evidence), `finishing-a-development-branch` (head SHA in the PR, hand-off to merge-gate).
+- Imported from cursor/plugins pstack (MIT): the two formal-verification skills, summarized into `formal-methods/references/project-verify-skill.md`. Notice in `THIRD_PARTY_NOTICES.md`.
+- Not imported: the pstack plugin as a whole, per-phase QA skills (test-plan, test-design, test-run, ...), a stronger adversarial-review skill, a decision-record CLI, mizchi's `mutation-test-loop` skill, shokai's `dependency-update` plugin. Their ideas are reflected where they fit.
+- Routing boundaries: `test-quality` audits tests after they exist, `test-driven-development` writes the first failing test. `exploratory-qa` explores without a script, `playwright-e2e` writes and repairs specs. `merge-gate` is the verdict by an agent that did not write the change, `verification-before-completion` is the author's own check, `finishing-a-development-branch` picks how to integrate.
+- Codex parity: `codex/AGENTS.md` carries short versions of the three new skills and the evidence rule. `claude/CLAUDE.md` gained a four-line entry section.
+- `skill-creator` Step 6 names `scripts/skill-security-scan.sh`, which is not in this repository. The new skills were checked with `quick_validate.py` and a manual pattern scan instead.
+- Follow-through for staged plans: `scripts/followthrough.py` (daily check, no model), `scripts/install-followthrough.sh` (launchd), `claude/hooks/followthrough-remind.sh` (SessionStart reminder). The hook is not registered in `claude/settings.base.json` yet; registration and the launchd install wait for the owner's approval.

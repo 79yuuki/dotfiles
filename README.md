@@ -62,6 +62,8 @@
 - `scripts/sync-claude-settings.sh`: `claude/settings.base.json` と `~/.claude/settings.local.json` から `~/.claude/settings.json` を生成するスクリプトです。
 - `scripts/ponytail-sweep.py`: `~/Development` 以下のリポジトリのうち、テストかコードが増えたものだけを ponytail で毎日監査し、新しい Must fix をダイジェストにまとめるスクリプトです。テストは `scripts/tests/`。
 - `scripts/install-ponytail-sweep.sh`: `ponytail-sweep.py` を launchd に登録・解除するスクリプトです。
+- `scripts/followthrough.py`: 段階導入の計画（ブランチで試用してから本体へ入れる、記録するだけの段階から強制する段階へ上げる、など）の「次へ進む条件」を毎日点検し、満たした日に通知します。LLM は使わず、知らせるだけで操作はしません。台帳は `~/.claude/state/followthrough/ledger.json`（書式はスクリプト冒頭）。`claude/hooks/followthrough-remind.sh` が、条件を満たした計画をセッション開始時に 1 行で知らせます。
+- `scripts/install-followthrough.sh`: `followthrough.py check` を launchd に登録・解除するスクリプトです（毎日 09:10）。
 
 ### Claude skills
 
@@ -81,13 +83,16 @@ Claude Code では skill の `description` と `when_to_use` が常にコンテ�
 - `claude/skills/dispatching-parallel-agents/SKILL.md`: Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies
 - `claude/skills/empirical-prompt-tuning/SKILL.md`: Empirically improve agent-facing instructions such as skills, AGENTS.md, CLAUDE.md, slash commands, task prompts, routing descriptio…
 - `claude/skills/executing-plans/SKILL.md`: Use when you have a written implementation plan to execute in a separate session with review checkpoints
+- `claude/skills/exploratory-qa/SKILL.md`: Run exploratory QA on a running app: tour-based scenarios, an operator/verifier split, a human-paired mode, three-valued verdicts.
 - `claude/skills/fact-check-gate/SKILL.md`: Verify factual claims before publishing or sending outputs: URLs, domains, dates, prices, product names, people, legal/compliance st…
 - `claude/skills/finishing-a-development-branch/SKILL.md`: Use when implementation is complete, all tests pass, and you need to decide how to integrate the work - guides completion of develop…
+- `claude/skills/formal-methods/SKILL.md`: Derive bounded models and regression tests for concurrency, retries, cache consistency, permissions or conflicting specifications.
 - `claude/skills/geo-seo/SKILL.md`: Optimize content and sites for AI search and generative engine visibility across ChatGPT, Perplexity, Claude, Gemini, Google AI Over…
 - `claude/skills/gtm-content-ops/SKILL.md`: Design and run small-team content operations: source monitoring, social posts, articles, newsletters, press releases, repurposing lo…
 - `claude/skills/harness-engineering/SKILL.md`: Design and improve AI-agent harnesses: context loading, routing, verification gates, safety boundaries, skill/tool packaging, monito…
 - `claude/skills/market-microstructure-execution/SKILL.md`: トレードbotの注文執行、板情報、スプレッド、スリッページ、約定可能性、CEX/DEXアービトラージ、マーケットメイク、funding rate、オーダーフロー、レイテンシを設計・検証する時に使う。
 - `claude/skills/marketing-skills/SKILL.md`: Use a compact library of marketing playbooks for CRO, SEO, positioning, copywriting, analytics, experiments, pricing, launches, ads,…
+- `claude/skills/merge-gate/SKILL.md`: Decide whether a pull request can merge without a human reading the diff: rules, re-run evidence, a verdict bound to the head commit.
 - `claude/skills/mutation-before-pr/SKILL.md`: Vitest / Jest / Bun でテストする JS/TS リポジトリで、PR を出す前と追加の push の前に差分へ mutation testing（mizchi/mutator）を回す手順。`claude/CLAUDE.md` と `codex/AGENTS.md` から参照する。
 - `claude/skills/parallel-orchestrator/SKILL.md`: Automatically estimates task complexity and orchestrates parallel subagent execution with Codex review. Triggers on: complex impleme…
 - `claude/skills/pentest/SKILL.md`: Run authorized web, API, and infrastructure penetration-test planning and safe verification using tiered tools and evidence capture.…
@@ -109,6 +114,7 @@ Claude Code では skill の `description` と `when_to_use` が常にコンテ�
 - `claude/skills/systematic-debugging/SKILL.md`: Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes
 - `claude/skills/test-driven-development/SKILL.md`: Use when implementing any feature or bugfix, before writing implementation code
 - `claude/skills/test-performance/SKILL.md`: JS/TS リポジトリの単体・コンポーネントテスト（Vitest / Jest）を、検出力を落とさずに速くする手順。`scripts/ab.py` が 2 つのコマンドを交互に流し、実時間・CPU 時間の中央値と、走ったテストの一致を出す（テストは `scripts/tests/`）。
+- `claude/skills/test-quality/SKILL.md`: Audit and strengthen an existing test suite's ability to catch breakage: mutation testing, weak-assertion review, property and differential tests.
 - `claude/skills/trading-ai-agent-ops/SKILL.md`: Claude Code やLLMエージェントでトレードbot、マーケット分析、戦略生成、運用監視、AIOpsを行う時に使う。AIに投資判断を丸投げせず、ログ、可視化、レビュー、監視、権限境界を設計する。
 - `claude/skills/trading-risk-controls/SKILL.md`: トレードbotの資金管理、ポジションサイズ、損切り、ATR、Kelly基準、ドローダウン制限、レバレッジ制限、日次停止、破産確率、リスク監査を設計・レビューする時に使う。
 - `claude/skills/trust-privacy-pack/SKILL.md`: Create and review trust, privacy, safety, retention, compliance, and customer-assurance artifacts for products and internal operatio…

@@ -50,6 +50,7 @@ SOFTWARE.
 - blast-radius
 - create-verification-skill（references/feature-map-example を含む）
 - maintain-verification-skill
+- formal-methods の `references/project-verify-skill.md`（`create-formal-verification-skill` と `maintain-formal-verification-skill` を日本語に要約して 1 ファイルにまとめた。取得コミット: fbb86c09bbb4 (2026-11-19)。`/statechart` への参照は外した）
 
 ローカル改変: Cursor のパス `.cursor/skills/` を `.claude/skills/` に変更。blast-radius は pstack の他 skill（how / why / arena / unslop）への参照を外し、複数モデルでの確認を codex skill に置き換えた。blast-radius と create-verification-skill は `disable-model-invocation` を外し、description に日本語の起動語を足した。
 

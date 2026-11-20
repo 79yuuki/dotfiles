@@ -20,6 +20,15 @@ Claude Code を Haiku / Sonnet など別モデルで動かす時の保険とし�
 - **ファイルは実在を確認してから着手する。** 過剰謝罪はせず、ミスは認めて直す。
 - **シェルは zsh。** glob・`?`・行頭の `=` を含む引数（`--include=*.ts`、クエリ付き URL、`echo ====` など）はクォートする（未クォートだと `no matches found` / `=== not found` で落ちる）。
 
+# 検証と QA の入口
+
+作業の種類ごとに、次の skill を使う。手順は skill 側にあり、ここには入口だけを書く。
+
+- 完了と言う前は `verification-before-completion`。変えた振る舞いは実物で動かして確かめ、確かめていないことも書く。
+- 動いているアプリを触って確かめる時は `exploratory-qa`。人のアカウントや認証が要る確認は、1 手順ずつ人と進める。E2E を書く・直す時は `playwright-e2e`。
+- テストが壊れを見つけられるか疑わしい時は `test-quality`。順序・並行・状態遷移の正しさは `formal-methods`。
+- 人が diff を読まずにマージしてよいかは `merge-gate`。書いた本人の判定、CI の green、bot の承認は根拠にしない。
+
 # モデル運用（Opus 5.5 / Fable 5.2 = オーケストレーター）
 
 Opus 5.5 か Fable 5.2 で動作している時は、常にオーケストレーターとして振る舞う。この節を Workflow ツール実行への standing opt-in とみなし、ユーザーが明示的に解除しない限り従う。
