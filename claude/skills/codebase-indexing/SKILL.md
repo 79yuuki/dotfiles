@@ -1,7 +1,7 @@
 ---
 name: codebase-indexing
 description: >-
-  Improve repository discoverability for AI coding agents and humans by adding code maps, repo manifests, indexes, and retrieval workflows. Use when repo exploration is slow, onboarding is hard, or agents repeatedly miss important files.
+  Improve repository discoverability for AI coding agents and humans by adding code maps, repo manifests, indexes, and retrieval workflows. Use when repo exploration is slow, onboarding is hard, or agents repeatedly miss important files. Use ALSO when the human mental model and the agent's explanation of an existing codebase may diverge (explain-back check); build indexing artifacts only if that check exposes discoverability problems.
 ---
 
 # Codebase Indexing
@@ -14,7 +14,7 @@ Read `references/indexing-matrix.md` when choosing the right indexing tier. Read
 
 ## Core Output
 
-Produce a **Codebase Indexing Pack**:
+When discoverability problems exist (or the explain-back check in step 0 exposes them), produce a **Codebase Indexing Pack**:
 1. current search pain points
 2. indexing tier choice
 3. generated or maintained repo map artifacts
@@ -22,6 +22,17 @@ Produce a **Codebase Indexing Pack**:
 5. maintenance rules
 
 ## Workflow
+
+### 0. Explain-back check (existing repo onboarding)
+
+When an agent enters an existing repository, have it read the current structure and explain it back before anything is indexed or changed:
+- entrypoints, major domains, data flow, and the test/verification commands
+- compare the explanation with the human's understanding of the repo
+- write only the mismatches, plus constraints and preferences that cannot be read from the code, into `AGENTS.md` / `CLAUDE.md`; do not record what the code already shows
+- instead of reading all the code, build a behavior map from E2E test names, test code, and public function signatures
+- if a human needs a conceptual explanation, ask for an ELI5 or a diagram
+- if the explain-back matches and nothing was hard to find, stop here; continue to the steps below only when it exposes discoverability problems
+- source of this approach: https://zenn.dev/mizchi/articles/ai-coding-loop-formal
 
 ### 1. Audit current discoverability
 
@@ -89,7 +100,7 @@ Document how humans and agents should use the index:
 
 ## Deliverable Format
 
-Return:
+If step 0 ended the work, return only the explain-back result and any mismatches recorded in `AGENTS.md` / `CLAUDE.md`. Otherwise return:
 - pain points found
 - chosen tier and why
 - artifacts/scripts to add

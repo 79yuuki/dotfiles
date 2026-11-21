@@ -78,3 +78,18 @@
 14. **AGENTS.md / CLAUDE.md** — 自環境のハーネス設計そのもの
 15. **local lessons / memory notes** — 失敗再発防止ログ（= Hashimoto's "engineer the harness"の実践）
 16. **verification-before-completion / skill-portfolio-evolution** — 完了宣言前の確定的ゲートと常設化判断
+
+## 追加ソース（2026-10）
+
+17. **俺のAIプログラミング手法（mizchi, Zenn, 2026）**
+    - URL: https://zenn.dev/mizchi/articles/ai-coding-loop-formal
+    - 要点: 委任判定の順序、/goal と数値指標によるループ、観点スイープ→umbrella issue、グローバル指示は判断基準に絞る、形式手法の使い分け（TLA+/Quint・Z3・Alloy・Lean）
+    - 関連ツール例: 循環的複雑度 https://github.com/moznion/cccc 、コード類似度 https://github.com/mizchi/similarity
+
+18. **Towards a Science of Scaling Agent Systems（Kim et al.）**
+    - URL: https://arxiv.org/abs/2512.08296 （arXiv:2512.08296）
+    - 要点: マルチエージェントの効果はタスク構造との適合で決まる。分解可能な金融推論で +80.8%、逐次計画で -70.0%。単一エージェントが一定水準を超えると協調の上積みは逓減し、中央集約の検証が誤り伝播を抑える
+
+19. **Claude Code /goal docs**
+    - URL: https://code.claude.com/docs/en/goal
+    - 要点: ターン終了ごとに小モデルが条件判定（ツール非実行・会話内容のみ）、未達なら自動継続。実体はセッション限定の prompt-based Stop hook

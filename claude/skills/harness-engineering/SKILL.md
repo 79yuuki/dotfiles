@@ -24,11 +24,11 @@ description: >-
 
 長時間の自走・再開・人間の承認が必要な作業では、該当する参照だけを読む。これらは手順の契約であり、hookや自動実行が導入済みであることの証明ではない。
 
-- **全項目の完了判定:** [references/goal-loop-evidence-convergence.md](references/goal-loop-evidence-convergence.md)。作業台帳の各項目に合格条件と証拠を対応させ、全項目の確認・例外の担当/処置・回帰検証が揃うまで全体を完了扱いにしない。
+- **全項目の完了判定:** [references/goal-loop-evidence-convergence.md](references/goal-loop-evidence-convergence.md)。作業台帳の各項目に合格条件と証拠を対応させ、全項目の確認・例外の担当/処置・回帰検証が揃うまで全体を完了扱いにしない。同 reference には loop driver（headless loop / `/goal` / Stop hook）、観点スイープ→umbrella issue、数値指標と ratchet の整理もある。
 - **再開と状態遷移:** [references/state-and-data-contracts.md](references/state-and-data-contracts.md)。次回実際に読む正本とフィールドを指定し、遷移の証拠を残す。記録に失敗した項目は未完了のままにする。
 - **人間の確認負担:** [references/human-attention-review-contract.md](references/human-attention-review-contract.md)。判断事項・動作変更・反証可能な証拠・未検証項目・最短の確認方法を小さなreview packetにする。
 
-検出→提案→承認→適用の既存導線は維持する。上記の契約は、公開・送信・権限変更・本番実行の許可を増やさない。
+hook・settings・権限・公開に関わる変更は検出→提案→承認→適用の導線を維持する（skill・AGENTS.md の改善は作業ツリーへ直接反映し、git diff と独立レビューで確認する）。上記の契約は、公開・送信・権限変更・本番実行の許可を増やさない。
 
 ## コア概念
 
@@ -94,17 +94,19 @@ Coding Agentは `prompt → action/tool → observation → next prompt` のフ�
 - **Default loop:** Plan → Execute → Evaluate → Learn
 - **software workflow ladder:** non-trivial development starts with reference gathering / prior art → thin failing test or acceptance check → smallest implementation → refactor → benchmark/perf check when relevant → security review → coverage/edge-case pass → next action artifact. Do not skip directly from reference gathering to broad refactor.
 - **default-FAIL contract:** 長時間agentは「検証不能なら成功扱いにしない」。成功条件・失敗時の停止条件・再開条件を prompt / progress artifact に明示する
-- **goal/plan separation:** 長い実装・複数ステップ修正では、最初に `goal / acceptance / stop condition / verification command` を固定し、調査・計画（Plan）と実装（Execute）を分ける。途中で文脈が散る場合でもゴールを残し、完了条件に照らして検証してから終了する
+- **goal/plan separation:** 長い実装・複数ステップ修正では、最初に `goal / acceptance / stop condition / verification command` を固定し、調査・計画（Plan）と実装（Execute）を分ける。途中で文脈が散る場合でもゴールを残し、完了条件に照らして検証してから終了する。ゴールが曖昧なら、リポジトリとツールで解消できない判断だけを、推奨既定値入りの goal 草案と一緒に 1 回の質問でユーザーに確認してから走らせる（詳細は goal-loop reference の Goal clarification gate）
 - **fresh-context evaluator:** 評価役は実装セッションの会話をそのまま引き継がず、成果物・diff・テスト結果・handoff artifact だけで独立評価する
 - **agent-maintained handoff:** 長時間agent自身に `progress / decisions / known failures / next command` を更新させ、次セッションは会話ではなくartifactから再開する
 - **eval-before-PRD:** AIプロダクト/LP/QAでは、長いPRDより先に「合格/不合格を判定できる eval scenario」を置く。仕様文は eval を満たすための補助にする
 - **quality decision process:** AIプロダクトは出力が分布し運用中にも振る舞いが変わるため、テスト技法だけでなく「主張・証拠・閾値・例外時の決定者」を先に決める。PdM/QA/SRE/事業側で品質会議テンプレを共有し、合否ではなく運用判断の再現性を上げる
 - **high-stakes domain boundary:** 金融・給与・法務・決済・署名など「それっぽく動く誤り」が高コストな領域では、AIに中核ロジックを丸投げしない。人間/ドメイン責任者が前提・例外・説明責任を握り、AIは `仕様の言語化補助 / 境界値・異常系の洗い出し / レビュー観点の追加 / 周辺UIやデモの高速化` に寄せる
 - **failure-log → harness fix:** 失敗を「次は気をつける」で終えず、失敗ログから原因を `instruction / tool / context / evaluator / deterministic gate` に分類し、再発防止を AGENTS.md / skill / hook / template のどれかへ最小反映する
+- **delegation triage:** 新しい種類の作業を任せる前に「任せられるか（ブロッカーは何か）→ 完了定義を数値化できるか → 一度やらせて挙動を観察 → 成功したら人間の継続判断なしに回せるか」の順で判定する。失敗は context 不足（指示・テストを足す）/ 権限不足（最小権限での付与を Safety 層で検討し人間が承認）/ 性能不足（足場を盛らずに棚上げし、モデル更新時に同じタスクで再試行）に分ける。モデルの能力境界は意図的に難しい依頼で定期的に試し、結果を記録する
+- **risk-tiered merge:** 自動マージや自動承認を入れるなら低リスク差分に限る。DB schema/migration、IaC（Terraform 等）、認証認可・権限、secrets、CI/CD 設定、課金に触れる差分は人間へエスカレートする。判定はモデルの自己申告ではなく path/diff ルールで確定的に行う
 - **maintenance ROI gate:** AI導入で生成速度だけ上がっても、保守コストが下がらないと数か月で逆効果になる。新しい agent / skill / codegen 導線を入れる時は `速度向上 × 保守コスト削減` で見て、保守削減に効く evidence（テスト、owner、handoff、削除基準、障害時の戻し方）がないものは常設化しない
 - **sandbox / permission split:** 外部入力・未検証コード・ブラウザ操作・公開送信を同じ agent chain に詰め込まない。scan / stage / verify / publish を分け、公開・秘密・破壊的操作は境界ツールか人間承認に寄せる
 - **benchmark corpus before rule:** 公開AI運用事例やClaude Codeログは、常設ルール化の前に scenario / hold-out / onboarding corpus に変換し、実測で効くものだけ standing rule に昇格する
-- **trace-based skill improvement:** skill / AGENTS.md / prompt を自己評価だけで書き換えない。失敗ログ・実行trace・golden/hold-out scenarioを先に集め、別評価器またはGEPA等のoffline optimizerで候補差分を比較し、best variantは直接適用ではなくreview可能なpatch/PRとして扱う
+- **trace-based skill improvement:** skill / AGENTS.md / prompt を自己評価だけで書き換えない。失敗ログ・実行trace・golden/hold-out scenarioを先に集め、別評価器またはGEPA等のoffline optimizerで候補差分を比較し、best variant は作業ツリーへ直接反映して使える状態にし、git diff と独立レビューで確認してからコミットする（hook や settings など副作用の大きい変更は承認制）
 - **next-turn branch decision:** 長セッションでは各ターン終端で `continue / isolate / rewind / compact / reset` を選ぶ。失敗試行やノイズの多い探索は本流に混ぜず、隔離または巻き戻し相当で捨てる
 - **artifact-first:** 会話継続より progress / decision / task / next-step handoff を優先
 - **verifier-first:** 自己評価より deterministic check / 別役割 evaluator を優先
@@ -360,12 +362,12 @@ Anthropic公式 (large-codebase article): **「A stop hook can reflect on what h
 |---|---|---|
 | Stop | session終了時に transcript を最小スキャンし harness化候補を検出 | `~/.claude/state/harness-opportunities.jsonl` に append |
 | Start (任意) | プロジェクト固有のskill/routing dynamic load | session context |
-| 次セッション skill-portfolio-evolution | jsonlを inventory source として読み、review可能 diff patch を生成 | `claude/skills/<target>/SKILL.md.patch` 等 |
+| 次セッション skill-portfolio-evolution | jsonlを inventory source として読み、改善を作業ツリーへ直接反映 | `claude/skills/<target>/` 等（git diff で review。hook/settings は承認まで staging） |
 
 **設計境界（公式の trace-based skill improvement 原則）:**
-- 検出 (Stop hook) と適用 (skill-portfolio-evolution + 人間 review) を分離
-- patch は直接 apply せず、review可能な形で staging
-- description trigger 追加は自動 patch OK、新規 hook / 削除は人間承認
+- 検出 (Stop hook) と適用 (skill-portfolio-evolution + git diff / 独立レビュー) を分離
+- skill・AGENTS.md の改善は作業ツリーへ直接反映して使える状態にし、コミットは確認後
+- 新規 hook / settings / 権限の変更と skill の削除は人間承認（承認前は patch を staging）
 
 ## 剪定サイクル と maintenance ROI
 
