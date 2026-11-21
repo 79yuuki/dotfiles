@@ -1,6 +1,6 @@
 ---
 name: dispatching-parallel-agents
-description: Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies. Use ALSO when noticing: 3つ以上の独立な調査/実装/レビュータスクが直列で進行している, 同じパターンの作業を複数ファイル/複数ターゲットで繰り返している, コンテキストが大きすぎて Orchestrator が混乱しそうな時, sub-agent に切り出せば context firewall として効きそうな反復タスク. Proactively propose parallel dispatch even if user did not explicitly ask.
+description: "Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies. Use ALSO when noticing: 3つ以上の独立な調査/実装/レビュータスクが直列で進行している, 同じパターンの作業を複数ファイル/複数ターゲットで繰り返している, コンテキストが大きすぎて Orchestrator が混乱しそうな時, sub-agent に切り出せば context firewall として効きそうな反復タスク. Proactively propose parallel dispatch even if user did not explicitly ask."
 ---
 
 # Dispatching Parallel Agents
@@ -65,13 +65,16 @@ Each agent gets:
 
 ### 3. Dispatch in Parallel
 
-```typescript
-// In Claude Code / AI environment
-Task("Fix agent-tool-abort.test.ts failures")
-Task("Fix batch-completion-behavior.test.ts failures")
-Task("Fix tool-approval-race-conditions.test.ts failures")
-// All three run concurrently
+Issue all three subagent dispatches in the same response — they run in parallel:
+
+```text
+Subagent (general-purpose): "Fix agent-tool-abort.test.ts failures"
+Subagent (general-purpose): "Fix batch-completion-behavior.test.ts failures"
+Subagent (general-purpose): "Fix tool-approval-race-conditions.test.ts failures"
+# All three run concurrently.
 ```
+
+Multiple dispatch calls in one response = parallel execution. One per response = sequential.
 
 ### 4. Review and Integrate
 
@@ -155,15 +158,6 @@ Agent 3 → Fix tool-approval-race-conditions.test.ts
 
 **Integration:** All fixes independent, no conflicts, full suite green
 
-**Time saved:** 3 problems solved in parallel vs sequentially
-
-## Key Benefits
-
-1. **Parallelization** - Multiple investigations happen simultaneously
-2. **Focus** - Each agent has narrow scope, less context to track
-3. **Independence** - Agents don't interfere with each other
-4. **Speed** - 3 problems solved in time of 1
-
 ## Verification
 
 After agents return:
@@ -171,12 +165,3 @@ After agents return:
 2. **Check for conflicts** - Did agents edit same code?
 3. **Run full suite** - Verify all fixes work together
 4. **Spot check** - Agents can make systematic errors
-
-## Real-World Impact
-
-From debugging session (2025-10-03):
-- 6 failures across 3 files
-- 3 agents dispatched in parallel
-- All investigations completed concurrently
-- All fixes integrated successfully
-- Zero conflicts between agent changes
