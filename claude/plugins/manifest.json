@@ -1,28 +1,36 @@
 {
   "enabledPlugins": {
     "superpowers@claude-plugins-official": {
-      "version": "5.1.0"
+      "version": "7.0.0",
+      "note": "公式 marketplace 版。2026-11-11 に claude plugin list で 7.0.0 を確認。dotfiles の claude/skills 内の取り込みコピーは上流 v6.4.2 とマージ済み (2026-10-07)。"
     },
     "frontend-design@claude-plugins-official": {
-      "version": "0742692199b4"
+      "version": "1.1.1"
     },
     "code-simplifier@claude-plugins-official": {
       "version": "1.0.0"
     },
     "financial-analysis@claude-for-financial-services": {
-      "version": "0.1.0",
+      "version": "0.1.2",
       "source": "GitHub (anthropics/financial-services)",
       "note": "空 hooks.json が現行 Claude Code でロードエラーになったため、ローカル cache/marketplace の hooks.json を {\"hooks\":{}} に補正済み。"
     },
     "equity-research@claude-for-financial-services": {
-      "version": "0.1.0",
+      "version": "0.1.2",
       "source": "GitHub (anthropics/financial-services)",
       "note": "空 hooks.json が現行 Claude Code でロードエラーになったため、ローカル cache/marketplace の hooks.json を {\"hooks\":{}} に補正済み。"
     },
     "market-researcher@claude-for-financial-services": {
-      "version": "0.1.0",
+      "version": "0.1.1",
       "source": "GitHub (anthropics/financial-services)",
       "note": "セクター/テーマ調査、競合分析、アイデアショートリスト用途。"
+    },
+    "explainer@explainer": {
+      "version": "0.5.2",
+      "source": "GitHub (mizchi/explainer)",
+      "status": "trial (2026-10-07 導入、user scope)。2026-11-11 時点で disabled（settings.base.json の enabledPlugins にも無い）",
+      "license": "MIT（同梱の first-reader は awesome-llm-apps 由来で Apache-2.0）",
+      "note": "hooks / MCP / commands なし。スクリプトはローカルツール（d2・node・vlmkit）の起動と 127.0.0.1 の簡易サーバー。ただし explainer の verify-doc.mjs は資料フォルダの checks.json に書かれたコマンドを sh -c で実行するので、自分で書いていない checks.json は実行前に中身を確認する。d2-diagram に curl|sh 形式の d2 インストール例があるので実行は承認制。"
     },
     "ponytail@dotfiles-pinned": {
       "version": "5.3.2",
@@ -44,6 +52,10 @@
       "pinned_commit": "f458cee31a75",
       "note": "Official Agent Skills examples/spec/template; install via Claude Code plugin marketplace when needed."
     },
+    "explainer": {
+      "source": "GitHub (mizchi/explainer)",
+      "pinned_commit": "578defba7249"
+    },
     "dotfiles-pinned": {
       "source": "settings 型（claude/settings.base.json の extraKnownMarketplaces に inline）",
       "note": "第三者 plugin をレビュー済み commit に固定するための marketplace。plugin source は github + sha。"
@@ -62,6 +74,17 @@
       "source": "GitHub (anthropics/skills)",
       "note": "Reference-only official example skills; install explicitly via Claude Code if needed. Official example skills used as reference for skill-creator/webapp-testing/design patterns; portable manifest intent, not local cache.",
       "enabled": false
+    }
+  },
+  "externalSkills": {
+    "modern-web-guidance": {
+      "source": "GitHub (GoogleChrome/modern-web-guidance)、npm modern-web-guidance 1.0.0",
+      "skill_version": "2026_11_09-5bcc021b",
+      "license": "Apache-2.0",
+      "status": "2026-11-11 導入、user scope。~/.claude/skills/modern-web-guidance へコピーされる。中身はリポジトリに入れず .gitignore で除外",
+      "install": "DISABLE_TELEMETRY=1 npx -y modern-web-guidance@latest install -g -a claude-code -y --copy",
+      "update": "npx -y modern-web-guidance@latest update",
+      "note": "hooks / MCP なし。skill は使うたびに npx -y modern-web-guidance@latest を実行するので、版は固定されず毎回 npm の最新を取得する。search の検索語・結果 ID・OS・agent 名を Google（play.googleapis.com/log）へ匿名で送る。止めるには環境変数 DISABLE_TELEMETRY=1（Claude Code 自身の利用統計も同じ変数で止まる点に注意）。以上は 2026-11-11 に npm 1.0.0 の modern-web.mjs と watchdog/main.js を読んで確認した。"
     }
   }
 }

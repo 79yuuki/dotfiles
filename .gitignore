@@ -11,3 +11,9 @@ secrets/**/*.env.*
 secrets/**/*.keys
 secrets/**/*.json
 *.local
+
+# ~/.claude/skills（= claude/skills）へ Claude Code や外部ツールが書き込む、マシン依存の中身
+claude/skills/.trash/
+claude/skills/synced/
+claude/skills/modern-web-guidance/
+__pycache__/
