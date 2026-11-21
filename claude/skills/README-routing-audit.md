@@ -1,6 +1,6 @@
 # Claude/Codex skill routing audit
 
-Date: 2026-05-19 (updated 2026-07-07)
+Date: 2026-05-19 (updated 2026-07-07, 2026-10-07)
 
 ## Sources checked
 
@@ -80,3 +80,17 @@ If any excluded skill becomes needed in dotfiles, first rewrite it as a generic 
 - Routing pointers to skills that do not exist in this repo (`dual-agent-dev`, `agent-teams-dev`, `lessons-gate`, `sessions_spawn`, `agent-runtime-self-improvement`) were remapped to existing skills (`codex`, `parallel-orchestrator`, `subagent-driven-development`, `skill-portfolio-evolution`, `verification-before-completion`).
 - `blogwatcher` runtime-split notes (installed-copy vs active-copy patching) were removed as runtime-specific; CLI examples normalized to the `blogwatcher-cli` binary name.
 - Known validator false positives (not defects): example links inside fenced code blocks in `skill-creator` and `prompt-design`; `[名前](URL)` template placeholders in `geo-seo`; placeholder emails like `name@example.com` in playbooks and tests.
+
+## 2026-10-07 update
+
+- Source: `https://zenn.dev/mizchi/articles/ai-coding-loop-formal` (treated as untrusted data; tips paraphrased, not copied).
+- New skill: `formal-methods`, created locally. The `formal-methods-reconciler` skill in mizchi/skills was used as a reference only and was not imported.
+- Updated `harness-engineering`: a goal-loop reference (loop drivers, perspective sweep into an umbrella issue, quantified metrics), SKILL.md additions (delegation triage, risk-tiered merge), and `sources.md`.
+- Updated `prompt-design`, `codebase-indexing`, `finishing-a-development-branch`, and `orchestrate-with-advisory`.
+- Codex parity: `codex/AGENTS.md` now carries short versions of formal-methods, onboarding, loop metrics, risk-tiered merge, and global instruction rules.
+- Superpowers vendored skills merged with upstream v6.4.2 (plugin stays at 6.4.1, the latest on the official marketplace; obra marketplace offers 6.3.0); license notice in `THIRD_PARTY_NOTICES.md`.
+- `explainer@explainer` installed as a trial plugin (v0.5.2, pinned `578defba7249`, security-scanned).
+- `skill-portfolio-evolution` now applies improvements directly to the working tree instead of staging under `claude/_proposed`.
+- `codex` skill gained a `codex exec` fallback for non-tmux sessions.
+- `codex/config.base.toml` model updated to `gpt-6.1-sol`.
+- Goal clarification gate added (harness-engineering goal-loop reference, prompt-design Pattern 11, `codex/AGENTS.md`).
