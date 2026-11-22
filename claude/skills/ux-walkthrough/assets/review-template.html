@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>メイン導線の確認</title>
+<style>
+:root { --bg:#faf9f6; --fg:#1d1c1a; --muted:#66625b; --line:#d9d5cc; --card:#fff; --accent:#1f5fbf; --concern:#c2410c; --idea:#1f5fbf; --gap:#7c3aed; --good:#15803d; }
+@media (prefers-color-scheme: dark) { :root { --bg:#161513; --fg:#ece9e3; --muted:#a8a49b; --line:#3b3934; --card:#201f1c; --accent:#8ab4ff; --concern:#fb923c; --idea:#8ab4ff; --gap:#c4b5fd; --good:#4ade80; } }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.7 system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif; }
+.wrap { max-width:1180px; margin:0 auto; padding:24px 16px 72px; }
+h1 { font-size:26px; line-height:1.35; margin:0 0 12px; }
+h2 { font-size:19px; margin:0; }
+h3 { font-size:16px; margin:0 0 8px; line-height:1.5; }
+.meta { display:grid; grid-template-columns:max-content 1fr; gap:2px 16px; margin:0 0 12px; }
+.meta dt, .detail dt { color:var(--muted); }
+.meta dd, .detail dd { margin:0; }
+.note { color:var(--muted); font-size:14px; }
+/* 上: 動画と場面の一覧。縦長の録画は横に並べ、横長の録画は縦に積む */
+.top { display:grid; gap:24px; align-items:start; margin-top:24px; }
+.top.portrait { grid-template-columns:minmax(0,auto) minmax(0,1fr); }
+@media (max-width:760px) { .top.portrait { grid-template-columns:1fr; } }
+video { display:block; max-width:100%; max-height:72vh; border:1px solid var(--line); border-radius:8px; background:#000; }
+.shot img { width:100%; height:auto; display:block; border:1px solid var(--line); border-radius:8px; }
+.timeline { list-style:none; margin:0; padding:0; display:grid; gap:4px; }
+.top:not(.portrait) .timeline { grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); }
+.timeline li { display:flex; gap:6px; }
+button { font:inherit; color:inherit; }
+.timeline button, .play, .jump { background:var(--card); border:1px solid var(--line); border-radius:6px; padding:6px 10px; cursor:pointer; text-align:left; }
+.timeline button { flex:1 1 auto; min-width:0; }
+.timeline button.now { border-color:var(--accent); box-shadow:inset 3px 0 0 var(--accent); }
+.jump { flex:0 0 auto; color:var(--accent); text-decoration:none; white-space:nowrap; }
+.count { color:var(--muted); font-size:13px; }
+:focus-visible { outline:3px solid var(--accent); outline-offset:2px; }
+/* 下: 場面ごと。縦長の画面は、指摘の横に置いて見えたままにする */
+article { border-top:1px solid var(--line); padding:24px 0; scroll-margin-top:8px; }
+.head { display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap; margin-bottom:12px; }
+.body.cols { display:grid; grid-template-columns:minmax(0,320px) minmax(0,1fr); gap:24px; align-items:start; }
+.body.cols .shot { position:sticky; top:16px; }
+@media (max-width:760px) { .body.cols { grid-template-columns:1fr; } .body.cols .shot { position:static; max-width:420px; } }
+.shot { position:relative; overflow:hidden; border-radius:8px; }
+.box { position:absolute; border:3px solid var(--k); border-radius:6px; background:transparent; padding:0; cursor:pointer; box-shadow:0 0 0 2px rgba(255,255,255,.8); }
+.box span, .num { display:inline-block; min-width:26px; height:26px; padding:0 6px; border-radius:13px; background:var(--k); color:#fff; font-weight:700; font-size:14px; line-height:26px; text-align:center; }
+.box span { position:absolute; bottom:100%; left:-3px; margin-bottom:2px; }
+.num { margin-right:8px; }
+.box.on { box-shadow:0 0 0 4px var(--k), 0 0 0 9999px rgba(0,0,0,.5); z-index:1; }
+.k-concern { --k:var(--concern); } .k-idea { --k:var(--idea); } .k-gap { --k:var(--gap); } .k-good { --k:var(--good); }
+.finding { border:1px solid var(--line); border-left:6px solid var(--k); border-radius:8px; background:var(--card); padding:12px 14px; margin:0 0 12px; scroll-margin-top:16px; }
+.finding.on { border-color:var(--k); }
+.kind { color:var(--k); font-weight:700; font-size:14px; margin-left:8px; white-space:nowrap; }
+.detail { display:grid; grid-template-columns:max-content 1fr; gap:2px 12px; margin:0; }
+.ask { display:flex; gap:8px 16px; flex-wrap:wrap; align-items:center; margin-top:10px; padding-top:10px; border-top:1px dashed var(--line); }
+.ask label { display:inline-flex; gap:6px; align-items:center; }
+input[type=text], textarea, select { font:inherit; color:inherit; background:var(--bg); border:1px solid var(--line); border-radius:6px; padding:6px 8px; }
+input[type=text] { flex:1 1 220px; min-width:0; }
+textarea { width:100%; }
+details { margin-top:10px; font-size:14px; color:var(--muted); }
+details li { overflow-wrap:anywhere; }
+.result { border:1px solid var(--line); border-radius:8px; background:var(--card); padding:16px; margin-top:32px; }
+.result .play { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:700; }
+#copied { color:var(--muted); margin-left:8px; }
+.warn { color:var(--concern); font-weight:700; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header id="header"></header>
+  <section class="top" id="top" aria-label="録画">
+    <div id="video"></div>
+    <div>
+      <p class="note">まず動画を通して見てください。場面の名前を押すと、その場面から再生します。「指摘へ」で、その場面の画面と、実装側の観察と提案に移ります。</p>
+      <ol class="timeline" id="timeline"></ol>
+    </div>
+  </section>
+  <section id="steps" aria-label="場面ごとの観察と提案"></section>
+  <section class="result" aria-label="確認の結果">
+    <h2>見終わったら</h2>
+    <p class="note">下の文字を、依頼したセッションに貼ってください。記録するのは、あなたが決めた内容だけです。</p>
+    <div class="ask" id="verdict"></div>
+    <p class="warn" id="warn" role="alert"></p>
+    <p><label for="overall">全体へのメモ</label><br><textarea id="overall" rows="2"></textarea></p>
+    <p><textarea id="out" rows="8" readonly aria-label="貼り付ける文字"></textarea></p>
+    <button class="play" id="copy" type="button">コピーする</button><span id="copied" role="status"></span>
+  </section>
+</div>
+<script type="application/json" id="data">__DATA__</script>
+<script>
+"use strict";
+const { id, rec, review } = JSON.parse(document.getElementById("data").textContent);
+const KIND = { concern: "引っかかり", idea: "提案", gap: "仕様や設計の穴", good: "良かった点" };
+const DECISION = { fix: "直す", keep: "そのまま", later: "後で" };
+const SEVERITY = ["0 問題ではない", "1 見た目だけ", "2 優先度は低い", "3 優先して直す", "4 出す前に直す"];
+const VERDICT = { seen: "確認済みにしてよい", fix: "出す前に直すものがある" };
+const key = `ux-walkthrough:${id}`; // id は録画と指摘の中身から作る。どちらかが変われば、覚えた判断は引き継がない
+let state = { f: {}, verdict: "", overall: "" };
+try { state = Object.assign(state, JSON.parse(localStorage.getItem(key) || "{}")); } catch (e) { /* 保存が使えなくても動く */ }
+
+function el(tag, attrs, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v == null || v === false) continue;
+    if (k === "text") e.textContent = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v === true ? "" : v);
+  }
+  e.append(...kids.filter((x) => x != null));
+  return e;
+}
+const clock = (t) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
+const pair = (dl, dt, dd) => dd && dl.append(el("dt", { text: dt }), el("dd", { text: dd }));
+const portrait = (v) => v.width < 600;
+
+document.title = `確認: ${review.title}`;
+const meta = el("dl", { class: "meta" });
+pair(meta, "誰として", review.persona);
+pair(meta, "何をしようとして", review.task);
+pair(meta, "版 / 環境", `${review.rev} / ${review.env}`);
+pair(meta, "録画した日時", new Date(rec.recordedAt).toLocaleString("ja-JP"));
+document.getElementById("header").append(
+  el("h1", { text: `メイン導線の確認: ${review.title}` }), meta,
+  rec.incomplete ? el("p", { class: "warn", role: "alert", text: `録画は途中で止まりました（${rec.incomplete}）。止まった先の画面は写っていないので、この録画では確認済みにできません。` }) : null,
+  review.summary ? el("p", { text: review.summary }) : null,
+  el("p", { class: "note", text: "録画は、隔離したブラウザでテスト用のデータを使って通したものです。番号の付いた枠は、実装側が気になっている場所です。これは利用者調査の代わりではありません。" }),
+  Array.isArray(review.notChecked) && review.notChecked.length
+    ? el("details", {}, el("summary", { text: `この録画で確かめていないこと（${review.notChecked.length} 件）` }), el("ul", {}, ...review.notChecked.map((t) => el("li", { text: String(t) }))))
+    : null);
+
+const video = rec.video ? el("video", { controls: true, preload: "metadata", src: rec.video }) : null;
+document.getElementById("video").append(video || el("p", { class: "note", text: "動画はありません。場面ごとの画面を見てください。" }));
+if (video && portrait(rec.viewport)) document.getElementById("top").classList.add("portrait");
+let videoBroken = false;
+// 最後まで見られない録画では、確認済みを選べない
+const cannotConfirm = () => (rec.incomplete ? "録画が途中で止まっている" : !video ? "動画が無い" : videoBroken ? "動画を読み込めない" : "");
+const seek = (t) => { if (video) { video.currentTime = Math.max(0, t - 1.5); video.play().catch(() => {}); video.scrollIntoView({ behavior: "smooth", block: "nearest" }); } };
+
+const findings = rec.steps.flatMap((s) => review.findings.filter((f) => f.step === s.n)).map((f, i) => ({ ...f, no: i + 1 }));
+const timeline = document.getElementById("timeline");
+const stepsEl = document.getElementById("steps");
+const lit = (no, on) => document.querySelectorAll(`[data-no="${no}"]`).forEach((n) => n.classList.toggle("on", on));
+
+for (const s of rec.steps) {
+  const mine = findings.filter((f) => f.step === s.n);
+  timeline.append(el("li", {},
+    el("button", { type: "button", "data-t": s.t, onclick: () => seek(s.t) }, el("span", { text: `${s.n}. ${s.title}` }), el("span", { class: "count", text: `  ${clock(s.t)}` })),
+    el("a", { class: "jump", href: `#step-${s.n}`, text: mine.length ? `指摘へ（${mine.length}）` : "画面へ" })));
+  const shot = el("div", { class: "shot" }, el("img", { src: s.screenshot, alt: `場面 ${s.n}: ${s.title}`, loading: "lazy" }));
+  const side = el("div", {});
+  for (const f of mine) {
+    const m = f.mark && s.marks[f.mark];
+    // 画面に入っていない要素（スクロールした先）には、枠を出さない
+    const b = m && m.x < s.viewport.width && m.y < s.viewport.height && m.x + m.width > 0 && m.y + m.height > 0 ? m : null;
+    if (b) {
+      const pct = (v, total) => `${Math.max(0, (100 * v) / total)}%`;
+      const box = el("button", { class: `box k-${f.kind}`, type: "button", "data-no": f.no, "aria-label": `${f.no} 番の指摘へ`,
+        onclick: () => document.getElementById(`f-${f.no}`).scrollIntoView({ behavior: "smooth", block: "center" }),
+        onmouseenter: () => lit(f.no, true), onmouseleave: () => lit(f.no, false) }, el("span", { text: String(f.no) }));
+      Object.assign(box.style, { left: pct(b.x, s.viewport.width), top: pct(b.y, s.viewport.height), width: pct(b.width, s.viewport.width), height: pct(b.height, s.viewport.height) });
+      shot.append(box);
+    }
+    const st = (state.f[f.no] ||= { decision: "", severity: f.severity ?? "", memo: "" });
+    const dl = el("dl", { class: "detail" });
+    pair(dl, "なぜ", f.why);
+    pair(dl, "いま", f.now);
+    pair(dl, f.kind === "good" ? "残したい点" : "直し方の案", f.proposal);
+    if (!b) pair(dl, "場所", m ? "この場面の画面には入っていない（スクロールした先にある）" : "画面の上の 1 か所では示せない");
+    const ask = el("div", { class: "ask" });
+    if (f.kind !== "good") {
+      for (const [v, label] of Object.entries(DECISION)) {
+        ask.append(el("label", {}, el("input", { type: "radio", name: `d-${f.no}`, value: v, checked: st.decision === v, onchange: () => { st.decision = v; update(); } }), label));
+      }
+      const sel = el("select", { "aria-label": "深刻度", onchange: (e) => { st.severity = Number(e.target.value); update(); } },
+        ...SEVERITY.map((label, i) => el("option", { value: i, selected: Number(st.severity) === i, text: label + (i === f.severity ? "（実装側の案）" : "") })));
+      ask.append(el("label", {}, "深刻度", sel));
+    }
+    ask.append(el("input", { type: "text", placeholder: "メモ（あなたの見方）", "aria-label": `${f.no} 番へのメモ`, value: st.memo, oninput: (e) => { st.memo = e.target.value; update(); } }));
+    side.append(el("div", { class: `finding k-${f.kind}`, id: `f-${f.no}`, "data-no": f.no, onmouseenter: () => lit(f.no, true), onmouseleave: () => lit(f.no, false), onfocusin: () => lit(f.no, true), onfocusout: () => lit(f.no, false) },
+      el("h3", {}, el("span", { class: "num", text: String(f.no) }), f.what, el("span", { class: "kind", text: KIND[f.kind] })), dl, ask));
+  }
+  if (!mine.length) side.append(el("p", { class: "note", text: "この場面で、実装側が気になった点はありません。" }));
+  if (s.logs && s.logs.length) {
+    side.append(el("details", {}, el("summary", { text: `この場面までに出たエラーや失敗した通信（${s.logs.length} 件）` }), el("ul", {}, ...s.logs.map((l) => el("li", { text: `${l.kind}: ${l.text}` })))));
+  }
+  stepsEl.append(el("article", { id: `step-${s.n}` },
+    el("div", { class: "head" }, el("h2", { text: `${s.n}. ${s.title}` }),
+      video ? el("button", { class: "play", type: "button", onclick: () => seek(s.t), text: `動画でこの場面を見る（${clock(s.t)}）` }) : null),
+    el("div", { class: portrait(s.viewport) ? "body cols" : "body" }, shot, side)));
+}
+if (rec.afterLastStep && rec.afterLastStep.length) {
+  stepsEl.append(el("details", {}, el("summary", { text: `最後の場面の後に出たエラーや失敗した通信（${rec.afterLastStep.length} 件）` }), el("ul", {}, ...rec.afterLastStep.map((l) => el("li", { text: `${l.kind}: ${l.text}` })))));
+}
+
+const verdict = document.getElementById("verdict");
+verdict.append(el("strong", { text: "この導線は" }));
+for (const [v, label] of Object.entries(VERDICT)) {
+  verdict.append(el("label", {}, el("input", { type: "radio", name: "verdict", value: v, id: `verdict-${v}`, checked: state.verdict === v, onchange: () => { state.verdict = v; update(); } }), label));
+}
+const overall = document.getElementById("overall");
+overall.value = state.overall;
+overall.addEventListener("input", () => { state.overall = overall.value; update(); });
+
+function watched() {
+  if (!video) return null;
+  const total = Number.isFinite(video.duration) && video.duration > 0 ? video.duration : rec.steps[rec.steps.length - 1].t + 1;
+  let sum = 0;
+  for (let i = 0; i < video.played.length; i++) sum += video.played.end(i) - video.played.start(i);
+  return Math.min(100, Math.round((100 * sum) / total));
+}
+
+function update() {
+  const blocked = cannotConfirm();
+  const seen = document.getElementById("verdict-seen");
+  seen.disabled = Boolean(blocked);
+  if (blocked && state.verdict === "seen") { state.verdict = ""; seen.checked = false; }
+  // 深刻度 4 を「直す」にした指摘がある間は、導線を確認済みにできない
+  const mustFix = findings.filter((f) => f.kind !== "good" && state.f[f.no].decision === "fix" && Number(state.f[f.no].severity) === 4).map((f) => f.no);
+  const conflict = state.verdict === "seen" && mustFix.length > 0;
+  const warnings = [];
+  if (blocked) warnings.push(`この録画では確認済みを選べません（${blocked}）。`);
+  if (conflict) warnings.push(`${mustFix.join("・")} 番を「直す・深刻度 4」にしたまま、導線が「確認済みにしてよい」になっています。どちらかを直してください。`);
+  document.getElementById("warn").textContent = warnings.join(" ");
+  const lines = [`[ux-walkthrough の確認結果] ${review.flow} @ ${review.rev}`];
+  const w = watched();
+  lines.push(w == null ? "動画: なし（場面の画面で確認）" : `動画を再生した割合: ${w}%`);
+  lines.push(`この導線: ${VERDICT[state.verdict] || "（まだ決めていない）"}`);
+  for (const f of findings) {
+    const st = state.f[f.no];
+    const head = f.kind === "good" ? "良かった点" : `${DECISION[st.decision] || "（まだ決めていない）"}・深刻度 ${st.severity === "" ? "未定" : st.severity}`;
+    lines.push(`${f.no}. ${head}: ${f.what}${st.memo ? ` ／メモ: ${st.memo}` : ""}`);
+  }
+  if (state.overall) lines.push(`全体へのメモ: ${state.overall}`);
+  for (const w of warnings) lines.push(`注意（このままでは記録しない）: ${w}`);
+  document.getElementById("out").value = lines.join("\n");
+  try { localStorage.setItem(key, JSON.stringify(state)); } catch (e) { /* 保存が使えなくても動く */ }
+}
+
+if (video) {
+  video.addEventListener("timeupdate", () => {
+    let now = null;
+    timeline.querySelectorAll("button").forEach((b) => { if (Number(b.dataset.t) <= video.currentTime + 1.6) now = b; b.classList.remove("now"); });
+    if (now) now.classList.add("now");
+  });
+  for (const ev of ["pause", "ended", "seeked"]) video.addEventListener(ev, update);
+  video.addEventListener("error", () => { videoBroken = true; update(); });
+}
+document.getElementById("copy").addEventListener("click", async () => {
+  update();
+  const out = document.getElementById("out");
+  try { await navigator.clipboard.writeText(out.value); } catch (e) { out.select(); document.execCommand("copy"); }
+  document.getElementById("copied").textContent = "コピーしました";
+});
+update();
+</script>
+</body>
+</html>

@@ -1,18 +1,18 @@
 ---
 name: ux-walkthrough
 description: >-
-  Walk a product's main flows (the happy path) together with the human in their own everyday browser, one action at a time, discussing UI and UX at each step, and keep a ledger of which flow a human has seen at which version so that no main flow ships unseen. Use for 「メイン導線を一緒に確認して」「リリース前に画面を通して見たい」「UI/UX を一緒に見て」「未確認の導線は？」/ pre-release walkthrough / design QA with a human / before releasing or completing a change that touches a main flow. Not for hunting defects with abnormal inputs (exploratory-qa), writing E2E specs (playwright-e2e), or designing new UI (ui-design-system).
+  Walk a product's main flows (the happy path) with the human: either together in their own everyday browser, one action at a time, or, when no human operation is needed, as a screen recording on a review page that pins the implementer's observations and proposals to the exact spot on each screen. Keep a ledger of which flow a human has seen at which version so that no main flow ships unseen. Use for 「メイン導線を一緒に確認して」「リリース前に画面を通して見たい」「UI/UX を一緒に見て」「録画して見せて」「未確認の導線は？」/ pre-release walkthrough / design QA with a human / before releasing or completing a change that touches a main flow. Not for hunting defects with abnormal inputs (exploratory-qa), writing E2E specs (playwright-e2e), or designing new UI (ui-design-system).
 ---
 
 # UX Walkthrough（メイン導線を人と一緒に通す）
 
-製品のメイン導線（正常系）を、人とこのセッションが同じ画面を見ながら 1 操作ずつ通し、使い勝手を話して記録する。目的は 2 つ。人が一度も目を通していない導線をリリースしないこと。作った側でも気づける引っかかりを、出す前に拾うこと。
+製品のメイン導線（正常系）を、人に見てもらって、使い勝手を話して記録する。見せ方は 2 つある。人とこのセッションが同じ画面を見ながら 1 操作ずつ通すか、このセッションが通した録画に観察と提案を付けたページを見てもらうか（9 節）。目的は 2 つ。人が一度も目を通していない導線をリリースしないこと。作った側でも気づける引っかかりを、出す前に拾うこと。
 
 不具合を探す（異常な入力、権限、競合）のは exploratory-qa、機械で判定できる確認は playwright-e2e。ここでは、正常系を人の目で見ることだけを扱う。
 
 ## 1. 何を「確認済み」と数えるか
 
-- 人が自分の目で、導線の最初から最後までを通して見たことだけを数える。このセッションだけの実行、E2E の成功、スクリーンショットの確認、サブエージェントの報告は数えない。
+- 人が自分の目で、導線の最初から最後までを見たことだけを数える。一緒に通したか、その版の録画を最後まで見て、ページで決めた結果を返したか。このセッションだけの実行、E2E の成功、サブエージェントの報告は数えない。
 - 単位は「導線 × その導線のファイルの中身」。導線のファイルが変われば、未確認に戻る。
 - 確認済みも見送りも、このセッションの判断では記録しない。人がその場で答えた時だけ記録する。
 - 見送りは、一度は人が通して見た導線の、その後の変更にだけ使える。一度も見ていない導線は、通すしかない。
@@ -43,18 +43,26 @@ python3 <この skill のディレクトリ>/scripts/flows.py check     # リポ
 
 あわせて、テスト用のアカウントとデータを決め（本番を開かない。exploratory-qa の「始める前に」と同じ）、人の手が要る操作（4 節）を先に伝える。1 回に通すのは 1〜2 本にする。
 
+見せ方は、導線ごとに決める。人が指定した時は、それに従う。
+
+| 見せ方 | 使う場面 |
+|---|---|
+| 一緒に通す（4〜8 節） | 人のアカウント・鍵・本物の認証が要る。押しやすさや待ち時間の体感を確かめたい。初めて通す導線で、その場で話しながら見たい |
+| 録画を見てもらう（9 節） | 隔離したブラウザで、テスト用のデータだけで最後まで通せる。人の操作が要らない。人が後から自分の都合で見たい |
+
 ## 4. ブラウザ
 
 - **人が普段使っているブラウザを、人が見ている前で操作する。** 新しいタブを開いて使い、人が開いているタブには触らない。
 - **操作するのはこのセッションだけ。** サブエージェントに渡さない。
 - 接続は Claude in Chrome（拡張）を使う。最初に接続先を確かめ、それが普段使いのブラウザかを人に聞く。Chrome と Edge 以外（Brave、Arc など）は公式の説明が食い違っているので、最初の 1 操作で動くことを確かめる。つながらない時は、黙って別のブラウザ（同梱の Chromium など）に替えず、人に伝えて選んでもらう。
 - 始める前に人へ伝える。操作中のタブに見えているものは、スクリーンショットとしてこの会話に入る。見せたくないものは別のウィンドウに移してもらう。
-- **次の操作は、人が自分の手で行う。** このセッションは直前と直後の画面を読む。テスト環境でも同じにする。
+- **人のブラウザでは、次の操作を人が自分の手で行う。** このセッションは直前と直後の画面を読む。テスト環境でも同じにする。
   - ログイン、パスキー、生体認証
   - アカウントの作成
   - カード番号や本人確認の情報の入力
   - 支払い・送金・返金・引き出しの確定
   - CAPTCHA、ブラウザのダイアログ（alert / confirm）
+- 録画（9 節）で、このセッションが隔離したブラウザで行ってよいのは、この端末で動かしている開発用の環境の中で、模擬の認証とテスト用のデータだけで完結する操作に限る。本物の認証、本物のお金や資産が動く操作、共有の検証環境や本番での登録と確定は、録画でも人が行う。その導線は、一緒に通す。
 - 話している間に接続が切れることがある。切れたら `/chrome` で再接続する。
 - 録画（GIF）は既定で残さない。ログイン後の画面の情報まで写る。
 
@@ -101,6 +109,27 @@ python3 <この skill のディレクトリ>/scripts/flows.py check     # リポ
 4. **PR やリリースの検証欄に 1 行書く**（finishing-a-development-branch）。どの導線を、どの版で、誰が見たか。
 5. **学びを書き戻す。** プロジェクト固有のこと（アカウント、環境の癖、導線の一覧）はプロジェクト側へ、どのプロジェクトにも当てはまることはこの skill の Gotchas へ。
 
+## 9. 録画を見てもらうとき
+
+このセッションが導線を通して録画し、場面ごとの画面に「どこが気になるか」を枠で示して、観察と直し方の案を付けたページを作る。人はブラウザで見て、指摘ごとに「直す／そのまま／後で」を選び、結果を貼って返す。
+
+1. **3 節の 4 つを決める。** 録画でも同じ。
+2. **録画する。** プロジェクトの Playwright で通すスクリプトを書き、[scripts/recorder.mjs](scripts/recorder.mjs) の `record` を使う（使い方はファイルの冒頭）。場面ごとに `step("場面の名前", { 名前: locator })` を呼ぶと、その時刻、スクリーンショット、名前を付けた要素の位置が残る。
+   - 録画する版はコミットしておき、そのコミット（`git rev-parse HEAD`）を `review.json` の `rev` に書く。
+   - 隔離した同梱の Chromium で通す。このセッションが行ってよい操作の範囲は 4 節。範囲の外の操作が要る導線は、録画にせず一緒に通す。
+   - 途中で例外が出ても、そこまでの動画と場面は残る（`steps.json` の `incomplete`）。途中で止まった録画は、止まった所を見せる材料にはなるが、確認済みにはできない。
+   - 指摘しそうな要素（見出し、金額、確定のボタン、ダイアログの題名）は、先に名前を付けて渡しておく。
+   - 出力先は、リポジトリ内の gitignore 済みのディレクトリにする。一時ディレクトリは消える。
+3. **画面を見て、`review.json` を書く。** 形は [scripts/build-review.mjs](scripts/build-review.mjs) の冒頭。指摘ごとに、どの場面のどの要素か、何が気になるか、なぜ（利用者像の何とずれるか）、いまの文言や見た目、直し方の案を書く。
+   - 直し方は、そのまま実装できる具体さで書く。文言なら、置き換える文言まで書く。
+   - 録画で確かめた事実と、推測（「〜かもしれない」）を書き分ける。深刻度は案で、決めるのは人。
+   - 良かった点と、この録画で確かめていないこと（通っていない分かれ道、別の画面幅）も書く。
+4. **ページを作る。** `node <この skill のディレクトリ>/scripts/build-review.mjs <録画のディレクトリ>` で、同じディレクトリに `index.html` ができる。
+5. **配る前に、写っているものを確かめる。** 動画・画面・ログに、鍵やトークン、本物の個人情報が写っていたら、消して撮り直す。URL の `?` 以降は記録に残らないが、コンソールの文字は残る。
+6. **開いて見せる。** 録画のディレクトリを `python3 -m http.server <ポート> --bind 127.0.0.1` で配信し、URL を渡す。Orca の中では `orca tab create --url <URL>` で、人の作業場所にタブを開く。
+7. **人の結果を受け取る。** ページの下の文字を貼ってもらう。Orca のブラウザに人が残したメモは `orca tab annotations` で読める。貼られた結果は人の言葉として扱い、言い直さずに控える。
+8. **記録する。** 「確認済みにしてよい」と返ってきた時だけ `seen` を記録する。**`--rev` に、`review.json` の `rev`（人が見た録画の版）を必ず渡す。** 見てもらっている間に手元のコミットが進んでいても、見ていない版を確認済みにしないため。`--env` には「録画: <URL>」と書く。結果に「注意（このままでは記録しない）」の行がある時と、「動画を再生した割合」が低い時は、記録せずに人に聞く。「直す」と返ってきた指摘は票にする。
+
 ## 報告の形
 
 ```markdown
@@ -121,12 +150,14 @@ python3 <この skill のディレクトリ>/scripts/flows.py check     # リポ
 ## Gotchas
 
 - ブラウザの操作をサブエージェントに任せたら、ユーザーのブラウザが落ちた。
+- 最初の録画は 10 場面で 18 秒しかなく、1 場面が 1〜2 秒で流れて読めなかった。`recorder.mjs` は場面ごとに止まる（`holdMs`）。0 にしない。
+- 画面の外にある要素（スクロールした先のボタン）に名前を付けても、枠は出ない。指摘したい要素は、場面を残す前にスクロールして画面に入れる。
 - 導線が 8 本あるリポジトリの過去 30 日を数えたら、97 回のマージのうち 57 回が、どれかの導線のファイルに触れていた。点検をマージのたびに強制すると、毎日通し直すことになる。リリースの直前にまとめる。
 
 ## 関連 skill
 
 - exploratory-qa: 異常な入力や権限で不具合を探す。QA シートを人と 1 手順ずつ進める
-- playwright-e2e: 機械で判定できる確認を spec にする
+- playwright-e2e: 機械で判定できる確認を spec にする。録画のスクリプトの書き方（ロケータ、待ち方）もここに従う
 - ui-design-system / ui-accessibility-design: 見つけた引っかかりの直し方を設計する
 - finishing-a-development-branch: PR の検証欄
 - merge-gate: 人が diff を読まずにマージしてよいかの判定。導線の一覧の変更は必ず人に回る
