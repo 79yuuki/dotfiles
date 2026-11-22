@@ -1,7 +1,7 @@
 ---
 name: exploratory-qa
 description: >-
-  Run exploratory QA on a running app or environment: tour-based scenarios, an operator/verifier split, a human-paired mode that goes one step at a time, three-valued verdicts, and a list of what was not checked. Use for 探索的テスト / 「QAして」「一緒に確認して」「dev 環境を触って確かめて」/ QA シートを進める・再開する / リリース前の受け入れ確認. Not for writing E2E spec files (playwright-e2e), judging whether tests catch breakage (test-quality), or generating a project verify skill (create-verification-skill).
+  Run exploratory QA on a running app or environment: tour-based scenarios, an operator/verifier split, a human-paired mode that goes one step at a time, three-valued verdicts, and a list of what was not checked. Use for 探索的テスト / 「QAして」「一緒に確認して」「dev 環境を触って確かめて」/ QA シートを進める・再開する / リリース前の受け入れ確認. Not for walking the main happy-path flows with a human to judge UI/UX before release (ux-walkthrough), writing E2E spec files (playwright-e2e), judging whether tests catch breakage (test-quality), or generating a project verify skill (create-verification-skill).
 ---
 
 # Exploratory QA（探索的テスト）
@@ -131,6 +131,7 @@ description: >-
 
 ## 関連 skill
 
+- ux-walkthrough: 正常系のメイン導線を、人と 1 操作ずつ通して UI/UX を見る。リリース前に、人が見ていない導線を残さない
 - playwright-e2e: 機械で判定できる確認を spec にする。E2E の書き方の決まり
 - test-quality: 異常系の観点。テストが壊れを見つけられるかの検品
 - create-verification-skill: プロジェクトのアプリを起動して操作する手順を、プロジェクト側の skill として残す

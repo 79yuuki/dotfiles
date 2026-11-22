@@ -63,7 +63,7 @@
 - `scripts/ponytail-sweep.py`: `~/Development` 以下のリポジトリのうち、テストかコードが増えたものだけを ponytail で毎日監査し、新しい Must fix をダイジェストにまとめるスクリプトです。テストは `scripts/tests/`。
 - `scripts/install-ponytail-sweep.sh`: `ponytail-sweep.py` を launchd に登録・解除するスクリプトです。
 - `scripts/followthrough.py`: 段階導入の計画（ブランチで試用してから本体へ入れる、記録するだけの段階から強制する段階へ上げる、など）の「次へ進む条件」を毎日点検し、満たした日に通知します。LLM は使わず、知らせるだけで操作はしません。台帳は `~/.claude/state/followthrough/ledger.json`（書式はスクリプト冒頭）。`claude/hooks/followthrough-remind.sh` が、条件を満たした計画をセッション開始時に 1 行で知らせます。
-- `scripts/install-followthrough.sh`: `followthrough.py check` を launchd に登録・解除するスクリプトです（毎日 09:10）。
+- `scripts/install-followthrough.sh`: `followthrough.py check` を launchd に登録・解除するスクリプトです（毎日 09:10）。`hook` / `unhook` で、SessionStart のリマインド hook を `~/.claude/settings.json` と `~/.claude/settings.local.json` に登録・解除します（バックアップを取り、既にある登録はこのチェックアウトの path に付け替えます）。
 
 ### Claude skills
 
@@ -124,6 +124,7 @@ Claude Code では skill の `description` と `when_to_use` が常にコンテ�
 - `claude/skills/unit-economics-gate/SKILL.md`: Evaluate opportunities, proposals, hires, tools, campaigns, and operating moves using unit economics, gross margin, fixed costs, cas…
 - `claude/skills/using-git-worktrees/SKILL.md`: Use when starting feature work that needs isolation from current workspace or before executing implementation plans - ensures an iso…
 - `claude/skills/using-superpowers/SKILL.md`: Use when starting any conversation - establishes how to find and use skills, requiring Skill tool invocation before ANY response inc…
+- `claude/skills/ux-walkthrough/SKILL.md`: Walk the main flows with the human in their own browser, one action at a time, and keep a ledger so that no main flow ships unseen.
 - `claude/skills/verification-before-completion/SKILL.md`: Use when about to claim work is complete, fixed, or passing, before committing or creating PRs - requires running verification comma…
 - `claude/skills/winning-proposal/SKILL.md`: Structure proposals and business documents so decision-makers can approve them: problem, stakes, options, budget logic, risks, proof…
 - `claude/skills/writing-plans/SKILL.md`: Use when you have a spec or requirements for a multi-step task, before touching code

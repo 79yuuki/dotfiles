@@ -129,6 +129,8 @@ If the diff touches DB schema/migrations, IaC (Terraform etc.), authentication/a
 
 In the verification section of the PR body, write the head commit SHA the evidence was produced on, the commands you ran with their results, and what you did not verify. Evidence for an older commit does not cover a newer one: after every push, update the section to say what you re-ran on the new head and what you did not.
 
+If the repository has a `.github/main-flows.toml`, run the `ux-walkthrough` check (`scripts/flows.py check`) on the head commit and paste its result into the verification section: which main flows a human has seen at this content, and which are unseen, changed since, or waiting on a fix. Do not record a flow as seen yourself; only a walkthrough with the human does that.
+
 Your own verification is not the merge verdict. If the repository has a `.github/merge-gate.toml`, start a fresh agent with the `merge-gate` skill after the PR is open, and pass it only the repository, the PR number, and the head SHA. A merge-gate verdict only changes whether a human needs to read the diff. It never gives you permission to merge: merging stays your human partner's decision, or the project's written merge rule.
 
 Keep the worktree — your human partner iterates on PR feedback there.
