@@ -61,11 +61,17 @@ if override_path.exists():
         if merged_markets.get(name) != entry:
             print(f"warning: {override_path} overrides pinned marketplace '{name}'", file=sys.stderr)
     # local が hooks.PreToolUse を持つと配列ごと置き換わる。base の hook（rm -rf の確認など）が消えたら知らせる
-    merged_hooks = merged.get("hooks")
-    merged_pre = merged_hooks.get("PreToolUse") if isinstance(merged_hooks, dict) else None
-    for entry in data.get("hooks", {}).get("PreToolUse", []):
-        if not isinstance(merged_pre, list) or entry not in merged_pre:
-            print(f"warning: {override_path} drops the base PreToolUse hook for matcher '{entry.get('matcher')}'", file=sys.stderr)
+    def pre_tool_use_commands(settings):
+        hooks = settings.get("hooks")
+        entries = hooks.get("PreToolUse") if isinstance(hooks, dict) else None
+        for entry in entries if isinstance(entries, list) else []:
+            for hook in entry.get("hooks", []) if isinstance(entry, dict) else []:
+                if isinstance(hook, dict):
+                    yield str(hook.get("command"))
+    kept = set(pre_tool_use_commands(merged))
+    for command in pre_tool_use_commands(data):
+        if command not in kept:
+            print(f"warning: {override_path} drops a base PreToolUse hook: {command[:70]}", file=sys.stderr)
     data = merged
 
 target_path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n")

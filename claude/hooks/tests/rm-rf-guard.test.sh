@@ -68,6 +68,28 @@ S=/tmp/job
 }; rm -rf "$S/build"
 CMD
 
+read -r -d '' BARE_DOLLAR_DELIMITER <<'CMD'
+cat <<E$OF
+text
+E$OF
+rm -rf /tmp/job
+CMD
+
+read -r -d '' BACKGROUND_SUBSHELL <<'CMD'
+S=/tmp/x
+(cd "$S" && make) &
+wait
+rm -rf "$S"
+CMD
+
+read -r -d '' CONTINUED_LINES <<'CMD'
+set -e
+S=/tmp/x &&
+
+  rm -rf "$S" \
+    "$S.bak"
+CMD
+
 # NONE: 実際に止まった2例
 check "real: headroot"          NONE "$(j "S=$S/headroot && rm -rf \$S && mkdir -p \$S && git archive HEAD | tar -x -C \$S")"
 check "real: ux-state"          NONE "$(j "S=$S; cd \"\$S/exp/foo\" && npm test | tail -5 && export UX_WALKTHROUGH_STATE_DIR=\"\$S/exp/ux-state\" PYTHONDONTWRITEBYTECODE=1 && rm -rf \"\$UX_WALKTHROUGH_STATE_DIR\" && python3 run.py")"
@@ -84,6 +106,11 @@ check "subshell"                NONE "$(j '(S=/tmp/x && rm -rf "$S/build")')"
 check "var used inside if"      NONE "$(j 'S=/tmp/x; if [ -d "$S" ]; then rm -rf "$S"; fi')"
 check "var used inside { }"     NONE "$(j 'S=/tmp/x; test -d "$S" && { rm -rf "$S"; echo done; }')"
 check "sequential reassignment" NONE "$(j 'S=/tmp/job; S=/tmp/job/sub; rm -rf "$S"')"
+check "&& list with \$() and |" NONE "$(j 'true && S=/tmp/job && echo "$(pwd)" | tail -1 && rm -rf "$S"')"
+check "unset in a subshell"     NONE "$(j 'S=/tmp/job; (unset S); rm -rf "$S"')"
+check "background subshell"     NONE "$(j "$BACKGROUND_SUBSHELL")"
+check "continued lines"         NONE "$(j "$CONTINUED_LINES")"
+check "heredoc delimiter E\$OF" NONE "$(j "$BARE_DOLLAR_DELIMITER")"
 check "sudo, temp target"       NONE "$(j 'sudo rm -rf /tmp/x')"
 check "timeout / env / nice"    NONE "$(j 'timeout 5 rm -rf /tmp/x && env A=1 nice -n 5 rm -rf /tmp/y')"
 check "glob below a subdir"     NONE "$(j 'rm -rf /tmp/x/*')"
@@ -96,12 +123,14 @@ check "rm unknown var, no -rf"  NONE "$(j 'rm "$f"')"
 check "git rm -rf"              NONE "$(j 'git rm -rf --cached node_modules')"
 check "git -C rm -r -f"         NONE "$(j 'git -C repo rm -r -f x')"
 check "/usr/bin/git rm -rf"     NONE "$(j '/usr/bin/git rm -rf --cached node_modules')"
+check "env ... git rm -rf"      NONE "$(j 'env GIT_CONFIG_NOSYSTEM=1 git rm -rf --cached node_modules')"
 check "echo rm -rf"             NONE "$(j 'echo rm -rf /etc')"
 check "docker run --rm"         NONE "$(j 'docker run --rm -f Dockerfile img')"
 check "grep for rm -rf"         NONE "$(j 'grep -n "rm -rf" README.md')"
 check "echo quoted rm -rf"      NONE "$(j "echo 'rm -rf /'")"
 check "commit message heredoc"  NONE "$(j "$COMMIT")"
 check "commit message \$'..'"   NONE "$(j "git commit -m \$'fix rm guard: don\\'t block cleanup'")"
+check "\$' inside double quotes" NONE "$(j "git commit -m \"Fix rm parser for \$' quoting\"")"
 check "heredoc body is data"    NONE "$(j "$WRITE_SCRIPT")"
 check "arithmetic shift"        NONE "$(j $'echo $((1 << 2\n)); echo rm')"
 check "broken quote, no rm"     NONE "$(j 'echo "abc')"
@@ -125,6 +154,7 @@ check "rm -rfv"                 ASK "$(j 'rm -rfv /Users/x')"
 check "one target outside"      ASK "$(j 'rm -rf /tmp/a /Users/x/b')"
 check "target after procsubst"  ASK "$(j 'rm -rf /tmp/job 2> >(cat) ~/project')"
 check "quoted digits target"    ASK "$(j 'rm -rf /tmp/job "123">/dev/null')"
+check "escaped digits target"   ASK "$(j 'rm -rf /tmp/job \123>/dev/null')"
 check "glob at temp root"       ASK "$(j 'rm -rf /tmp/*')"
 check "temp root with slash"    ASK "$(j 'rm -rf /private/tmp/')"
 check "\$TMPDIR itself"         ASK "$(j 'rm -rf "$TMPDIR"')"
@@ -142,10 +172,18 @@ check "assigned inside { }"     ASK "$(j '{ S=/tmp/job; rm -rf "$S"; }')"
 check "assigned in function"    ASK "$(j "$UNCALLED_FUNCTION")"
 check "assigned in pipeline"    ASK "$(j 'S=/tmp/job | cat; rm -rf "$S/build"')"
 check "assigned in background"  ASK "$(j 'S=/tmp/job & wait; rm -rf "$S/build"')"
+check "&& list in background"   ASK "$(j 'S=/Users/tester/project; S=/tmp/job && echo ready & wait; rm -rf "$S"')"
+check "&& list ended by ( )"    ASK "$(j 'true && S=/tmp/x && (true); rm -rf "$S/y"')"
+check "&& list crossed by ||"   ASK "$(j 'true && S=/tmp/x || true && rm -rf "$S/y"')"
 check "appended var"            ASK "$(j 'S=/tmp/a; S+=b; rm -rf "$S"')"
+check "local outside function"  ASK "$(j 'local S=/tmp/l; rm -rf "$S"')"
+check "readonly keeps old value" ASK "$(j 'readonly S=/Users/x; S=/tmp/a; rm -rf "$S"')"
 check "unset var"               ASK "$(j 'S=/tmp/job; unset S; rm -rf "$S"')"
 check "\${S:=x} assigns"        ASK "$(j 'S=/tmp/job; : "${S:=/Users/tester/project}"; rm -rf "$S"')"
 check "read rebinds"            ASK "$(j 'S=/tmp/x; read S; rm -rf "$S"')"
+check "builtin read rebinds"    ASK "$(j 'S=/tmp/job; builtin read -r S; rm -rf "$S"')"
+check "read sets REPLY"         ASK "$(j 'REPLY=/tmp/job; read; rm -rf "$REPLY"')"
+check "read inside subshell"    ASK "$(j 'S=/tmp/job; (S=/tmp/inner; read -r S; rm -rf "$S")')"
 check "for rebinds"             ASK "$(j 'S=/tmp/x; for S in ~/a ~/b; do :; done; rm -rf "$S"')"
 check "single-quoted \$S"       ASK "$(j "S=/tmp/x; rm -rf '\$S'")"
 check "prefix assignment"       ASK "$(j 'S=/tmp/x true; rm -rf "$S"')"
@@ -159,6 +197,7 @@ check "loop variable"           ASK "$(j 'for d in a b; do rm -rf "$d"; done')"
 # ASK: rm の置かれ方
 check "inside \$()"             ASK "$(j 'echo "$(rm -rf ~/x)"')"
 check "inside \${..:-\$()}"     ASK "$(j 'echo "${UNSET:-$(rm -rf ~/project)}"')"
+check "inside \$(( \$() ))"     ASK "$(j 'echo "$(( $(rm -rf ~/project; echo 0) + 1 ))"')"
 check "inside backticks"        ASK "$(j 'echo `rm -rf ~/x`')"
 check "after newline"           ASK "$(j $'cd repo\nrm -rf node_modules')"
 check "after odd heredoc"       ASK "$(j "$DOLLAR_DELIMITER")"
@@ -173,6 +212,7 @@ check "backslash rm"            ASK "$(j '\rm -rf ~/x')"
 check "quoted rm"               ASK "$(j '"rm" -rf ~/x')"
 check "unparsable with rm"      ASK "$(j 'rm -rf "/tmp/x')"
 check "unclosed ( with rm"      ASK "$(j '(rm -rf /tmp/job')"
+check "unclosed heredoc"        ASK "$(j 'rm -rf /tmp/job <<EOF')"
 
 # 登録: settings.base.json のコマンドを、Claude Code と同じように sh -c で動かす
 REGISTERED="$(jq -r '.hooks.PreToolUse[] | select(.matcher == "Bash") | .hooks[0].command' "$REPO/claude/settings.base.json")"
@@ -181,14 +221,13 @@ mkdir -p "$T/with/.claude/hooks" "$T/without" "$T/bin" && ln -s "$HOOK" "$T/with
 HOOK_HOME="$T/with"
 check "registered: outside temp"     ASK  "$(j 'rm -rf ~/foo')"
 check "registered: temp"             NONE "$(j 'rm -rf /tmp/x')"
-# hook か python3 が無い時は、置き換え前の ask ルール相当（再帰の rm はすべて確認）に戻る
+# hook か python3 が無い時は細かい判定をしない。rm という語を含む呼び出しはすべて確認する
 HOOK_HOME="$T/without"
 check "no hook: rm -rf"              ASK  "$(j 'rm -rf /tmp/x')"
-check "no hook: rm -fr after newline" ASK "$(j $'cd a\nrm -fr b')"
-check "no hook: rm -f -r"            ASK  "$(j 'rm -f -r b')"
-check "no hook: rm --recursive"      ASK  "$(j 'cd a && rm --force --recursive b')"
-check "no hook: rm file"             NONE "$(j 'rm -f file.txt')"
-check "no hook: no rm"               NONE "$(j 'docker run --rm -r x && npm run perform -r')"
+check "no hook: rm after newline"    ASK  "$(j $'cd a\nrm -fr b')"
+check "no hook: rm, line continued"  ASK  "$(j $'cd a && rm \\\n  -rf ~/foo')"
+check "no hook: rm, tab"             ASK  "$(j $'rm\t-rf ~/foo')"
+check "no hook: no rm"               NONE "$(j 'docker run --rm -r x && npm run perform -r && ls rm-rf-guard.py')"
 HOOK_HOME="$T/with"
 HOOK_ENV_PATH="$T/bin" check "no python3: rm -rf" ASK "$(j 'rm -rf /tmp/x')"
 HOOK_ENV_PATH="$T/bin" check "no python3: no rm"  NONE "$(j 'ls -la')"
@@ -200,8 +239,12 @@ ERR="$(HOME="$T/sync" "$REPO/scripts/sync-claude-settings.sh" 2>&1 >/dev/null)"
 ok "sync: hook registered, ask rule gone" $?
 printf '%s' '{"hooks":{"PreToolUse":[{"matcher":"*","hooks":[{"type":"command","command":"true"}]}]}}' >"$T/sync/.claude/settings.local.json"
 ERR="$(HOME="$T/sync" "$REPO/scripts/sync-claude-settings.sh" 2>&1 >/dev/null)"
-[[ "$ERR" == *"drops the base PreToolUse hook for matcher 'Bash'"* ]]
+[[ "$ERR" == *"drops a base PreToolUse hook"*"rm-rf-guard.py"* ]]
 ok "sync: warns when local replaces PreToolUse" $?
+jq '.hooks.PreToolUse |= map(if .matcher == "Bash" then .hooks += [{"type":"command","command":"true"}] else . end) | {hooks: {PreToolUse: .hooks.PreToolUse}}' "$REPO/claude/settings.base.json" >"$T/sync/.claude/settings.local.json"
+ERR="$(HOME="$T/sync" "$REPO/scripts/sync-claude-settings.sh" 2>&1 >/dev/null)"
+[[ -z "$ERR" ]]
+ok "sync: no warning when local keeps the base hooks" $?
 
 echo "---"; echo "PASS=$PASS FAIL=$FAIL"
 [[ "$FAIL" -eq 0 ]]

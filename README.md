@@ -56,7 +56,7 @@
 ### Claude 設定
 
 - `claude/settings.base.json`: Claude Code の managed base 設定です。通知 hook、status line、言語、enabled plugin、commit 固定した第三者 plugin の marketplace（`dotfiles-pinned`）を持ちます。
-- `claude/hooks/rm-rf-guard.py`: Bash の PreToolUse hook です。再帰 + 強制の `rm`（`-rf` / `-fr` / `-r -f` など）に確認を強制し、対象がすべて一時フォルダ（`/tmp`、`/private/tmp`、`/var/folders`、`/private/var/folders`、`$TMPDIR` の配下）だと分かる時だけ何もしません。auto mode より優先される `permissions.ask` の `Bash(rm -rf *)` を置き換えたもので、一時フォルダの掃除で止まらないようにしています。hook か `python3` が無い環境では、登録したコマンドが再帰の `rm` をすべて確認します（置き換え前のルール相当）。テストは `claude/hooks/tests/rm-rf-guard.test.sh`。
+- `claude/hooks/rm-rf-guard.py`: Bash の PreToolUse hook です。再帰 + 強制の `rm`（`-rf` / `-fr` / `-r -f` など）に確認を強制し、対象がすべて一時フォルダ（`/tmp`、`/private/tmp`、`/var/folders`、`/private/var/folders`、`$TMPDIR` の配下）だと分かる時だけ何もしません。auto mode より優先される `permissions.ask` の `Bash(rm -rf *)` を置き換えたもので、一時フォルダの掃除で止まらないようにしています。hook か `python3` が無い環境では、登録したコマンドが `rm` を含む呼び出しをすべて確認します。テストは `claude/hooks/tests/rm-rf-guard.test.sh`。
 - `claude/plugins/manifest.json`: 利用中 plugin の移植用スナップショットです。cache 実体ではなく、どの plugin を使っていたかを残します。
 - `scripts/sync-claude-settings.sh`: `claude/settings.base.json` と `~/.claude/settings.local.json` から `~/.claude/settings.json` を生成するスクリプトです。
 - `scripts/ponytail-sweep.py`: `~/Development` 以下のリポジトリのうち、テストかコードが増えたものだけを ponytail で毎日監査し、新しい Must fix をダイジェストにまとめるスクリプトです。テストは `scripts/tests/`。
