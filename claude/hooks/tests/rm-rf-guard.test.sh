@@ -75,6 +75,21 @@ E$OF
 rm -rf /tmp/job
 CMD
 
+read -r -d '' CONTINUED_DELIMITER <<'CMD'
+cat <<\
+EOF
+text
+EOF
+rm -rf /tmp/job
+CMD
+
+read -r -d '' ESCAPED_DELIMITER <<'CMD'
+cat <<"E\$OF"
+text
+E$OF
+rm -rf /tmp/job
+CMD
+
 read -r -d '' BACKGROUND_SUBSHELL <<'CMD'
 S=/tmp/x
 (cd "$S" && make) &
@@ -111,6 +126,9 @@ check "unset in a subshell"     NONE "$(j 'S=/tmp/job; (unset S); rm -rf "$S"')"
 check "background subshell"     NONE "$(j "$BACKGROUND_SUBSHELL")"
 check "continued lines"         NONE "$(j "$CONTINUED_LINES")"
 check "heredoc delimiter E\$OF" NONE "$(j "$BARE_DOLLAR_DELIMITER")"
+check "heredoc delimiter <<\\"  NONE "$(j "$CONTINUED_DELIMITER")"
+check "heredoc delimiter \"E\\\$OF\"" NONE "$(j "$ESCAPED_DELIMITER")"
+check "unset leaves REPLY"      NONE "$(j 'REPLY=/tmp/job; unset UNUSED; rm -rf "$REPLY"')"
 check "sudo, temp target"       NONE "$(j 'sudo rm -rf /tmp/x')"
 check "timeout / env / nice"    NONE "$(j 'timeout 5 rm -rf /tmp/x && env A=1 nice -n 5 rm -rf /tmp/y')"
 check "glob below a subdir"     NONE "$(j 'rm -rf /tmp/x/*')"
@@ -239,8 +257,12 @@ ERR="$(HOME="$T/sync" "$REPO/scripts/sync-claude-settings.sh" 2>&1 >/dev/null)"
 ok "sync: hook registered, ask rule gone" $?
 printf '%s' '{"hooks":{"PreToolUse":[{"matcher":"*","hooks":[{"type":"command","command":"true"}]}]}}' >"$T/sync/.claude/settings.local.json"
 ERR="$(HOME="$T/sync" "$REPO/scripts/sync-claude-settings.sh" 2>&1 >/dev/null)"
-[[ "$ERR" == *"drops a base PreToolUse hook"*"rm-rf-guard.py"* ]]
+[[ "$ERR" == *"drops the base PreToolUse hook for Bash"*"rm-rf-guard.py"* ]]
 ok "sync: warns when local replaces PreToolUse" $?
+jq '(.hooks.PreToolUse[] | select(.matcher == "Bash").matcher) = "Edit" | {hooks: {PreToolUse: .hooks.PreToolUse}}' "$REPO/claude/settings.base.json" >"$T/sync/.claude/settings.local.json"
+ERR="$(HOME="$T/sync" "$REPO/scripts/sync-claude-settings.sh" 2>&1 >/dev/null)"
+[[ "$ERR" == *"drops the base PreToolUse hook for Bash"* ]]
+ok "sync: warns when the hook moves to another matcher" $?
 jq '.hooks.PreToolUse |= map(if .matcher == "Bash" then .hooks += [{"type":"command","command":"true"}] else . end) | {hooks: {PreToolUse: .hooks.PreToolUse}}' "$REPO/claude/settings.base.json" >"$T/sync/.claude/settings.local.json"
 ERR="$(HOME="$T/sync" "$REPO/scripts/sync-claude-settings.sh" 2>&1 >/dev/null)"
 [[ -z "$ERR" ]]

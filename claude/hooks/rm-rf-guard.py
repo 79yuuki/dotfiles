@@ -35,8 +35,8 @@ BRACED = re.compile(r"\{([A-Za-z_]\w*)(:?\?[^}$`\\]*)?\}")  # ${S} と ${S:?}。
 ANSI_C = re.compile(r"'(?:[^'\\]|\\.)*'", re.S)  # $'...' は \' を含められる
 ASSIGN = re.compile(r"([A-Za-z_]\w*)(\+?)=(.*)", re.S)
 REDIRECT = re.compile(r"&?(<<<|<<-?|[<>]+)[&|]?")
-HEREDOC_WORD = re.compile(r"""[ \t]*((?:\$?'[^']*'|"[^"]*"|\\.|[^\s;&|<>()'"\\])+)""", re.S)  # 区切りは展開されない
-UNQUOTE = re.compile(r"""\$?'([^']*)'|"([^"]*)"|\\(.)""", re.S)
+HEREDOC_WORD = re.compile(r"""[ \t]*((?:\$?'[^']*'|"(?:[^"\\]|\\.)*"|\\.|[^\s;&|<>()'"\\])+)""", re.S)
+UNQUOTE = re.compile(r"""\$?'([^']*)'|"((?:[^"\\]|\\.)*)"|\\(.)""", re.S)
 SEPARATOR = re.compile(r"&&|\|\||\|&|;;|[;&|\n()]")
 BLOCK_OPEN = ("{", "if", "while", "until")  # 先頭から外して、続きをコマンドとして読む
 BLOCK_WORD = ("then", "else", "elif", "do", "!", "time")
@@ -50,6 +50,17 @@ INERT = ("git", "echo", "printf", "grep", "rg")  # rm という語を実行し�
 
 class Unparsable(Exception):
     pass
+
+
+def heredoc_delimiter(raw):
+    """<< の区切りから引用を外す。区切りは展開されないので、通常の語とは別に読む。"""
+    def unquote(m):
+        if m.group(1) is not None:  # '...' と $'...'
+            return m.group(1)
+        if m.group(2) is not None:  # "..." の中では \$ \` \" \\ と行継続だけがエスケープ
+            return re.sub(r'\\([$`"\\])', r"\1", m.group(2).replace("\\\n", ""))
+        return m.group(3).replace("\n", "")  # \x。行末の \ は行継続
+    return UNQUOTE.sub(unquote, raw)
 
 
 def parse(src, emit):
@@ -218,8 +229,7 @@ def parse(src, emit):
                     if not m2:
                         raise Unparsable("ヒアドキュメントの区切りが読めない")
                     pos = m2.end()
-                    delimiter = UNQUOTE.sub(lambda q: q.group(1) or q.group(2) or q.group(3) or "", m2.group(1))
-                    heredocs.append((delimiter, m.group(1) == "<<-"))
+                    heredocs.append((heredoc_delimiter(m2.group(1)), m.group(1) == "<<-"))
                 else:
                     skip = True
             elif c == "(" and word is None and src.startswith("((", pos) and arithmetic():
@@ -362,7 +372,7 @@ def check(cmd, env):
             frozen.update(a.split("=")[0].rstrip("+") for a in args[k + 1:] if not a.startswith("-"))
             poison(frozen)
         elif head in REBIND:
-            poison([a for a in args[k + 1:] if NAME.fullmatch(a)] + ["REPLY"])
+            poison([a for a in args[k + 1:] if NAME.fullmatch(a)] + ["REPLY"] * (head == "read"))
 
         i = next((j for j in range(k, len(args)) if args[j] == "rm" or args[j].endswith("/rm")), None)
         targets = None if i is None else rm_targets(words[lead + i + 1:], args[i + 1:])
