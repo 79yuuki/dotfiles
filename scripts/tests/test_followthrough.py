@@ -13,6 +13,7 @@ import unittest
 HERE = os.path.dirname(os.path.abspath(__file__))
 SCRIPT = os.path.join(os.path.dirname(HERE), "followthrough.py")
 HOOK = os.path.join(os.path.dirname(os.path.dirname(HERE)), "claude", "hooks", "followthrough-remind.sh")
+INSTALLER = os.path.join(os.path.dirname(HERE), "install-followthrough.sh")
 
 _spec = importlib.util.spec_from_file_location("followthrough", SCRIPT)
 ft = importlib.util.module_from_spec(_spec)
@@ -250,6 +251,67 @@ class FollowthroughTest(unittest.TestCase):
             f.write("{broken")
         r = subprocess.run(["bash", HOOK], input="{}", capture_output=True, text=True, env=env, cwd=inside)
         self.assertEqual((r.returncode, r.stdout), (0, ""))
+
+    def test_installer_registers_repoints_and_removes_the_hook(self):
+        live, local, missing = (os.path.join(self.tmp.name, n) for n in ("settings.json", "settings.local.json", "none.json"))
+        other = {"hooks": [{"type": "command", "command": "other.sh"}]}
+        stale = {"matcher": "startup", "hooks": [{"type": "command", "command": "/old/claude/hooks/followthrough-remind.sh"}]}
+        with open(live, "w") as fh:
+            json.dump({"theme": "dark", "hooks": {"SessionStart": [other, stale], "Stop": [other]}}, fh)
+        with open(local, "w") as fh:
+            json.dump({"model": "x"}, fh)
+        env = dict(os.environ, FOLLOWTHROUGH_SETTINGS_FILES=f"{live}:{local}:{missing}")
+        run = lambda cmd: subprocess.run(["bash", INSTALLER, cmd], capture_output=True, text=True, env=env)
+        read = lambda p: json.load(open(p))
+        ours = lambda p: [h["command"] for g in read(p)["hooks"]["SessionStart"] for h in g["hooks"] if "followthrough" in h["command"]]
+
+        r = run("hook")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        for p in (live, local, missing):
+            self.assertEqual(ours(p), [HOOK])                                   # 古い path の登録は付け替える
+            self.assertEqual(read(p)["hooks"]["SessionStart"][-1]["matcher"], "startup")
+        self.assertEqual((read(live)["theme"], read(live)["hooks"]["Stop"], read(live)["hooks"]["SessionStart"][0]), ("dark", [other], other))
+        self.assertEqual(read(local)["model"], "x")
+        before = open(live).read()
+        self.assertIn("unchanged", run("hook").stdout)                          # 2 回目は何も変えない
+        self.assertEqual(open(live).read(), before)
+
+        self.assertEqual(run("unhook").returncode, 0)
+        self.assertEqual((ours(live), read(live)["hooks"]["SessionStart"]), ([], [other]))
+
+        # 同じグループに別の hook が入っていても、自分の hook だけを付け替え・削除する
+        shared = {"matcher": "startup", "hooks": [other["hooks"][0], stale["hooks"][0]]}
+        with open(live, "w") as fh:
+            json.dump({"hooks": {"SessionStart": [shared]}}, fh)
+        self.assertEqual(run("hook").returncode, 0)
+        self.assertEqual(read(live)["hooks"]["SessionStart"][0], {"matcher": "startup", "hooks": [other["hooks"][0]]})
+        self.assertEqual(ours(live), [HOOK])
+        self.assertEqual(run("unhook").returncode, 0)
+        self.assertEqual(read(live)["hooks"]["SessionStart"], [{"matcher": "startup", "hooks": [other["hooks"][0]]}])
+
+        # 1 つでも読めない・形が違う・書けないなら、どれも変えない
+        before = open(live).read()
+        for broken in ("{broken", "[]", '{"hooks": []}', '{"hooks": {"SessionStart": [1]}}',
+                       '{"hooks": {"SessionStart": [{"hooks": "bad"}]}}', '{"hooks": {"SessionStart": [{"hooks": [1]}]}}'):
+            with open(local, "w") as fh:
+                fh.write(broken)
+            r = run("hook")
+            self.assertNotEqual(r.returncode, 0, broken)
+            self.assertIn("nothing was changed", r.stderr, broken)
+            self.assertEqual(open(live).read(), before, broken)
+        locked = os.path.join(self.tmp.name, "locked")
+        os.makedirs(locked)
+        with open(os.path.join(locked, "s.json"), "w") as fh:
+            json.dump({}, fh)
+        os.chmod(locked, 0o500)
+        try:
+            env["FOLLOWTHROUGH_SETTINGS_FILES"] = f"{live}:{os.path.join(locked, 's.json')}"
+            r = run("hook")
+            self.assertNotEqual(r.returncode, 0)
+            self.assertEqual(open(live).read(), before)
+            self.assertFalse(os.path.exists(live + ".tmp-followthrough"))
+        finally:
+            os.chmod(locked, 0o700)
 
 
 if __name__ == "__main__":
