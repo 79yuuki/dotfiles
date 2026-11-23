@@ -68,8 +68,12 @@ enable_corepack() {
 # Own prefix instead of nvm's per-version globals (needs Node >= 24, unlike the nvm default):
 # survives Node upgrades, and bin/mutator picks the Node to run it with.
 install_mutator() {
+  local version
   printf 'npm install @mizchi/mutator@%s into %s\n' "${MUTATOR_VERSION}" "${MUTATOR_PREFIX}"
   nvm exec --silent 24 npm install --global --prefix "${MUTATOR_PREFIX}" "@mizchi/mutator@${MUTATOR_VERSION}"
+  # A separate assignment, so that a wrapper that cannot start fails the script (set -e).
+  version="$("${REPO_ROOT}/bin/mutator" --version)"
+  printf 'mutator %s\n' "${version}"
 }
 
 main() {
@@ -89,7 +93,6 @@ main() {
   printf '\nnode setup complete\n'
   printf 'default node: %s\n' "$(node -v)"
   printf 'npm: %s\n' "$(npm -v)"
-  printf 'mutator: %s\n' "$("${REPO_ROOT}/bin/mutator" --version)"
 }
 
 main "$@"
