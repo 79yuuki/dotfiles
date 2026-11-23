@@ -135,7 +135,7 @@ Claude Code では skill の `description` と `when_to_use` が常にコンテ�
 - `node/default-packages`: 新しい Node 版を入れたとき自動で入れるグローバル npm パッケージ一覧です。
 - `scripts/setup-homebrew.sh`: `Brewfile` を使って Homebrew 系ツールを復元するスクリプトです。
 - `scripts/setup-node.sh`: `nvm` 導入、Node 版 install、default alias 設定、`corepack enable`、mutator の導入をまとめて行うスクリプトです。
-- `bin/mutator`: mutation testing の `mutator`（`@mizchi/mutator`）をどのディレクトリからでも動かすラッパーです。mutator は Node 24 以上が要り、テストも同じ Node で走らせるので、PATH の node が 24 以上ならそれを、足りなければ nvm で入れた一番新しい Node を使います（nvm の default は変えません）。本体は `setup-node.sh` が版を固定して `~/.local/share/mutator` に入れます。テストは `bin/tests/mutator.test.sh`。
+- `bin/mutator`: mutation testing の `mutator`（`@mizchi/mutator`）をどのディレクトリからでも動かすラッパーです。mutator は Node 24 以上が要り、Vitest / Jest のテストも同じ Node で走らせるので、PATH の node が 24 以上ならそれを、足りなければ nvm で入れた一番新しい Node を使います（nvm の default は変えません）。本体は `setup-node.sh` が版を固定して `~/.local/share/mutator` に入れます。プロジェクトの外に置くため、Vitest の jsdom などの環境のテストでは Vite の `server.fs.allow` に阻まれます（回避策は `mutation-before-pr` skill）。テストは `bin/tests/mutator.test.sh`。
 
 ### 旧 Vim 資産
 

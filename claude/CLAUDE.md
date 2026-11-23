@@ -34,5 +34,5 @@ Opus 5.5 で動作している時は、常にオーケストレーターとし�
 
 # PR 前の mutation testing
 
-- Vitest / Jest / Bun でテストする JS/TS リポジトリでは、コードを変えた PR を出す前と、その PR に追加で push する前に、差分へ mutation testing を回す。生き残った変異はテストを足して殺し（等価な変異だけ理由を付けて除外）、score と生き残りの件数を PR 本文に1行書く。
+- Vitest / Jest / Bun でテストする JS/TS リポジトリでは、コード（テスト以外）を変えた PR を出す前と、その PR に追加で push する前に、差分へ mutation testing を回す。生き残った変異はテストを足して殺し（等価な変異だけ理由を付けて除外）、score と生き残りの件数を PR 本文に1行書く。
 - 使うコマンド、等価な変異の扱い、mutator を使っていないリポジトリでの後片付けは `mutation-before-pr` skill に従う。

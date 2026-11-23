@@ -136,7 +136,7 @@ Codex は Claude Code の Stop hook 相当の仕組みを持たないため、se
 
 ## Mutation testing before PR
 
-- Vitest / Jest / Bun でテストする JS/TS リポジトリでは、コードを変えた PR を出す前と、その PR に追加で push する前に、差分へ mutation testing を回す。手順の正本は Claude skill の `~/.claude/skills/mutation-before-pr/SKILL.md` で、回す前に読む。
+- Vitest / Jest / Bun でテストする JS/TS リポジトリでは、コード（テスト以外）を変えた PR を出す前と、その PR に追加で push する前に、差分へ mutation testing を回す。手順の正本は Claude skill の `~/.claude/skills/mutation-before-pr/SKILL.md` で、回す前に読む。
 - プロジェクトに `check:mutation` のような script や mutator の設定があればそれを使い、無ければグローバルの `mutator --since origin/<base>` を使う。
 - 生き残った変異はテストを足して殺し、等価な変異だけ理由を付けて除外する。score と生き残りの件数を PR 本文に1行書く。回せなかった時は理由を書く。
-- mutator を使っていないリポジトリでは `mutator accept` を使わず（key と理由は PR 本文に書く）、回した後に `git clean -fdxq -- .mutator` で片付けて `.mutator/` を残さない。
+- mutator を使っていないリポジトリでは `mutator accept` を使わず（key と理由は PR 本文に書く）、回した後に `git clean -fdxq -- .mutator`（skill の一時設定を作った時はそのファイルも）で片付けて、何も残さない。

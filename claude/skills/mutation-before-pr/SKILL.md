@@ -1,28 +1,36 @@
 ---
 name: mutation-before-pr
-description: Vitest / Jest / Bun でテストする JS/TS リポジトリで、コードを変えた PR を出す前と、その PR に追加で push する前に、差分へ mutation testing（mizchi/mutator）を回す手順。コマンドの選び方、生き残りの対処と等価な変異の除外、PR 本文に書く1行、mutator を使っていないリポジトリでの後片付け。テスト群全体の検品には使わない。
+description: Vitest / Jest / Bun でテストする JS/TS リポジトリで、コード（テスト以外）を変えた PR を出す前と、その PR に追加で push する前に、差分へ mutation testing（mizchi/mutator）を回す手順。コマンドの選び方、生き残りの対処と等価な変異の除外、PR 本文に書く1行、mutator を使っていないリポジトリでの後片付け。テスト群全体の検品には使わない。
 ---
 
 # PR の前に差分へ mutation testing を回す
 
 差分のコードをわざと書き換えた変種（変異）を作り、テストが落ちるかを見る。落ちない変異があれば、テストはその差分を守っていない。
 
-対象は、Vitest / Jest / Bun でテストしている JS/TS のリポジトリで、コードを変えた PR。PR を出す前と、その PR に追加で push する前に毎回回し、PR 本文の1行も書き直す。
+対象は、Vitest / Jest / Bun でテストしている JS/TS のリポジトリで、コード（テスト以外）を変えた PR。PR を出す前と、その PR に追加で push する前に毎回回し、PR 本文の1行も書き直す。テストだけを変えた PR は、差分に変異が無い（0 件で score 100% と出る）ので対象にしない。
 
 ## コマンドを選ぶ
 
 1. base を最新にする: `git fetch origin <base>`。
-2. プロジェクトに専用の入口があれば、それを使う。package.json の `check:mutation` のような script、`mutator.config.*`、devDependencies の `@mizchi/mutator` が目印。使い方と判定の基準はプロジェクトの README に従う（例: `pnpm run check:mutation --since origin/main`）。
+2. プロジェクトに専用の入口があれば、それを使う。package.json の `check:mutation` のような script、`mutator.config.*`、devDependencies の `@mizchi/mutator` が目印。使い方と判定の基準はプロジェクトの README に従う（例: `pnpm run check:mutation --since origin/main`）。script が無く devDependencies にだけある時は、グローバルではなくプロジェクトの mutator を `pnpm exec mutator`（npm なら `npx mutator`）で使う。
 3. 無ければ、グローバルの `mutator --since origin/<base>` を、テストのあるパッケージのディレクトリで実行する（monorepo ならパッケージごと）。
    - 変異の対象は既定で `src/` 以下。ソースが別の場所なら `--include 'app/**/*.{ts,tsx}'` のように渡す。
-   - テストだけを変えた PR では `--include-test-changes` を付け、変えたテストが守るコードの変異を回す（付けないと変異が 0 件で、score は 100% と出る）。
+   - 変えたテストが弱くなっていないかも見たい時は `--include-test-changes` を付ける。変えたテストが通るコードの変異も回るので、差分の外の生き残りも出る。必須にはしない。
    - 生き残りの全件が要る時は `--reporter agent`（標準出力に JSON）。
-   - 差分が大きい時は `--time-budget 600` で打ち切れる。打ち切って回さなかった変異は Pending になり、差分の score には入らない（Pending だけなら 100% と出る）。Pending が残ったら、片付けの前に同じコマンドをもう一度実行して続きを回す。
-   - グローバルの `mutator` は dotfiles の `bin/mutator`。PATH の node が 24 以上ならそれを、足りなければ nvm で入れた一番新しい Node を使い、テストもその Node で走る。プロジェクトが Node の版を決めていれば、先に `nvm use` する。
+   - 差分が大きい時は `--time-budget 600` で打ち切れる。打ち切って回さなかった変異は Pending になり、差分の score には入らない（Pending だけなら 100% と出る）。Pending の件数は、テキストの要約行（`Killed 17 · Survived 2 · Pending 3` のような行）か `--reporter agent` の `counts.Pending` で見る。JSON 報告（`mutation.json`）の Pending には差分の外の変異も入るので数えない。Pending が残ったら、片付けの前に同じコマンドをもう一度実行して続きを回す。
+   - グローバルの `mutator` は dotfiles の `bin/mutator`。PATH の node が 24 以上ならそれを、足りなければ nvm で入れた一番新しい Node を使う。Vitest / Jest のテストもその Node で走る（Bun は PATH の `bun` で走る）。プロジェクトが Node の版を決めていれば、先に `nvm use` する。
 
 ## 動かない時
 
 - mutator 0.5.3 のランナーが前提にする版は、Vitest 5.x（peer `^5.0.0`）、Jest 30 以上（実験的）、Bun（実験的）。Vitest 3.2.4 では baseline で `Cannot read properties of undefined (reading 'meta')` が出て止まった（exit 4）。この PR のためにプロジェクトの依存を上げない。
+- グローバルの mutator で、jsdom や happy-dom の環境のテストだけが `Cannot find module '/@fs/…/mutator-vitest/dist/setup.js'` で落ちる（exit 4）のは、mutator の setup ファイルが Vite の `server.fs.allow`（既定はプロジェクトのルート）の外にあるため。実行するディレクトリに一時設定 `vitest.mutator.tmp.config.mts` を作り、`--config vitest.mutator.tmp.config.mts` を付けて回す。import するのはプロジェクトの Vitest 設定（`vitest.config.*`、無ければ `vite.config.*`）。後片付けで消す。
+
+  ```ts
+  import { mergeConfig } from "vitest/config";
+  import base from "./vitest.config.ts";
+  export default mergeConfig(base, { server: { fs: { strict: false } } });
+  ```
+
 - exit 4 は「変異を入れなくてもテストが落ちる」。元から落ちるテストのせいなら、そのテストを外した設定をリポジトリの外（一時ディレクトリ）に作り、`--config`（Vitest）か `--jest-config` で渡す。外したテストは PR 本文に書く。
 - 回せなかった時は、PR 本文に `mutation: 未実行（理由）` と書く。黙って省かない。
 
@@ -49,9 +57,9 @@ mutator 0.5.3 がリポジトリに書くものは次の2つ（本体のコー�
 
 手順:
 
-1. 回す前に `git status --porcelain --ignored` の出力を控え、その中に `.mutator/` と `mutator.accepted.json` が無いことを確かめる。在れば前から在るものなので、3 の片付けはせずに報告する。
+1. 回す前に、実行するディレクトリで `ls -d .mutator mutator.accepted.json` が何も見つけないことを確かめる（`git status` は未追跡のディレクトリをまとめて表示するので、中の `.mutator/` を見落とす）。在れば前から在るものなので、3 の片付けはせずに報告する。あわせて `git status --porcelain --ignored` の出力を控える。
 2. 報告のファイルが要る時は `--reporter text --reporter json --report-dir "$(mktemp -d)"` でリポジトリの外に出す（`--report-dir` だけでは、ファイルは書かれない）。
-3. 回した後、同じディレクトリで `git clean -fdxq -- .mutator` を実行する。追跡されていないものだけが消える。`rm -rf` は使わない。
+3. 回した後、同じディレクトリで `git clean -fdxq -- .mutator vitest.mutator.tmp.config.mts` を実行する。追跡されていないものだけが消える。`rm -rf` は使わない。
 4. `git status --porcelain --ignored` を回す前と比べ、増えたものが無いことを確かめる。
 
 キャッシュを消すので、追加の push の前に回すと最初から回り直す。差分だけを回すので、時間は短い。

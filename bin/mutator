@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Global `mutator` (@mizchi/mutator, installed by scripts/setup-node.sh into its own prefix).
-# It needs Node >= 24 and runs the project's tests on that same Node, while the nvm default is older.
+# It needs Node >= 24 and runs Vitest/Jest tests on that same Node, while the nvm default is older.
 # Uses the node on PATH when it is >= 24 (e.g. after `nvm use`), else the newest nvm-installed node.
 set -euo pipefail
 
