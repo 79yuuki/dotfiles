@@ -1,35 +1,40 @@
 {
   "target": "ui-refine",
-  "date": "2026-11-23",
-  "iteration": 2,
+  "date": "2026-11-24",
+  "iteration": 3,
   "status": "doing",
   "scenarios": [
     "S1 confirm step whose spec fixes copy, diagram and colors (non-public; not recorded)",
-    "H1 fictional refund confirm step (fixtures/ui-refine/)"
+    "H1 fictional refund confirm step (fixtures/ui-refine/)",
+    "H2 fictional refund confirm step, external field under review, worker cannot ask, modest and bold versions"
   ],
   "holdOut": "H1",
   "success": {
     "S1": true,
-    "H1": true
+    "H1": true,
+    "H2": true
   },
   "accuracy": {
     "S1": 1.0,
-    "H1": 0.857
+    "H1": 0.857,
+    "H2": 1.0
   },
   "toolUses": {
     "S1": 8,
-    "H1": 12
+    "H1": 12,
+    "H2": 12
   },
   "durationMs": {
     "S1": 164260,
-    "H1": 123243
+    "H1": 123243,
+    "H2": 174489
   },
   "newAmbiguities": [
-    "button rename: A or B",
-    "where a removal reduces facts (B)",
-    "how to fill the destination column for move-only rows",
-    "may legal text (C) be moved or resized",
-    "which unshot states to list"
+    "exception for under-review fields vs 'under review means C'",
+    "legal text position moved by reordering",
+    "non-text visuals on an externally shared screen",
+    "kept warning makes the hidden test easier",
+    "button rename on a C screen"
   ],
   "discretionaryFills": [
     "estimated after-counts marked as guesses",
@@ -40,6 +45,6 @@
   "nextAction": "Use on the next flow including a bold version; check the hidden-text pass condition and the text budget; run section 5 with ux-walkthrough recording pages once",
   "realUse": {
     "date": "2026-11-24",
-    "note": "used once on a real non-public flow; 10 usability fixes and the owner's bolder direction folded back; no fresh blank-executor rerun"
+    "note": "used once on a real non-public flow; 10 usability fixes and the owner's bolder direction folded back; iter3 blank-executor run on the result"
   }
 }

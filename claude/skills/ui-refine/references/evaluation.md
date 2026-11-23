@@ -28,15 +28,21 @@
 
 **本文を隠すテスト**: 人は画面の文を読まない、の代わりの試し。説明文（操作・見出し・ラベル・図・`keep` の外の文字）を透明にした画面（3 節の `uiRefineText` に `hide: true`）で、同じタスクをさせる。隠しても通るなら、見出し・ボタン・図・状態の表示で伝わっている。`keep` に説明文を入れて通りやすくしない（`keep` は値・状態の表示・C の表示・残す警告だけ）。
 
-**合格の決め方**（先に決めて書いておく）: 直した後の画面は、(1) 本文を隠した画面で、前もって書いた合格の割合に届く、(2) 通常の画面での成績が前より下がらない、(3) 取り消せない結果やお金を読み違えた回が増えない、の 3 つを全部満たす。隠した時の成績の落ち方の差だけで判定しない（両方とも悪くなっても差は小さくなる）。
+**合格の決め方**（先に決めて書いておく）: 判定は段ごとに行い、全体の割合でならさない。直した後の画面は、次を全部満たす。
 
-**回数が 1 回と決まっている時**: 1 回で言えることと言えないことを分けて書く。例:「最初に押す物は、前後とも、本文を隠した画面でも正解（各 1 回）。迷った所の数は 7 → 5。1 回ずつなので、悪くしていないこと、迷いが減った傾向まで。分かりやすくなったかは人で確かめる」。
+1. 本文を隠した画面で、どの段も「正しい物を最初に押した」が 3 回のうち 2 回以上（既定の基準。緩めるのは人が決めた時だけ）。
+2. 本文を隠した画面で、取り消せない結果やお金を読み違えた回が 0（`keep` に残した警告と値で伝わること）。
+3. 通常の画面でも本文を隠した画面でも、どの段の成績も前より下がらない。
+
+隠した時の成績の落ち方の差だけで判定しない（両方とも悪くなっても差は小さくなる）。
+
+**回数が 1 回と決まっている時**: 観測したことだけを書き、合否は付けない。例:「最初に押す物は、前後とも、本文を隠した画面でも正解だった（各 1 回）。迷った所の数は前 7、後 5。1 回ずつなので、悪くしていないか・良くなったかは判定できない。合否は人の確認を待つ」。
 
 **実行者に渡す文の雛形**
 
 ```md
 あなたは <誰として: 例「初めてこのサービスで支払う人」> です。<目的: 例「お店で 1,250 円を払いたい」>。
-画面の画像を 1 枚ずつ見せます。説明書や仕様は無く、画面だけで判断してください。
+画面の画像を順に見せます。説明書や仕様は無く、画面だけで判断してください。縦に長い画面は「画面 1（全 3 枚）」のように分けて渡すので、同じ画面の画像を全部見てから、その画面について答えてください。
 各画面について、次の 5 つに答えてください。
 1. 最初にどこを押しますか（場所と、書かれている名前）
 2. 押すと何が起きると思いますか
@@ -49,6 +55,7 @@
 ```js
 // 縦に長い画面を、上から区切って撮る（確かめ役の AI に順に渡す）。seg は 1 枚の高さ、overlap は重ねる高さ（px）
 const shootInParts = async (page, prefix, { seg = 1600, overlap = 120 } = {}) => {
+  if (!(seg > 0 && overlap >= 0 && overlap < seg)) throw new Error("seg > 0、0 <= overlap < seg にする");
   const height = await page.evaluate(() => document.documentElement.scrollHeight);
   const { width } = page.viewportSize();
   const files = [];
@@ -84,10 +91,11 @@ const uiRefineText = ({ root: rootSel = "", keep = "", hide = false } = {}) => {
   const root = rootSel ? document.querySelector(rootSel) : document.body;
   if (!root) throw new Error(`root が見つからない: ${rootSel}`);
   const ACTION = 'button, a[href], input:not([type=hidden]), select, textarea, summary, [role=button], [role=link], [role=checkbox], [role=radio], [role=tab]';
-  const NAME = 'h1, h2, h3, h4, h5, h6, [role=heading], legend, label, figure, svg, [role=img]';
+  const NAME = 'h1, h2, h3, h4, h5, h6, [role=heading], legend, label, svg, [role=img]';
   const BUTTONISH = 'button, a[href], [role=button], input[type=submit], input[type=button]';
   const boxOf = (el) => { while (el && getComputedStyle(el).display === "contents") el = el.parentElement; return el; };
-  const shown = (el) => getComputedStyle(el).visibility === "visible" && !!boxOf(el)?.checkVisibility({ opacityProperty: true, visibilityProperty: true });
+  // 読み上げ用に見えなくした文字（1px 以下の箱）は、目に入らないので数えない
+  const shown = (el) => { const b = boxOf(el); if (!b || getComputedStyle(el).visibility !== "visible" || !b.checkVisibility({ opacityProperty: true, visibilityProperty: true })) return false; const r = b.getBoundingClientRect(); return r.width > 1 || r.height > 1; };
   // 操作を先に判定する（keep にした表のセルの中のボタンも、操作として数える）
   const kindOf = (el) => (el.closest(ACTION) ? "action" : keep && el.closest(keep) ? "keep" : el.closest(NAME) ? "name" : "explanation");
   const chars = { explanation: 0, name: 0, action: 0, keep: 0 };
@@ -101,7 +109,7 @@ const uiRefineText = ({ root: rootSel = "", keep = "", hide = false } = {}) => {
     chars[kind] += [...text].length;
     if (kind === "explanation") explanationNodes.push(n);
   }
-  const actions = [...root.querySelectorAll(ACTION)].filter(shown);
+  const actions = [...(root.matches(ACTION) ? [root] : []), ...root.querySelectorAll(ACTION)].filter(shown);
   for (const el of actions) if (el.matches("input[type=submit], input[type=button], input[type=reset]")) chars[kindOf(el)] += [...el.value.replace(/\s+/g, "")].length;
   // 色は canvas に塗って RGBA に直す（oklch() や color() で返る時もあるため）
   const ctx = document.createElement("canvas").getContext("2d", { willReadFrequently: true });
@@ -138,8 +146,9 @@ const uiRefineText = ({ root: rootSel = "", keep = "", hide = false } = {}) => {
 - `explanationChars` が説明文の文字数。見出し・ラベル・図の中の文字（`nameChars`）、ボタンやリンクの中の文字（`actionChars`）、`keep` に当たる文字（`keepChars`）は別に数える。空白は数えない。見えている文字だけを数えるので、閉じた 2 段目（`details` など）の中身は入らない。これが「最初に目に入る本文」になる。
 - `root` で数える範囲を絞る。導線の本文だけを数える時は、左のメニュー・ヘッダー・下のタブの外の要素を指す。文字の予算は、区画ごとに `root` を替えて数える。見つからないセレクタを渡すと止まる（黙って全体を数えない）。
 - 判定の順は、操作 → `keep` → 名前 → 説明文。`keep` にした表のセルの中のボタンも、操作として数える。
-- 図の中の文字は名前として数え、隠すテストでも残す。図の中に説明の文を入れて数から逃れない（図の文字はラベル程度にする）。
-- `keep` には、隠すテストでも消してはいけない物を全部渡す。金額・宛先・枚数や日付などの値、状態の表示（札・チップ・進み具合）、規約・法定の表示（C）、取り消せない結果の警告（重なっていれば残す 1 つ）。前後で同じ意味の物を指すセレクタにする。
+- SVG の図の中の文字は名前として数え、隠すテストでも残す。`figcaption` などの図の説明文は本文として数える。HTML で組んだ図のラベル（ステッパーの段の名前など）は、短いラベルだけを `keep` に渡す。図の中に説明の文を入れて数から逃れない。
+- 読み上げ用に見えなくした文字（1px 以下の箱）は数えない。
+- `keep` には、隠すテストでも消してはいけない物を全部渡す。金額・宛先・枚数や日付などの値、状態の表示（札・チップ・進み具合）、HTML で組んだ図の短いラベル、規約・法定の表示（C）、取り消せない結果の警告（重なっていれば残す 1 つ）。前後で同じ意味の物を指すセレクタにする。
 - `primaryActions` が主な操作の数。1 が目標。ただし、やることが全部済んだ画面では 0 が正しい（済んだ物を変える操作を一番強く見せない）。2 以上なら、同じ強さの物が並んでいないかを画像で見る。`actions` は見えている操作の総数（押せない物も含む）。
 - 主な操作の判定は見た目の近似。スタイルを当てていない既定のボタン（灰色）も数える。白いボタン、枠線だけのボタン、押せないボタン（`disabled`、無効な `fieldset` の中、`inert`、`aria-disabled`）は数えない。数え漏れと数えすぎは、画像で確かめて表に注記する。
 - 数えられない文字がある: iframe の中、Shadow DOM の中、疑似要素（`::before` の `content`）、画像の中の文字。ある画面では注記する。
