@@ -1,7 +1,7 @@
 ---
 name: ui-refine
 description: >-
-  Refine a working product's screens so anyone can operate them without mistakes and without reading, keeping the spec (what can be done, states, flow) unchanged. Fence what must not change, inventory screens and states per flow, diagnose (discoverable / predictable / learnable, error prevention, explanation-heavy or AI-made look) assuming people do not read body text, fix by structure, labels, diagrams, order, defaults and constraints within a text budget instead of adding text, offer a modest and a bold version, compare before/after with an agent that has not read this skill, and ship one PR per flow. Use for 「UI を良くして」「説明臭い」「AI が作った感がある」「文字だらけ」「画面を分かりやすく」「誤操作を減らしたい」「UI を磨いて」/ refining an existing app's UI. Not for new UI, a new visual direction or a design system (ui-design-system / frontend-design), walking flows with a human (ux-walkthrough), accessibility audits (ui-accessibility-design), abnormal-input testing (exploratory-qa), or the clarity of documents or copy alone (clarity-gate).
+  Refine a working product's screens so anyone can operate them without mistakes or reading, keeping what can be done, states and flow unchanged. Fence what must not change, inventory screens and states, diagnose (discoverable / predictable / learnable, error prevention, explanation-heavy or AI-made look) assuming people do not read body text, fix by structure, labels, diagrams, order, defaults and constraints within a text budget instead of adding text, default to a bold version with spec-rewrite proposals (modest as fallback), compare before/after with an agent that has not read this skill, one PR per flow. Use for 「UI を良くして」「説明臭い」「AI が作った感がある」「文字だらけ」「画面を分かりやすく」「誤操作を減らしたい」「UI を磨いて」/ refining an existing app's UI. Not for new UI, a new visual direction or a design system (ui-design-system / frontend-design), walking flows with a human (ux-walkthrough), accessibility audits (ui-accessibility-design), abnormal-input testing (exploratory-qa), or the clarity of documents or copy alone (clarity-gate).
 ---
 
 # UI Refine（仕様は変えずに、間違えずに使える画面にする）
@@ -114,12 +114,12 @@ description: >-
 
 文を削らない行は「削る文と行き先」に「なし」と書く。「文言の分類」に「なし」と書くのは、文言を変えない行だけ（言い換えや、C の表示に触れる案には分類を付ける）。見立てと方針だけを返す時は、最後に、2 節の状態と幅のうち撮れていないものと、数えていない数を書く。
 
-**控えめ版と大胆版を両方出す。** 文を 2 割減らす程度の控えめな直しでは、たいてい足りない。
+**既定は大胆版。控えめ版は代わりの道。** 文を 2 割減らす程度の控えめな直しでは、たいてい足りない。
 
-- 控えめ版: 仕様にも B・C の文言にも触れない範囲（「そのまま直す」の表）だけで作る。
-- 大胆版: 仕様の文の書き換え、図の追加、区画の組み直しまで含めて、読まない前提と文字の予算を満たす形で作る。仕様の書き換えは、前の文・後の文・理由を提案として出す（1 節。決めるのは人）。できること・状態・流れの変更と C の文言は、大胆版でも勝手に変えず、提案に留める。
-- 大胆版は、見せるための試作として別のブランチで作る（マージを前提にしない）。決まっていない仕様の書き換えを含んでよいのは、この試作の中だけで、その部分は PR の本文に提案（前の文・後の文・理由）として並べる。前・控えめ版・大胆版を同じ状態・同じ幅で撮り、左右に並べて人に選んでもらう（[references/evaluation.md](references/evaluation.md) の 4 節）。
-- 本番に入れるのは人が選んだ版だけ。仕様の書き換えが要る版は、その提案が決まり、柵（決まった仕様）を立て直してから、改めて本番に入れる PR にする。
+- 大胆版（既定）: 読まない前提と文字の予算を満たす形で作る。図の追加、区画の組み直し、仕様の文の書き換えまで含めてよい。仕様の書き換えは、前の文・後の文・理由を提案として出す（1 節。決めるのは人）。できること・状態・流れの変更と C の文言は、大胆版でも勝手に変えず、提案に留める。作り方の例は [references/principles.md](references/principles.md) の例 3。
+- 控えめ版（代わりの道）: 仕様を動かせない画面（仕様が見せ方まで決めていて書き換えの見込みが無い、外部に共有した画面など）や、急ぎで小さく直す時に使う。仕様にも B・C の文言にも触れない範囲（「そのまま直す」の表）だけで作る。大胆版の仕様の書き換えの提案が通らないかもしれない時は、控えめ版も作って並べる。
+- 決まっていない仕様の書き換えを含む大胆版は、見せるための試作として別のブランチで作り、その部分を PR の本文に提案として並べる。前と大胆版（控えめ版を作った時は 3 枚）を同じ状態・同じ幅で撮り、左右に並べて人に見せる（[references/evaluation.md](references/evaluation.md) の 4 節）。
+- 本番に入れるのは人が決めた版だけ。仕様の書き換えが要る版は、その提案が決まり、柵（決まった仕様）を立て直してから本番に入れる。
 
 ## 5. 確かめる（直した本人ではない目で）
 
@@ -138,7 +138,7 @@ AI の結果は甘めに出る（[references/evaluation.md](references/evaluatio
   - 何の導線か。変えていないもの（柵）と E2E の結果
   - 前後の画像（スマホと PC）と、ux-walkthrough のページの場所
   - 数の前後（説明文の文字数、主な操作の数、区画ごとの文字の予算）と、本文を隠した画面での結果
-  - 控えめ版と大胆版を作った時は、並べた画像と、どちらを選んだか
+  - 前と大胆版（控えめ版を作った時はそれも）を並べた画像と、人が決めた版
   - 白紙の AI の結果（何回、何が通り、何が通らなかったか）
   - 文言の変更の一覧（A／B／C）と、削った説明の行き先
   - 人に聞いて決めたこと。まだ決まっていない聞く案と、仕様の書き換えの提案（前の文・後の文・理由）
@@ -153,6 +153,8 @@ AI の結果は甘めに出る（[references/evaluation.md](references/evaluatio
 - 実際の画面で数えたら、左のメニューやヘッダーの文字まで数えた。`root` で本文に絞る。
 - `keep` に表のセルを入れたら、セルの中のボタンまで `keep` に数えた。道具を、操作を先に判定する形に直した。
 - 縦に長い画面を 1 枚の画像で確かめ役の AI に渡したら、縮小されて文字が読めなかった。区切って渡す（[references/evaluation.md](references/evaluation.md) の 1 節）。
+- 大胆版で図と段の一覧を作ったら、一覧に無い区画と、いまの段より後の段の強いボタンで、確かめ役の AI が迷った。段の一覧には全部の区画を載せ、強いボタンはいまの段だけにする。
+- 大胆版で注意を「くわしく」へ移しすぎ、取り消せない操作の前の注意まで隠して、レビューで戻した。お金・鍵の漏れ・取り消せないことの注意は、文字の予算より優先して残す。
 - 試しで `keep` を金額の一覧だけにしたら、枚数・公演日・規約の表示・取り消せない警告まで説明文として数え、隠した画面からも消えた。`keep` には値・C の表示・残す警告を全部入れる。
 
 ## 関連 skill
