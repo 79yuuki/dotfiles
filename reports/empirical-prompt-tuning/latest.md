@@ -1,10 +1,9 @@
 # Empirical Prompt Tuning — latest
 
-- target: ambition-lens（claude/skills/ambition-lens/SKILL.md）
-- date: 2026-10-16
-- iteration: 3
-- status: converged
-- 結果: 3 iteration・17 シナリオで期待判定と全一致（iter1 6/6、iter2 6/6、iter3 5/5）
-- 詳細: 2026-10-16-ambition-lens-iter1.md / -iter2.md / -iter3.md
-- 追記（同日）: ローカルのプロンプト履歴で hook の語彙と除外を調整した（T の発火率 76.5%→98.3%）。詳細: 2026-10-16-ambition-lens-history-tuning.md
-- next action: 実セッションでの hook 発火と起動率の観察、1〜2週間後に Skip 条件と hook 語彙を見直す
+- target: ui-refine（claude/skills/ui-refine/SKILL.md）
+- date: 2026-11-23
+- iteration: 2
+- status: doing
+- 結果: 白紙の実行者（Sonnet）2 本。iter1（仕様が文言・図・色まで決めている確認の段）は critical 2/2・checklist 7/7、iter2（hold-out。架空の払い戻しの確認の段、題材は fixtures/ui-refine/）は critical 2/2・checklist 6/7（重い順が 1 か所崩れた）。どちらも説明を足さず、仕様を変える直しを「聞く案」に分けた
+- 詳細: 2026-11-23-ui-refine-iter1.md / -iter2.md
+- next action: 実際の導線で前後比較（白紙の AI と ux-walkthrough の録画のページ）を一度通す。次に使った時に iter2 の修正（分類の例、重い順）が効いたかを見る

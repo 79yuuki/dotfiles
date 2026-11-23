@@ -1,7 +1,7 @@
 ---
 name: ui-design-system
 description: >-
-  Design, critique, and refine high-quality UI systems for web apps, landing pages, dashboards, and mobile interfaces. Use for layout, visual hierarchy, color, typography, components, interaction states, responsive behavior, and accessibility.
+  Design, critique, and refine high-quality UI systems for web apps, landing pages, dashboards, and mobile interfaces. Use for layout, visual hierarchy, color, typography, components, interaction states, responsive behavior, and accessibility. Not for cleaning up an existing app's screens for clarity and fewer mistakes without changing the spec (ui-refine).
 ---
 
 # UI Design System — 9段階プロンプトチェーン
