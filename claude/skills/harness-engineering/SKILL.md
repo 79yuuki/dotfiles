@@ -158,7 +158,6 @@ Coding Agentは `prompt → action/tool → observation → next prompt` のフ�
 **この skill 群での適用例:**
 - `codex` skill: Claude Code（Generator）+ Codex（Evaluator/Reviewer）
 - `parallel-orchestrator`: 複数Generator + Codex横断レビュー
-- `requesting-code-review`: 多観点レビュー依頼と評価
 
 ### Pattern 1.5: AI Product Quality Decision Template
 
@@ -240,7 +239,7 @@ AIプロダクト/agent機能/LLM出力を含むLP・QAでは、テストケー�
 
 **この skill 群での適用例:**
 - sub-agent 起動（Claude Code の Task/Agent tool 等）でコンテキスト隔離
-- `dispatching-parallel-agents` / `subagent-driven-development` の並列構成
+- `parallel-orchestrator` の並列構成
 
 ### Pattern 5: AI-Ready Data Harness
 
@@ -403,9 +402,8 @@ Anthropic公式 (large-codebase article):
 | `AGENTS.md` / `CLAUDE.md` | Instruction層 | 全セッションの行動指針 |
 | `coding-agent` | Initializer/Coder | ワンショット実装 |
 | `codex` skill | Generator/Evaluator | Claude Code + Codexレビュー |
-| `parallel-orchestrator` / `subagent-driven-development` | Sub-agents + Evaluator | 並列開発 + 横断レビュー |
-| `verification-before-completion` | Learn gate | 完了宣言前の確定的ゲート |
-| `requesting-code-review` | Evaluator | 多観点レビュー依頼 |
+| `parallel-orchestrator` | Sub-agents + Evaluator | 並列開発 + 横断レビュー |
+| CLAUDE.md「検証と QA の入口」 | Learn gate | 完了宣言前の確定的ゲート |
 | `prompt-design` | Instruction層 | プロンプト品質チェックリスト |
 | sub-agent 起動 (Task/Agent tool) | Sub-agents | コンテキスト隔離 |
 | progress file / handoff artifact | Context Management | セッション間記憶 |
@@ -417,11 +415,11 @@ Anthropic公式 (large-codebase article):
 | Gate | 主な受け皿 | 合格条件 |
 |---|---|---|
 | Define / Spec | `prompt-design`, `harness-engineering`, project brief | what/why、制約、成功条件が明示されている |
-| Plan | `writing-plans`, `coding-agent` | 小さく検証可能な単位に分かれている |
+| Plan | `coding-agent` | 小さく検証可能な単位に分かれている |
 | Build | `coding-agent` / project-specific ops | 1 sliceずつ実装し、handoffが残る |
 | Verify / Test | deterministic checks, browser QA, fresh-context evaluator | テスト・lint・typecheck・UI QA等の証拠がある |
-| Review / Simplify / Security | `requesting-code-review`, `skill-creator` security audit, security policy | merge/常設化前に別視点・安全境界を通す |
-| Ship / Learn | release checklist, `finishing-a-development-branch`, `skill-portfolio-evolution` | rollback/monitoring/学習の戻し先がある |
+| Review / Simplify / Security | `codex`, `skill-creator` security audit, security policy | merge/常設化前に別視点・安全境界を通す |
+| Ship / Learn | release checklist, `merge-gate`, `skill-portfolio-evolution` | rollback/monitoring/学習の戻し先がある |
 
 ## 参考文献
 

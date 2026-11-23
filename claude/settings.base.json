@@ -79,7 +79,6 @@
     "command": "input=$(cat); name=$(echo \"$input\" | jq -r '.model.display_name'); id=$(echo \"$input\" | jq -r '.model.id'); used=$(echo \"$input\" | jq -r '.context_window.used_percentage // empty'); in_tok=$(echo \"$input\" | jq -r '.context_window.total_input_tokens // 0'); out_tok=$(echo \"$input\" | jq -r '.context_window.total_output_tokens // 0'); cost=$(echo \"$input\" | jq -r '.cost.total_cost_usd // 0'); printf \"%s (%s) | Ctx: %.1f%% | In: %s Out: %s | $%.4f\" \"$name\" \"$id\" \"${used:-0}\" \"$in_tok\" \"$out_tok\" \"$cost\""
   },
   "enabledPlugins": {
-    "superpowers@claude-plugins-official": true,
     "frontend-design@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true,
     "financial-analysis@claude-for-financial-services": true,

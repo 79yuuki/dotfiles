@@ -1,14 +1,14 @@
 ---
 name: test-quality
 description: >-
-  Audit and strengthen an existing test suite's ability to catch breakage: mutation testing, weak-assertion review, property-based / characterization / differential / generated tests, abnormal-case viewpoints, and risk-based selection. Use for テスト改善 / 「テストの質を上げて」「このテストは信用できる？」「カバレッジは高いのにバグが出る」/ mutation testing / AI が書いたテストの検品 / テストをマージの根拠に使う前. Not for writing the first failing test of a change (test-driven-development), state-space or ordering properties (formal-methods), browser flows (playwright-e2e), or exploring a running app (exploratory-qa).
+  Audit and strengthen an existing test suite's ability to catch breakage: mutation testing, weak-assertion review, property-based / characterization / differential / generated tests, abnormal-case viewpoints, and risk-based selection. Use for テスト改善 / 「テストの質を上げて」「このテストは信用できる？」「カバレッジは高いのにバグが出る」/ mutation testing / AI が書いたテストの検品 / テストをマージの根拠に使う前. Not for writing the first failing test of a change, state-space or ordering properties (formal-methods), browser flows (playwright-e2e), or exploring a running app (exploratory-qa).
 ---
 
 # Test Quality（テストの検出力を上げる）
 
 テストの価値は「壊れを見つけられるか」で決まる。件数とカバレッジは、実行された行を数えているだけで、壊れた時に落ちるかどうかは教えてくれない。この skill は、既にあるテストを検品し、足りない所だけを足す。
 
-変更と一緒に最初のテストを書く手順は test-driven-development にある。ここは、書き終わったテスト群を後から測る時に使う。
+ここは、書き終わったテスト群を後から測る時に使う。変更と一緒に最初のテストを書く手順（先に失敗するテストを書き、通してから整える）は扱わない。
 
 ## 判定の物差し
 
@@ -103,7 +103,6 @@ flaky なテストは、skip・sleep の追加・通るまでの再実行で隠�
 
 ## 関連 skill
 
-- test-driven-development: 変更と一緒に最初のテストを書く。`writing-good-tests.md` に書き方
 - formal-methods: 状態空間と順序の性質。反例を回帰テストにする
 - playwright-e2e: E2E の書き方の決まり
 - exploratory-qa: 動いているアプリを操作して探す

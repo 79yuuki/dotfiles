@@ -1,7 +1,7 @@
 ---
 name: test-performance
 description: >-
-  JS/TS リポジトリの単体・コンポーネントテスト（Vitest / Jest）の実行を、検出力を落とさずに速くする手順。測る → 内訳を分ける → 候補を1つずつ試す → 同じ正しさを確かめる → 残すか戻すか。「テストが遅い」「CI のテスト時間を短くしたい」「pool / isolate / environment / happy-dom / Browser Mode / ts-jest を替えて速くしたい」時に使う。テストが壊れを見つけるかの検品（test-quality）、PR 前の mutation testing（mutation-before-pr）、E2E を書く・回す（playwright-e2e）、落ちるテストや flaky の原因調査（systematic-debugging）、アプリ本体や bundle の速度には使わない。
+  JS/TS リポジトリの単体・コンポーネントテスト（Vitest / Jest）の実行を、検出力を落とさずに速くする手順。測る → 内訳を分ける → 候補を1つずつ試す → 同じ正しさを確かめる → 残すか戻すか。「テストが遅い」「CI のテスト時間を短くしたい」「pool / isolate / environment / happy-dom / Browser Mode / ts-jest を替えて速くしたい」時に使う。テストが壊れを見つけるかの検品（test-quality）、PR 前の mutation testing（mutation-before-pr）、E2E を書く・回す（playwright-e2e）、落ちるテストや flaky の原因調査（evidence-driven-investigation）、アプリ本体や bundle の速度には使わない。
 ---
 
 # テストの実行を、正しさを落とさずに速くする

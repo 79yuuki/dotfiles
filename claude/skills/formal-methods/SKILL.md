@@ -14,7 +14,7 @@ description: >-
 
 順序や入力の組合せに未検査の性質があり、通常の例示テストだけでは判断しづらい時に使う。小さく全列挙できるなら、それだけで終える。
 仕様が実装よりずっと抽象的な時や、実行中の状態を一貫した形で取り出せない時は、モデルを実装に追従させる費用が効果を上回りやすい。その場合は、モデルを書く前に、単純な参照実装と本実装を同じ入力で比べる差分テストから始める。
-単純な CRUD や UI 調整には過剰なので、通常のテスト（test-driven-development）で済ませる。
+単純な CRUD や UI 調整には過剰なので、通常のテストで済ませる。
 
 ## ツール選択
 
@@ -76,10 +76,8 @@ description: >-
 ## 関連 skill
 
 - derive-regression-oracles: 利用可能なら同じモデル→反例→回帰の作業として統合する。この skill は Mac 上の既存入口であり別の万能ワークフローを追加しない
-- test-driven-development: 反例を RED のテストにする手順
 - test-quality: 既存のテストが壊れを見つけられるかの検品（mutation testing、property-based test）
-- systematic-debugging: 順序・状態空間の問題ではないバグの切り分け
-- verification-before-completion: 検査・テストを実行してから完了を宣言する
+- evidence-driven-investigation: 順序・状態空間の問題ではないバグの切り分け
 - harness-engineering: ループの数値指標
 - smart-contract-audit: スマートコントラクトでの補助的な利用
 - merge-gate: 検査の結果をマージの根拠に使う時の判定

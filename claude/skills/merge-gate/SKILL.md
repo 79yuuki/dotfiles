@@ -1,7 +1,7 @@
 ---
 name: merge-gate
 description: >-
-  Decide whether a pull request can merge without a human reading the diff. An agent that did not write the change applies path/diff rules, re-runs the evidence, and records a high / medium / low verdict bound to the head commit. Use for 「この PR は自動マージしていい？」「マージ判定して」/ merge gate / 自動マージの精度を測る・段階導入する / agent が書いた fix PR を人が読まずに入れる前. Not for choosing how to integrate your own branch (finishing-a-development-branch), claiming your own work is done (verification-before-completion), or design review (requesting-code-review).
+  Decide whether a pull request can merge without a human reading the diff. An agent that did not write the change applies path/diff rules, re-runs the evidence, and records a high / medium / low verdict bound to the head commit. Use for 「この PR は自動マージしていい？」「マージ判定して」/ merge gate / 自動マージの精度を測る・段階導入する / agent が書いた fix PR を人が読まずに入れる前. Not for choosing how to integrate your own branch, claiming your own work is done, or design review (codex).
 ---
 
 # Merge Gate（人が diff を読まずにマージしてよいかの判定）
@@ -137,8 +137,7 @@ python3 scripts/followups.py OWNER/REPO --days 60 [--config merge-gate.toml]
 
 ## 関連 skill
 
-- verification-before-completion: 書いた側が、完了と言う前に行う検証
-- finishing-a-development-branch: 自分のブランチをどう統合するかを選ぶ
+- 書いた側が完了と言う前に行う検証と、PR の検証欄の書き方は、CLAUDE.md の「検証と QA の入口」
 - blast-radius: 小さな差分の影響範囲を、実行で確かめる
 - test-quality: テストが壊れを見つけられるかの検品
 - exploratory-qa / playwright-e2e: 実物で動かして確かめる手段

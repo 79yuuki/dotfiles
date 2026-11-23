@@ -135,7 +135,7 @@ description: >-
 - playwright-e2e: 機械で判定できる確認を spec にする。E2E の書き方の決まり
 - test-quality: 異常系の観点。テストが壊れを見つけられるかの検品
 - create-verification-skill: プロジェクトのアプリを起動して操作する手順を、プロジェクト側の skill として残す
-- systematic-debugging: 見つけた不具合の原因を調べる
+- evidence-driven-investigation: 見つけた不具合の原因を調べる
 - merge-gate: 人が diff を読まずにマージしてよいかの判定
 
 ## 出典

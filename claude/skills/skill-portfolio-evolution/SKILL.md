@@ -22,7 +22,7 @@ Official source snapshot: [references/anthropic-official-sources-2026-05-12.md](
 
 - `anthropics/skills` (`anthropic-agent-skills` marketplace): general Agent Skills examples, spec, template, `skill-creator`, document/web/design/testing patterns.
 - `anthropics/financial-services` (`claude-for-financial-services` marketplace): financial-analysis, equity-research, market-researcher, managed-agent cookbook patterns.
-- `anthropics/claude-plugins-official`: Claude Code official plugins such as Superpowers and frontend/design workflow plugins.
+- `anthropics/claude-plugins-official`: Claude Code official plugins such as frontend/design workflow plugins.
 
 Prefer Claude Code plugin commands for actual install:
 

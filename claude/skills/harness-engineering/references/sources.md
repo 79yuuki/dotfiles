@@ -77,7 +77,7 @@
 
 14. **AGENTS.md / CLAUDE.md** — 自環境のハーネス設計そのもの
 15. **local lessons / memory notes** — 失敗再発防止ログ（= Hashimoto's "engineer the harness"の実践）
-16. **verification-before-completion / skill-portfolio-evolution** — 完了宣言前の確定的ゲートと常設化判断
+16. **CLAUDE.md「検証と QA の入口」 / skill-portfolio-evolution** — 完了宣言前の確定的ゲートと常設化判断
 
 ## 追加ソース（2026-10）
 

@@ -1,9 +1,5 @@
 {
   "enabledPlugins": {
-    "superpowers@claude-plugins-official": {
-      "version": "7.0.0",
-      "note": "公式 marketplace 版。2026-11-11 に claude plugin list で 7.0.0 を確認。dotfiles の claude/skills 内の取り込みコピーは上流 v6.4.2 とマージ済み (2026-10-07)。"
-    },
     "frontend-design@claude-plugins-official": {
       "version": "1.1.1"
     },
@@ -64,7 +60,6 @@
   "notes": [
     "これは移植用の簡易 manifest です。",
     "plugin cache 本体や installPath のようなマシン依存情報は含めていません。",
-    "Superpowers は公式 marketplace 版を正とし、重複発火を避けるため marketplace fork との二重 enable はしません。",
     "Anthropic Agent Skills marketplace can be added in Claude Code with: /plugin marketplace add anthropics/skills",
     "Official external skills are introduced by provenance/pinned manifest first; machine-local plugin cache paths are intentionally excluded."
   ],

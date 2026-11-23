@@ -1,6 +1,6 @@
 ---
 name: orchestrate-with-advisory
-description: "Opus 5.5 をオーケストレーター、Sonnet 5 を実装者とする Workflow ツール多エージェント開発パターン。実装・修正・調査など複数ステップの作業を開始する時に毎回使う。タスク分割（ファイル所有権の排他）、構造化返却（done/blocked）、統合検証エージェント、blocked 時のアドバイザリーループ（Opus が助言を ADVICE 欄に追記して resumeFromRunId で再開）を提供する。使わない場面（NOT for）: 会話的な応答や1ファイルの軽微な修正（workflow 化しない）、Codex CLI とのレビュー対話（→ codex スキル）、Agent ツール単発の軽量タスク（→ coding-agent / dispatching-parallel-agents）。"
+description: "Opus 5.5 をオーケストレーター、Sonnet 5 を実装者とする Workflow ツール多エージェント開発パターン。実装・修正・調査など複数ステップの作業を開始する時に毎回使う。タスク分割（ファイル所有権の排他）、構造化返却（done/blocked）、統合検証エージェント、blocked 時のアドバイザリーループ（Opus が助言を ADVICE 欄に追記して resumeFromRunId で再開）を提供する。使わない場面（NOT for）: 会話的な応答や1ファイルの軽微な修正（workflow 化しない）、Codex CLI とのレビュー対話（→ codex スキル）、Agent ツール単発の軽量タスク（→ coding-agent / parallel-orchestrator）。"
 ---
 
 # Orchestrate with Advisory
@@ -94,9 +94,9 @@ journal / 成果を読んで判断してから次ステージの Workflow を起
 重点観点・出力フォーマット（✅ APPROVED / ⚠️ APPROVED WITH CONCERNS / ❌ NEEDS FIXES）を含める。
 **✅ APPROVED が出るまで修正 → 再レビューを繰り返し、未承認のまま次ステージへ進まない。**
 ただし同じ変更で 3 ラウンド収束しなければ方針を見直してユーザーに相談する（2 回目以降の範囲と対象外は
-requesting-code-review の「Avoiding review loops」に従う）。
+`codex` スキルの「ゲート条件」に従う）。
 指摘は鵜呑みにせず、コード・仕様と突き合わせて技術検証してから適用する
-（receiving-code-review の原則。正当でない指摘は根拠を添えて Codex に反論してよい）。
+（正当でない指摘は根拠を添えて Codex に反論してよい）。
 修正はこのスキルのオーケストレーション手順（分割 → Sonnet 委譲 → 統合検証）で行う。
 
 ## チェックリスト（起動前）

@@ -17,7 +17,7 @@
 - agent runtimeスキルも self-contained scripts を優先する
 
 ## 3. ワンショットの守備範囲を超えたら昇格する
-次に当てはまるなら `coding-agent` に留めず、`parallel-orchestrator` / `subagent-driven-development` / `harness-engineering` を検討する:
+次に当てはまるなら `coding-agent` に留めず、`parallel-orchestrator` / `harness-engineering` を検討する:
 - 複数ファイルをまたぐ
 - 設計判断が大きい
 - 長時間自走が必要

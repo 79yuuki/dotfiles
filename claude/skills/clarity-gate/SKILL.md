@@ -24,7 +24,7 @@ description: >-
 - ✅ team chat報告・ブリーフィング（社内でもわかりやすさは重要）
 - ✅ マーケティングコピー全般（marketing-skillsと連携）
 - ❌ 内部の技術メモ・調査ノート（読者が限定的）
-- ❌ コードそのもの（→ requesting-code-review）
+- ❌ コードそのもの（→ codex）
 - ❌ UI/UXのビジュアル面（→ ui-accessibility-design）
 
 ## フロー（3ステップ）

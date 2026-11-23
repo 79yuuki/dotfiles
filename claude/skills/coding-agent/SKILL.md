@@ -188,7 +188,7 @@ Codex, Claude Code, OpenCode, Pi の使い方・フラグ・PR レビュー・�
 - UI / LP / 管理画面の変更で Figma・口頭仕様・雑なメモしかない時は、**いきなり本実装しない**。先に Storybook / プロトタイプ / 受け入れシナリオへ落として **spec-hole review** を回し、Empty / Loading / Error / 長文 / i18n / 権限差分まで露出させてから実装する
 - 変更が大きい時は、いきなり一発実装せず **vertical slice** に切って1スライスずつ進める
 - JS/TS は vibe / agent coding 後に `knip` ベースの dead code 掃除を検討する
-- ワンショットの守備範囲を超えたら、`parallel-orchestrator` / `subagent-driven-development` / `harness-engineering` へ昇格する
+- ワンショットの守備範囲を超えたら、`parallel-orchestrator` / `harness-engineering` へ昇格する
 
 ---
 
