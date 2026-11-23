@@ -25,6 +25,7 @@
 - `tmux.conf` -> `~/.tmux.conf`
 - `vimrc` -> `~/.vimrc`
 - `vim/` -> `~/.vim`
+- `bin/mutator` -> `~/.local/bin/mutator`
 - `eslint.config.mjs` -> プロジェクト側で参照する共有テンプレート
 - `claude/settings.base.json` -> `~/.claude/settings.json` の managed base
 - `claude/skills/` -> `~/.claude/skills/`。Claude Code が skill を自動発見するための symlink
@@ -132,7 +133,8 @@ Claude Code では skill の `description` と `when_to_use` が常にコンテ�
 - `node/versions.txt`: 復元対象としてまとめて install する Node.js の一覧です。
 - `node/default-packages`: 新しい Node 版を入れたとき自動で入れるグローバル npm パッケージ一覧です。
 - `scripts/setup-homebrew.sh`: `Brewfile` を使って Homebrew 系ツールを復元するスクリプトです。
-- `scripts/setup-node.sh`: `nvm` 導入、Node 版 install、default alias 設定、`corepack enable` をまとめて行うスクリプトです。
+- `scripts/setup-node.sh`: `nvm` 導入、Node 版 install、default alias 設定、`corepack enable`、mutator の導入をまとめて行うスクリプトです。
+- `bin/mutator`: mutation testing の `mutator`（`@mizchi/mutator`）をどのディレクトリからでも動かすラッパーです。mutator は Node 24 以上が要り、テストも同じ Node で走らせるので、PATH の node が 24 以上ならそれを、足りなければ nvm で入れた一番新しい Node を使います（nvm の default は変えません）。本体は `setup-node.sh` が版を固定して `~/.local/share/mutator` に入れます。テストは `bin/tests/mutator.test.sh`。
 
 ### 旧 Vim 資産
 
@@ -231,6 +233,7 @@ cd ~/Development/dotfiles
 - `node/default-version` の default alias 設定
 - `node/default-packages` のグローバル npm パッケージ導入
 - `corepack enable`
+- `@mizchi/mutator`（版は `setup-node.sh` で固定）を `~/.local/share/mutator` に導入。`install.sh` が張る `~/.local/bin/mutator` から使う
 
 ### 6. secrets を戻す
 
@@ -256,6 +259,7 @@ exec zsh
 brew --version
 node -v
 pnpm -v
+mutator --version
 tmux -V
 claude --version
 codex --version

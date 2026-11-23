@@ -24,5 +24,6 @@
 3. `node/default-version` を default alias に設定
 4. default Node を use
 5. `corepack enable` を実行
+6. `@mizchi/mutator` を `~/.local/share/mutator` に入れる（Node 24 以上で動くので nvm の globals ではなく専用の場所。`bin/mutator` が Node を選んで起動する）
 
 `nvm` upstream は Homebrew 経由を公式サポートしていないため、この repo では `~/.nvm` への標準導入を前提にしています。
