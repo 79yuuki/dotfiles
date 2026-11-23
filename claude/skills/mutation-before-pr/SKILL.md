@@ -12,7 +12,7 @@ description: Vitest / Jest / Bun でテストする JS/TS リポジトリで、�
 ## コマンドを選ぶ
 
 1. base を最新にする: `git fetch origin <base>`。
-2. プロジェクトに専用の入口があれば、それを使う。package.json の `check:mutation` のような script、`mutator.config.*`、devDependencies の `@mizchi/mutator` が目印。使い方と判定の基準はプロジェクトの README に従う（例: `pnpm run check:mutation --since origin/main`）。script が無く devDependencies にだけある時は、グローバルではなくプロジェクトの mutator を `pnpm exec mutator`（npm なら `npx mutator`）で使う。
+2. プロジェクトに専用の入口があれば、それを使う。package.json の `check:mutation` のような script、`mutator.config.*`、devDependencies の `@mizchi/mutator` が目印。使い方と判定の基準はプロジェクトの README に従う（例: `pnpm run check:mutation --since origin/main`）。script が無く devDependencies にだけある時は、グローバルではなくプロジェクトの mutator を `pnpm exec mutator --since origin/<base>`（npm なら `npx mutator --since origin/<base>`）で使う。
 3. 無ければ、グローバルの `mutator --since origin/<base>` を、テストのあるパッケージのディレクトリで実行する（monorepo ならパッケージごと）。
    - 変異の対象は既定で `src/` 以下。ソースが別の場所なら `--include 'app/**/*.{ts,tsx}'` のように渡す。
    - 変えたテストが弱くなっていないかも見たい時は `--include-test-changes` を付ける。変えたテストが通るコードの変異も回るので、差分の外の生き残りも出る。必須にはしない。
@@ -23,7 +23,7 @@ description: Vitest / Jest / Bun でテストする JS/TS リポジトリで、�
 ## 動かない時
 
 - mutator 0.5.3 のランナーが前提にする版は、Vitest 5.x（peer `^5.0.0`）、Jest 30 以上（実験的）、Bun（実験的）。Vitest 3.2.4 では baseline で `Cannot read properties of undefined (reading 'meta')` が出て止まった（exit 4）。この PR のためにプロジェクトの依存を上げない。
-- グローバルの mutator で、jsdom や happy-dom の環境のテストだけが `Cannot find module '/@fs/…/mutator-vitest/dist/setup.js'` で落ちる（exit 4）のは、mutator の setup ファイルが Vite の `server.fs.allow`（既定はプロジェクトのルート）の外にあるため。実行するディレクトリに一時設定 `vitest.mutator.tmp.config.mts` を作り、`--config vitest.mutator.tmp.config.mts` を付けて回す。import するのはプロジェクトの Vitest 設定（`vitest.config.*`、無ければ `vite.config.*`）。後片付けで消す。
+- グローバルの mutator で、jsdom や happy-dom の環境のテストだけが `Cannot find module '/@fs/…/mutator-vitest/dist/setup.js'` で落ちる（exit 4）のは、mutator の setup ファイルが Vite の `server.fs.allow`（既定はプロジェクトのルート）の外にあるため。実行するディレクトリに一時設定 `vitest.mutator.tmp.config.mts` を作り、`--config vitest.mutator.tmp.config.mts` を付けて回す。import するのはプロジェクトの Vitest 設定（`vitest.config.*`、無ければ `vite.config.*`）。設定が関数（`defineConfig((env) => …)`）なら `export default async (env) => mergeConfig(await base(env), { server: { fs: { strict: false } } });` にする。同じ名前のファイルが前から在れば、上書きせずに止めて報告する。今回作ったものだけを後片付けで消す。
 
   ```ts
   import { mergeConfig } from "vitest/config";
@@ -57,7 +57,7 @@ mutator 0.5.3 がリポジトリに書くものは次の2つ（本体のコー�
 
 手順:
 
-1. 回す前に、実行するディレクトリで `ls -d .mutator mutator.accepted.json` が何も見つけないことを確かめる（`git status` は未追跡のディレクトリをまとめて表示するので、中の `.mutator/` を見落とす）。在れば前から在るものなので、3 の片付けはせずに報告する。あわせて `git status --porcelain --ignored` の出力を控える。
+1. 回す前に、実行するディレクトリで `ls -d .mutator mutator.accepted.json vitest.mutator.tmp.config.mts` が何も見つけないことを確かめる（`git status` は未追跡のディレクトリをまとめて表示するので、中の `.mutator/` を見落とす）。在れば前から在るものなので、3 の片付けはせずに報告する。あわせて `git status --porcelain --ignored` の出力を控える。
 2. 報告のファイルが要る時は `--reporter text --reporter json --report-dir "$(mktemp -d)"` でリポジトリの外に出す（`--report-dir` だけでは、ファイルは書かれない）。
 3. 回した後、同じディレクトリで `git clean -fdxq -- .mutator vitest.mutator.tmp.config.mts` を実行する。追跡されていないものだけが消える。`rm -rf` は使わない。
 4. `git status --porcelain --ignored` を回す前と比べ、増えたものが無いことを確かめる。
