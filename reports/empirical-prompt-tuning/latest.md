@@ -1,10 +1,11 @@
 # Empirical Prompt Tuning — latest
 
-- target: ambition-lens（claude/skills/ambition-lens/SKILL.md）
-- date: 2026-10-16
+- target: ui-refine（claude/skills/ui-refine/SKILL.md）
+- date: 2026-11-24
 - iteration: 3
-- status: converged
-- 結果: 3 iteration・17 シナリオで期待判定と全一致（iter1 6/6、iter2 6/6、iter3 5/5）
-- 詳細: 2026-10-16-ambition-lens-iter1.md / -iter2.md / -iter3.md
-- 追記（同日）: ローカルのプロンプト履歴で hook の語彙と除外を調整した（T の発火率 76.5%→98.3%）。詳細: 2026-10-16-ambition-lens-history-tuning.md
-- next action: 実セッションでの hook 発火と起動率の観察、1〜2週間後に Skip 条件と hook 語彙を見直す
+- status: doing
+- 結果: 白紙の実行者（Sonnet）2 本。iter1（仕様が文言・図・色まで決めている確認の段）は critical 2/2・checklist 7/7、iter2（hold-out。架空の払い戻しの確認の段、題材は fixtures/ui-refine/）は critical 2/2・checklist 6/7（重い順が 1 か所崩れた）。どちらも説明を足さず、仕様を変える直しを「聞く案」に分けた
+- 詳細: 2026-11-23-ui-refine-iter1.md / -iter2.md / 2026-11-24-ui-refine-iter3.md
+- 追記（2026-11-24）: 実際の導線で 1 回使った（非公開の題材。白紙の AI の前後比較 1 回ずつ、左右に並べた静止画で人が確認）。使い心地で詰まった 10 件（数える範囲、表の中のボタンの数え方、長い画面の渡し方、E2E が無いリポジトリの柵、人に聞けない作業者の進め方ほか）と、依頼者の追加の方針（人は文を読まない前提、図で見せる、文字の予算、控えめ版と大胆版、仕様の書き換えの提案）を反映した。反映後の版で、白紙の実行者（Sonnet）を 1 本回した（iter3。架空の題材で、外部共有が確認中・人に聞けない作業者・控えめ版と大胆版。critical 3/3、checklist 7/7。続けて、規約・法定の表示の欄だけ確認中のケース iter4 も 4/4）
+- 追記（2026-11-24）: 依頼者が実際の画面の 3 者比較（前・控えめ版・大胆版）を見て大胆版を採ったので、大胆版を既定の進め方に、控えめ版を代わりの道にした。その実例を principles.md の例 3 に足した。書き換えの後の版で、道の選び方を白紙の実行者に 3 場面で答えさせ、3 つとも期待どおりだった（iter5）
+- next action: 大胆版まで含めた形で次の導線に使い、本文を隠すテストの合格の条件と文字の予算が回るかを見る。ux-walkthrough の録画のページでの前後比較を一度通す
