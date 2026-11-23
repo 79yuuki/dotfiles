@@ -20,14 +20,15 @@ Claude Code を Haiku / Sonnet など別モデルで動かす時の保険とし�
 - **ファイルは実在を確認してから着手する。** 過剰謝罪はせず、ミスは認めて直す。
 - **シェルは zsh。** glob・`?`・行頭の `=` を含む引数（`--include=*.ts`、クエリ付き URL、`echo ====` など）はクォートする（未クォートだと `no matches found` / `=== not found` で落ちる）。
 
-# モデル運用（Opus 5.5 = オーケストレーター）
+# モデル運用（Opus 5.5 / Fable 5.2 = オーケストレーター）
 
-Opus 5.5 で動作している時は、常にオーケストレーターとして振る舞う。この節を Workflow ツール実行への standing opt-in とみなし、ユーザーが明示的に解除しない限り従う。
+Opus 5.5 か Fable 5.2 で動作している時は、常にオーケストレーターとして振る舞う。この節を Workflow ツール実行への standing opt-in とみなし、ユーザーが明示的に解除しない限り従う。
 
 - 実質的な作業（複数ステップの実装・調査・レビュー・監査）は Workflow ツールで多エージェントに編成して進める（進捗は /workflows で確認できる）。会話的な応答や1ファイルの軽微な修正まで workflow 化しない。
-- 簡単・機械的なサブタスク（検索・列挙・定型変換・単純な実装・事実突合）は `model: 'sonnet'` を指定して Sonnet 5 に委譲する。判断・統合・敵対的検証・最終レビューは Opus 5.5 本体が直接担う。
-- **実装作業の開始時は毎回 `orchestrate-with-advisory` スキルを起動**し、その手順（ファイル排他のタスク分割・done/blocked 構造化返却・統合検証エージェント・blocked→ADVICE 追記→resumeFromRunId のアドバイザリーループ）に従う。Sonnet が blocked を返したら Opus が判断・助言して再開させる。
+- 簡単・機械的なサブタスク（検索・列挙・定型変換・単純な実装・事実突合）は `model: 'sonnet'` と `effort: 'xhigh'` を必ず明示して Sonnet に委譲する（Workflow の `agent()` の opts でも Agent ツールの引数でも同じ。effort は省くと設定次第で xhigh にならない）。判断・統合・敵対的検証・最終レビューは Opus 5.5 / Fable 5.2 本体が直接担う。
+- Orca の bot として worker を立てる時（`orca orchestration worker-start`）は必ず `--model` を付ける（付けないと既定のモデルで起動する）。簡単な仕事（CI の再実行・衝突の解消・小さなレビュー指摘の修正・文面の手直し・分かっている事実の issue 化・機械的な置換）は `--model sonnet --effort xhigh`、設計・決済やお金・セキュリティ・原因の分からない調査は `--model opus`。
+- **実装作業の開始時は毎回 `orchestrate-with-advisory` スキルを起動**し、その手順（ファイル排他のタスク分割・done/blocked 構造化返却・統合検証エージェント・blocked→ADVICE 追記→resumeFromRunId のアドバイザリーループ）に従う。Sonnet が blocked を返したら本体（Opus / Fable）が判断・助言して再開させる。
 - **サブタスク（ステージ）が完了するたびに `codex` スキルで Codex CLI（設定済みの高精度レビュー構成）にレビューを依頼し、✅ APPROVED が出るまで修正→再レビューを繰り返してから次へ進む**。指摘は鵜呑みにせず技術検証してから適用する（receiving-code-review の原則）。同じ変更で3ラウンド収束しなければ方針を見直してユーザーに相談する（requesting-code-review の「Avoiding review loops」）。
 - 実質的な作業の最終報告は「要対応 / 変更点 / 発見」で終える。途中で止まってユーザーに聞くのは blocked の時と、破壊的操作・外部送信の前だけ。
 
-理由: Opus 5.5 は判断と統合に集中させ、機械的な作業を安価で速い Sonnet 5 に振ることで、品質・コスト・速度を同時に最適化するため。
+理由: Opus 5.5 / Fable 5.2 は判断と統合に集中させ、機械的な作業を安価で速い Sonnet（effort xhigh）に振ることで、品質・コスト・速度を同時に最適化するため。
