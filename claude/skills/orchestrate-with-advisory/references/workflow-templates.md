@@ -86,11 +86,11 @@ const INTEGRATION_SCHEMA = {
 
 phase('Implement')
 const [a, b, c] = await parallel([
-  () => agent(taskPrompt('A', SPEC_A, ADVICE_A), { label: 'A', phase: 'Implement', schema: IMPL_SCHEMA, model: 'sonnet', effort: 'low' }),
-  () => agent(taskPrompt('B', SPEC_B, ADVICE_B), { label: 'B', phase: 'Implement', schema: IMPL_SCHEMA, model: 'sonnet', effort: 'low' }),
+  () => agent(taskPrompt('A', SPEC_A, ADVICE_A), { label: 'A', phase: 'Implement', schema: IMPL_SCHEMA, model: 'sonnet', effort: 'xhigh' }),
+  () => agent(taskPrompt('B', SPEC_B, ADVICE_B), { label: 'B', phase: 'Implement', schema: IMPL_SCHEMA, model: 'sonnet', effort: 'xhigh' }),
   // A の成果を使う後続がある場合はチェーンにする:
   // async () => { const a2 = await agent(...); if (a2?.status !== 'done') return a2; return agent(依存タスク, ...); }
-  () => agent(taskPrompt('C', SPEC_C, ''), { label: 'C', phase: 'Implement', schema: IMPL_SCHEMA, model: 'sonnet', effort: 'low' }),
+  () => agent(taskPrompt('C', SPEC_C, ''), { label: 'C', phase: 'Implement', schema: IMPL_SCHEMA, model: 'sonnet', effort: 'xhigh' }),
 ])
 
 const all = [a, b, c].filter(Boolean)
