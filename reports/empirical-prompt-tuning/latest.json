@@ -6,28 +6,33 @@
   "scenarios": [
     "S1 confirm step whose spec fixes copy, diagram and colors (non-public; not recorded)",
     "H1 fictional refund confirm step (fixtures/ui-refine/)",
-    "H2 fictional refund confirm step, external field under review, worker cannot ask, modest and bold versions"
+    "H2 fictional refund confirm step, external field under review, worker cannot ask, modest and bold versions",
+    "H3 same fixture, external out of scope with evidence, legal field under review (iter4)"
   ],
   "holdOut": "H1",
   "success": {
     "S1": true,
     "H1": true,
-    "H2": true
+    "H2": true,
+    "H3": true
   },
   "accuracy": {
     "S1": 1.0,
     "H1": 0.857,
-    "H2": 1.0
+    "H2": 1.0,
+    "H3": 1.0
   },
   "toolUses": {
     "S1": 8,
     "H1": 12,
-    "H2": 12
+    "H2": 12,
+    "H3": 5
   },
   "durationMs": {
     "S1": 164260,
     "H1": 123243,
-    "H2": 174489
+    "H2": 174489,
+    "H3": 82414
   },
   "newAmbiguities": [
     "exception for under-review fields vs 'under review means C'",
