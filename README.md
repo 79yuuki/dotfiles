@@ -25,6 +25,7 @@
 - `tmux.conf` -> `~/.tmux.conf`
 - `vimrc` -> `~/.vimrc`
 - `vim/` -> `~/.vim`
+- `bin/mutator` -> `~/.local/bin/mutator`
 - `eslint.config.mjs` -> プロジェクト側で参照する共有テンプレート
 - `claude/settings.base.json` -> `~/.claude/settings.json` の managed base
 - `claude/skills/` -> `~/.claude/skills/`。Claude Code が skill を自動発見するための symlink
@@ -87,6 +88,7 @@ Claude Code では skill の `description` と `when_to_use` が常にコンテ�
 - `claude/skills/harness-engineering/SKILL.md`: Design and improve AI-agent harnesses: context loading, routing, verification gates, safety boundaries, skill/tool packaging, monito…
 - `claude/skills/market-microstructure-execution/SKILL.md`: トレードbotの注文執行、板情報、スプレッド、スリッページ、約定可能性、CEX/DEXアービトラージ、マーケットメイク、funding rate、オーダーフロー、レイテンシを設計・検証する時に使う。
 - `claude/skills/marketing-skills/SKILL.md`: Use a compact library of marketing playbooks for CRO, SEO, positioning, copywriting, analytics, experiments, pricing, launches, ads,…
+- `claude/skills/mutation-before-pr/SKILL.md`: Vitest / Jest / Bun でテストする JS/TS リポジトリで、PR を出す前と追加の push の前に差分へ mutation testing（mizchi/mutator）を回す手順。`claude/CLAUDE.md` と `codex/AGENTS.md` から参照する。
 - `claude/skills/parallel-orchestrator/SKILL.md`: Automatically estimates task complexity and orchestrates parallel subagent execution with Codex review. Triggers on: complex impleme…
 - `claude/skills/pentest/SKILL.md`: Run authorized web, API, and infrastructure penetration-test planning and safe verification using tiered tools and evidence capture.…
 - `claude/skills/playwright-e2e/SKILL.md`: Implement and run Playwright end-to-end tests and browser UI verification efficiently. Use for web app flows, regression tests, scre…
@@ -133,7 +135,8 @@ Claude Code では skill の `description` と `when_to_use` が常にコンテ�
 - `node/versions.txt`: 復元対象としてまとめて install する Node.js の一覧です。
 - `node/default-packages`: 新しい Node 版を入れたとき自動で入れるグローバル npm パッケージ一覧です。
 - `scripts/setup-homebrew.sh`: `Brewfile` を使って Homebrew 系ツールを復元するスクリプトです。
-- `scripts/setup-node.sh`: `nvm` 導入、Node 版 install、default alias 設定、`corepack enable` をまとめて行うスクリプトです。
+- `scripts/setup-node.sh`: `nvm` 導入、Node 版 install、default alias 設定、`corepack enable`、mutator の導入をまとめて行うスクリプトです。
+- `bin/mutator`: mutation testing の `mutator`（`@mizchi/mutator`）をどのディレクトリからでも動かすラッパーです。mutator は Node 24 以上が要り、Vitest / Jest のテストも同じ Node で走らせるので、PATH の node が 24 以上ならそれを、足りなければ nvm で入れた一番新しい Node を使います（nvm の default は変えません）。本体は `setup-node.sh` が版を固定して `~/.local/share/mutator` に入れます。プロジェクトの外に置くため、Vitest の jsdom などの環境のテストでは Vite の `server.fs.allow` に阻まれます（回避策は `mutation-before-pr` skill）。テストは `bin/tests/mutator.test.sh`。
 
 ### 旧 Vim 資産
 
@@ -232,6 +235,7 @@ cd ~/Development/dotfiles
 - `node/default-version` の default alias 設定
 - `node/default-packages` のグローバル npm パッケージ導入
 - `corepack enable`
+- `@mizchi/mutator`（版は `setup-node.sh` で固定）を `~/.local/share/mutator` に導入。`install.sh` が張る `~/.local/bin/mutator` から使う
 
 ### 6. secrets を戻す
 
@@ -257,6 +261,7 @@ exec zsh
 brew --version
 node -v
 pnpm -v
+mutator --version
 tmux -V
 claude --version
 codex --version

@@ -8,6 +8,8 @@ NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
 DEFAULT_VERSION_FILE="${REPO_ROOT}/node/default-version"
 VERSIONS_FILE="${REPO_ROOT}/node/versions.txt"
 DEFAULT_PACKAGES_FILE="${REPO_ROOT}/node/default-packages"
+MUTATOR_VERSION="0.5.3"
+MUTATOR_PREFIX="${MUTATOR_PREFIX:-$HOME/.local/share/mutator}"
 
 install_nvm() {
   if [[ -s "${NVM_DIR}/nvm.sh" ]]; then
@@ -63,6 +65,17 @@ enable_corepack() {
   fi
 }
 
+# Own prefix instead of nvm's per-version globals (needs Node >= 24, unlike the nvm default):
+# survives Node upgrades, and bin/mutator picks the Node to run it with.
+install_mutator() {
+  local version
+  printf 'npm install @mizchi/mutator@%s into %s\n' "${MUTATOR_VERSION}" "${MUTATOR_PREFIX}"
+  nvm exec --silent 24 npm install --global --prefix "${MUTATOR_PREFIX}" "@mizchi/mutator@${MUTATOR_VERSION}"
+  # A separate assignment, so that a wrapper that cannot start fails the script (set -e).
+  version="$("${REPO_ROOT}/bin/mutator" --version)"
+  printf 'mutator %s\n' "${version}"
+}
+
 main() {
   if ! command -v git >/dev/null 2>&1; then
     printf 'git is required to install nvm\n' >&2
@@ -75,6 +88,7 @@ main() {
   install_versions
   set_default_version
   enable_corepack
+  install_mutator
 
   printf '\nnode setup complete\n'
   printf 'default node: %s\n' "$(node -v)"

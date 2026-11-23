@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Global `mutator` (@mizchi/mutator, installed by scripts/setup-node.sh into its own prefix).
+# It needs Node >= 24 and runs Vitest/Jest tests on that same Node, while the nvm default is older.
+# Uses the node on PATH when it is >= 24 (e.g. after `nvm use`), else the newest nvm-installed node.
+set -euo pipefail
+
+cli="${MUTATOR_PREFIX:-$HOME/.local/share/mutator}/lib/node_modules/@mizchi/mutator/dist/cli.js"
+if [[ ! -f "$cli" ]]; then
+  echo "mutator: $cli not found; run scripts/setup-node.sh in dotfiles" >&2
+  exit 127
+fi
+
+node24() { "$1" -e 'process.exit(+process.versions.node.split(".")[0] >= 24 ? 0 : 1)' 2>/dev/null; }
+
+if ! node24 node; then
+  shopt -s nullglob
+  installed=("${NVM_DIR:-$HOME/.nvm}"/versions/node/v*/bin/node)
+  newest=""
+  # Guarded: an empty array is "unbound" under set -u in bash 3.2 (/bin/bash on macOS).
+  if (( ${#installed[@]} > 0 )); then
+    newest="$(printf '%s\n' "${installed[@]}" | sort -V | tail -n 1)"
+  fi
+  if [[ -z "$newest" ]] || ! node24 "$newest"; then
+    echo "mutator: needs Node >= 24; install one with nvm (e.g. nvm install 24)" >&2
+    exit 1
+  fi
+  # Prepend, as `nvm use` would, so that node/npx the tests spawn are the same version.
+  PATH="$(dirname "$newest"):$PATH"
+fi
+
+exec node "$cli" "$@"
