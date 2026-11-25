@@ -159,3 +159,8 @@ Codex は Claude Code の Stop hook 相当の仕組みを持たないため、se
 - プロジェクトに `check:mutation` のような script、mutator の設定、devDependencies の `@mizchi/mutator` があればプロジェクトのものを使い（例: `pnpm exec mutator --since origin/<base>`）、無ければグローバルの `mutator --since origin/<base>` を使う。
 - 生き残った変異はテストを足して殺し、等価な変異だけ理由を付けて除外する。score と生き残りの件数を PR 本文に1行書く。回せなかった時は理由を書く。
 - mutator を使っていないリポジトリでは `mutator accept` を使わず（key と理由は PR 本文に書く）、回した後に `git clean -fdxq -- .mutator`（skill の一時設定を作った時はそのファイルも）で片付けて、何も残さない。
+
+## Test performance
+
+- JS/TS のテスト（Vitest / Jest）を速くする依頼では、`~/.claude/skills/test-performance/SKILL.md` を先に読み、測る → 内訳を分ける → 候補を 1 つずつ A/B で試す → 同じ正しさを確かめる → 残すか戻すか、の順に進める。
+- 走ったテストの集合が同じ・新しい失敗と skip が 0・順序を変えて安定、の 3 つを満たさない速さは改善に数えない。隔離を弱める案（`isolate: false`、vm 系の pool、Browser Mode の `isolate: false`）には、汚染の検査と検出力の確認を必ず付ける。
