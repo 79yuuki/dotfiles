@@ -128,23 +128,22 @@ class AbTest(unittest.TestCase):
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
 
     def test_terminating_ab_stops_what_it_started(self):
-        pid_file = os.path.join(self.tmp.name, "pid")
-        sleeper = f"sleep 60 & echo $! > {pid_file}; wait; true {{json}}"
+        beat = os.path.join(self.tmp.name, "beat")  # grows while the grandchild is alive
+        beater = f"(while :; do printf . >> {beat}; sleep 0.05; done) & wait; true {{json}}"
         ok = self.command("x:one:passed")
-        for args in (["--a", sleeper, "--b", sleeper], ["--a", ok, "--b", ok, "--prepare", sleeper]):
+        for args in (["--a", beater, "--b", beater], ["--a", ok, "--b", ok, "--prepare", beater]):
             ab = subprocess.Popen([sys.executable, AB, "--cwd", self.tmp.name, *args],
                                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             deadline = time.monotonic() + 20
-            while not (os.path.exists(pid_file) and os.path.getsize(pid_file)) and time.monotonic() < deadline:
+            while not os.path.exists(beat) and time.monotonic() < deadline:
                 time.sleep(0.05)
-            with open(pid_file) as f:
-                grandchild = int(f.read())
-            os.remove(pid_file)
             ab.terminate()
             self.assertEqual(ab.wait(timeout=20), 143)
-            time.sleep(0.2)  # the orphan is reaped by init
-            with self.assertRaises(ProcessLookupError):
-                os.kill(grandchild, 0)
+            time.sleep(0.2)
+            size = os.path.getsize(beat)
+            time.sleep(0.5)
+            self.assertEqual(os.path.getsize(beat), size)
+            os.remove(beat)
 
     def test_different_signals_are_different_results(self):
         a = self.command("x:one:passed") + "; kill -TERM $$"
