@@ -108,6 +108,7 @@ Claude Code では skill の `description` と `when_to_use` が常にコンテ�
 - `claude/skills/subagent-driven-development/SKILL.md`: Use when executing implementation plans with independent tasks in the current session
 - `claude/skills/systematic-debugging/SKILL.md`: Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes
 - `claude/skills/test-driven-development/SKILL.md`: Use when implementing any feature or bugfix, before writing implementation code
+- `claude/skills/test-performance/SKILL.md`: JS/TS リポジトリの単体・コンポーネントテスト（Vitest / Jest）を、検出力を落とさずに速くする手順。`scripts/ab.py` が 2 つのコマンドを交互に流し、実時間・CPU 時間の中央値と、走ったテストの一致を出す（テストは `scripts/tests/`）。
 - `claude/skills/trading-ai-agent-ops/SKILL.md`: Claude Code やLLMエージェントでトレードbot、マーケット分析、戦略生成、運用監視、AIOpsを行う時に使う。AIに投資判断を丸投げせず、ログ、可視化、レビュー、監視、権限境界を設計する。
 - `claude/skills/trading-risk-controls/SKILL.md`: トレードbotの資金管理、ポジションサイズ、損切り、ATR、Kelly基準、ドローダウン制限、レバレッジ制限、日次停止、破産確率、リスク監査を設計・レビューする時に使う。
 - `claude/skills/trust-privacy-pack/SKILL.md`: Create and review trust, privacy, safety, retention, compliance, and customer-assurance artifacts for products and internal operatio…
