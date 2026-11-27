@@ -8,6 +8,9 @@ Input: one JSON object per line, as produced from the GitHub pulls/N/files API
       --files files.jsonl --expect-files 6
   classify_diff.py --self-test
 
+`formal` lists the matching [[formal]] entries (evidence the judge re-runs, and how far a human may
+narrow reading) even under a low ceiling; `formal_full_read` lists the files no narrowing entry covers.
+
 The verdict can never be higher than `ceiling`. Take the config from the base branch,
 not from the change being judged. Anything the script cannot read exits non-zero:
 no result means no verdict.
@@ -25,6 +28,8 @@ ORDER = ["low", "medium", "high"]
 # A change must not be able to edit the rules or the CI that judge it.
 ALWAYS_SENSITIVE = [".github/**"]
 DEFAULT_PREFIXES = ["fix"]
+# A [[formal]] entry whose human_reads starts with one of these narrows nothing (the human reads the whole file).
+FULL_READ_PREFIXES = ("全部読む", "差分を全部読む")
 # The same --jq is used in SKILL.md, so history scoring and live verdicts read identical records.
 FILES_JQ = '.[] | {filename, previous_filename, additions, deletions, status, has_patch: has("patch")}'
 
@@ -88,6 +93,7 @@ def validate_config(cfg):
     paths = cfg.get("paths", {})
     groups = [paths.get(k, []) for k in ("sensitive", "tests", "size_ignore")]
     groups += [c.get("when") for c in cfg.get("checks", [])]
+    groups += [f.get("when") for f in cfg.get("formal", [])]
     for group in groups:
         if not isinstance(group, list) or not all(isinstance(p, str) for p in group):
             sys.exit(f"config: path patterns must be lists of strings, got {group!r}")
@@ -95,6 +101,10 @@ def validate_config(cfg):
             glob_re(p)
     if not all(isinstance(c.get("ask"), str) for c in cfg.get("checks", [])):
         sys.exit("config: every [[checks]] entry needs an `ask` string")
+    for f in cfg.get("formal", []):
+        ev = f.get("evidence")
+        if not isinstance(f.get("human_reads"), str) or not isinstance(ev, list) or not all(isinstance(e, str) for e in ev):
+            sys.exit("config: every [[formal]] entry needs `evidence` (list of strings) and a `human_reads` string")
 
 
 def classify(title, rows, cfg):
@@ -138,6 +148,16 @@ def classify(title, rows, cfg):
         cap("medium", f"中身が見えない変更がある（バイナリか、差分が大きすぎる）: {', '.join(opaque[:5])}")
 
     checks = [c["ask"] for c in cfg.get("checks", []) if any(matches(p, c["when"]) for p, *_ in rows)]
+    # [[formal]]: evidence the judge must re-run, and how far the human may narrow reading, per file.
+    # Applies even when the ceiling is low; it never raises the verdict.
+    formal = []
+    for f in cfg.get("formal", []):
+        hit = [p for p, *_ in rows if matches(p, f["when"])]
+        if hit:
+            narrows = not f["human_reads"].startswith(FULL_READ_PREFIXES)
+            formal.append({"area": f.get("area", ""), "files": hit, "evidence": f["evidence"],
+                           "human_reads": f["human_reads"], "narrows": narrows})
+    narrowed = {p for e in formal if e["narrows"] for p in e["files"]}
     return {
         "in_scope": in_scope,
         "ceiling": ceiling,
@@ -151,6 +171,9 @@ def classify(title, rows, cfg):
             "test_lines_deleted": sum(d for _, _, d, _ in tests),
         },
         "checks": checks,
+        "formal": formal,
+        # Files no narrowing [[formal]] entry covers: the human reads them in full (empty when nothing matched).
+        "formal_full_read": [p for p, *_ in rows if p not in narrowed] if formal else [],
     }
 
 
@@ -205,6 +228,18 @@ def self_test():
     assert exits(lambda: parse_files('{"filename": "x.ts"}'))  # missing fields
     assert exits(lambda: parse_files(code, expect=2))  # incomplete file list
     assert len(parse_files(code + "\n" + spec, expect=2)) == 2
+    # [[formal]]: reported even under a low ceiling; full-read entries do not narrow; malformed entries are rejected
+    fcfg = {"paths": {"sensitive": ["proofs/**", "src/**"]}, "formal": [
+        {"area": "proofs", "when": ["proofs/**"], "evidence": ["build"], "human_reads": "文の差分だけ"},
+        {"area": "code", "when": ["src/**"], "evidence": ["model unchanged?"], "human_reads": "全部読む。"},
+    ]}
+    fr = classify("fix: x", parse_files("\n".join([rec("proofs/A.lean"), rec("src/a.ts"), rec("README.md")])), fcfg)
+    assert fr["ceiling"] == "low" and [e["area"] for e in fr["formal"]] == ["proofs", "code"], fr
+    assert [e["narrows"] for e in fr["formal"]] == [True, False]
+    assert fr["formal_full_read"] == ["src/a.ts", "README.md"], fr["formal_full_read"]
+    assert classify("fix: x", one, fcfg)["formal"] == [] and classify("fix: x", one, fcfg)["formal_full_read"] == []
+    assert exits(lambda: classify("fix: x", one, {"formal": [{"when": ["a/[b]"], "evidence": [], "human_reads": "x"}]}))
+    assert exits(lambda: classify("fix: x", one, {"formal": [{"when": ["a/**"], "human_reads": "x"}]}))  # no evidence
     print("self-test ok")
 
 

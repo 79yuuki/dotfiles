@@ -49,3 +49,18 @@ size_ignore = ["**/*.snap", "**/*.md"]
 # [[checks]]
 # when = ["**/controllers/**"]
 # ask = "認証や署名に使う値（origin、RP ID、challenge、鍵の指定）を変えていないか。変えていれば人に回す"
+
+# 決定的に確かめた所（証明・総当たり・対のテスト）。上限が low でも判定役が読み、証拠がそろえば人が読む範囲を絞る。
+# human_reads が「全部読む」「差分を全部読む」で始まる節は絞らない（証拠を確かめる問いだけを足す）。
+# 絞る節に当たらないファイルは全部読む。判定（low / medium / high）は変えない。SKILL.md の「形式検証に当たる PR」。
+# [[formal]]
+# area = "Lean の証明"
+# when = ["proofs/**"]
+# evidence = ["proofs/ で `lake build --wfail` と、定理の文の一覧の検査が成功する"]
+# human_reads = "定理の文の一覧の差分と、定義の差分。theorem の証明部分は読まなくてよい"
+#
+# [[formal]]
+# area = "モデルの写し元"
+# when = ["src/payment/**"]
+# evidence = ["この差分が、モデルの写した振る舞いを変えているかを答える。変えていれば、モデルが先に直っている"]
+# human_reads = "全部読む（モデルと実物の一致を機械で確かめていない）"
