@@ -1,7 +1,7 @@
 ---
 name: ui-refine
 description: >-
-  Refine a working product's screens so anyone can operate them without mistakes or reading, keeping what can be done, states and flow unchanged. Fence what must not change, inventory screens and states, diagnose (discoverable / predictable / learnable, error prevention, explanation-heavy or AI-made look) assuming people do not read body text, fix by structure, labels, diagrams, order, defaults and constraints within a text budget instead of adding text, default to a bold version with spec-rewrite proposals (modest as fallback), compare before/after with an agent that has not read this skill, one PR per flow. Use for 「UI を良くして」「説明臭い」「AI が作った感がある」「文字だらけ」「画面を分かりやすく」「誤操作を減らしたい」「UI を磨いて」/ refining an existing app's UI. Not for new UI, a new visual direction or a design system (ui-design-system / frontend-design), walking flows with a human (ux-walkthrough), accessibility audits (ui-accessibility-design), abnormal-input testing (exploratory-qa), or the clarity of documents or copy alone (clarity-gate).
+  Refine a working product's screens so anyone can operate them without mistakes or reading, keeping features, states and flow unchanged. Fence what must not change (spec, shared wording, legal fences), inventory screens and states, diagnose assuming people skim (discoverable / predictable / learnable, error prevention, lingering notices, restating the user's last step, AI-made look), fix by structure, labels, diagrams, order, defaults and familiar patterns within a text and height budget, default to a bold version with spec proposals, re-check each iteration with Haiku / Sonnet skimming the screens, one PR per flow. Use for 「UI を良くして」「説明臭い」「AI が作った感がある」「文字だらけ」「縦に長い」「画面を分かりやすく」「誤操作を減らしたい」「UI を磨いて」/ refining an existing app's UI. Not for new UI, a new visual direction or a design system (ui-design-system / frontend-design), walking flows with a human (ux-walkthrough), accessibility audits (ui-accessibility-design), abnormal-input testing (exploratory-qa), or the clarity of copy alone (clarity-gate).
 ---
 
 # UI Refine（仕様は変えずに、間違えずに使える画面にする）
@@ -12,19 +12,20 @@ description: >-
 
 ## 0. プロジェクトの設定を読む
 
-プロジェクト固有のこと（仕様の正本の場所、触ってはいけない文言、ブランドの文書、導線の一覧、用語集）は、この skill に書かない。プロジェクトに置く設定ファイルから読む。
+プロジェクト固有のこと（仕様の正本の場所、触ってはいけない文言、法の柵、外のサービス、端末の印、ブランドの文書、導線の一覧、用語集）は、この skill に書かない。プロジェクトに置く設定ファイルから読む。
 
 - 場所は、CLAUDE.md や AGENTS.md に書かれていればそこ。書かれていなければ `docs/ui-refine.md`。
-- 無い時は [references/project-config-template.md](references/project-config-template.md) を写して作り、リポジトリから分かる所（仕様の文書、E2E の場所、導線）だけを埋める。「外部に事前共有した画面の文言」と「規約・法定の表示」は人に聞いて埋める。
-- ある時も、この 2 つの欄を確かめる。空欄や「確認中」は未確認として扱う（無い時は「なし」と書いてもらう）。未確認のあいだは文言に手を付けない（見立てと、配置の案までは進めてよい）。
-- 人にすぐ聞けない作業者（別のワーカーなど）は、欄に「確認中」と書いて進める。確認中のあいだに文言を直してよいのは、次の 2 つを両方とも根拠を挙げて言える時の、A の言い換えだけ。(1) 外部に共有した範囲が仕様の正本や記録（共有した画面の一覧、影響の判定）から読み取れて、その画面が範囲の外。(2) 直す文言が、規約・法定の表示にも、仕様が決めた文言にも当たらない（規約・法定の表示の欄が確認済み（「なし」を含む）の時だけ言える。この欄も確認中なら、文言に手を付けない）。根拠と、した言い換えを PR に書き、人が確かめる。読み取れなければ文言に手を付けない。
+- 無い時は [references/project-config-template.md](references/project-config-template.md) を写して作り、リポジトリから分かる所（仕様の文書、E2E の場所、導線）だけを埋める。「外部に事前共有した画面の文言」「規約・法定の表示」「法の柵」は人に聞いて埋める。
+- ある時も、「外部に事前共有した画面の文言」と「規約・法定の表示」の 2 つの欄を確かめる。空欄や「確認中」は未確認として扱う（無い時は「なし」と書いてもらう）。未確認のあいだは文言に手を付けない（見立てと、配置の案までは進めてよい）。
+- 人にすぐ聞けない作業者（別のワーカーなど）は、欄（法の柵を含む）に「確認中」と書いて進める。確認中のあいだに文言を直してよいのは、次の 2 つを両方とも根拠を挙げて言える時の、A の言い換えだけ。(1) 外部に共有した範囲が仕様の正本や記録（共有した画面の一覧、影響の判定）から読み取れて、その画面が範囲の外。(2) 直す文言が、規約・法定の表示にも、仕様が決めた文言にも当たらない（規約・法定の表示の欄が確認済み（「なし」を含む）の時だけ言える。この欄も確認中なら、文言に手を付けない）。根拠と、した言い換えを PR に書き、人が確かめる。読み取れなければ文言に手を付けない。
+- 「法の柵」（画面の言い方が越えてはいけない線）の欄も確かめる。照らすのは欄にある柵だけで、中身を推測で足さない。空欄・確認中のあいだは、柵に関わる言い方（[references/cognition.md](references/cognition.md) の 6 節 4 の観点に当たる言い方）を作らない（外のサービスとの関係を型で見せる案は、聞く案の形まで）。
 - 設定ファイルや、それが指す仕様の正本とこの skill が食い違ったら、設定ファイルと仕様に従う。この skill の定番（ボタンに括弧書きを付けない、など）に沿う直しは、聞く案に回す。
 
 ## 1. 柵を立てる（変えないものを先に並べる）
 
 ここで言う仕様は 3 つ。できること（操作の種類と、その結果）、状態（画面とデータの状態と、その移り変わり）、流れ（段の順番、分かれ道、先へ進む条件）。
 
-- 設定ファイルにある仕様の正本と E2E テストを、「変えないもの」として一覧にする。
+- 設定ファイルにある仕様の正本と E2E テストを、「変えないもの」として一覧にする。法の柵も入れる。柵を越える言い方は、聞く案にも出さない。
 - 直す前に E2E を走らせ、走らない・落ちる時はその理由を記録する。画面を通すテスト（E2E）が無い時と、直す前から走らない時だけ、部品のテストと型チェックを代わりの柵にする。直したことで落ちた E2E を、代わりの柵で置き換えない。撮影は手元の開発サーバーで、作り物の応答（Playwright の `page.route`）を返して行ってよい（本物の API と個人情報は使わない）。E2E が無い・走らない理由と、作り物の応答で撮ったことを PR に書く。
 - 仕様の正本が見せ方まで決めていることがある（文言の表、図、色、強調、並び、「隠さない」「読みにくくしない」のような見せ方の決まり）。先にそれを探し、見つけたら柵に入れる。決められた文言は C と同じに扱う。
 - 変えてよいのは、仕様が決めていない見せ方だけ。配置、強弱、同じ画面の中での順番と区画の組み方、部品、図、文の長さと言い回し、余白と色。
@@ -49,16 +50,17 @@ description: >-
 - 設定ファイルの導線ごとに、すべての画面と状態を撮る。状態は、初め、入力中、エラー、処理中、完了、押せない状態、空、値が長い・大きい（最大の金額、長い名前）。
 - 状態が多い画面（1 つの区画だけで十数の状態がある、など）は、全部の代わりに代表を撮る。何も済んでいない（初め）、途中（いま取りかかる段がある）、全部済み、エラー・読み込みの失敗、値が長い・大きい、取り消せない操作の直前。直す所に関わる状態（押せない、処理中、空、分かれ道の先）は必ず入れる。撮らなかった状態ごとに、どの代表で代わりに見たかを PR に書く。
 - 幅はスマホ（375 と 320）と PC。スクロールが要る画面は、ページ全体を頭から撮る（Playwright の `fullPage`）。画像の名前は `<導線>-<画面>-<状態>-<幅>.png` に揃える。
-- 撮る時に、説明文の文字数と主な操作の数を数えておく（[references/evaluation.md](references/evaluation.md) の 3 節）。数える範囲は導線の本文に絞る（左のメニューやヘッダーを入れない）。直した後と比べる基準になる。
+- 撮る時に、説明文の文字数と主な操作の数、縦の長さと最初の画面（主な操作が入るか、説明文の文字数）を数えておく（[references/evaluation.md](references/evaluation.md) の 3 節）。最初の画面は主な端末の高さ（既定 375×667。320 幅は高さ 568）で測る。数える範囲は導線の本文に絞る（左のメニューやヘッダーを入れない）。直した後と比べる基準になる。
 - 撮った画像は自分の目で見る。DOM やコードだけで見立てない。
 - 隔離したブラウザで、テスト用のデータだけで撮る。本物の個人情報や鍵が写ったら消して撮り直す。
 
 ## 3. 見立て
 
-1. **最初に、読まない前提で確かめる。** 本文の文字を全部隠した画面（[references/evaluation.md](references/evaluation.md) の 3 節の `hide: true`）を撮り、見出し・ボタン・図・アイコン・状態の表示だけでタスクができるかを、白紙の AI に試させる（同じ 1 節）。できない所が、いちばん大きい直しどころになる。そこは文を足さず、図・構造・状態の表示で伝える形に作り直す。白紙の AI に試させられない時は、隠した画像を自分で見て、何が伝わらないかを書き、白紙の AI での確かめは 5 節に回す。
+1. **最初に、読まない前提で確かめる。** 先に、画面ごとの 1 行（下の 2）と、次に押す物・押した後に起きることの正解、読ませたい区画を書く（[references/evaluation.md](references/evaluation.md) の 5 節）。それから Haiku と Sonnet に画面の画像だけを流し読みさせ（各 3 回以上。[references/evaluation.md](references/evaluation.md) の 5 節）、「長い」「飛ばした」と言われた所と、読ませたいのに覚えられていない所を拾う。次に、本文の文字を全部隠した画面（[references/evaluation.md](references/evaluation.md) の 3 節の `hide: true`）を撮り、見出し・ボタン・図・アイコン・状態の表示だけでタスクができるかを、白紙の AI に試させる（同じ 1 節）。できない所が、いちばん大きい直しどころになる。そこは文を足さず、図・構造・状態の表示で伝える形に作り直す。白紙の AI に試させられない時は、隠した画像を自分で見て、何が伝わらないかを書き、白紙の AI での確かめは 5 節に回す。
 2. 画面ごとに「誰が・何のために・この画面で何を決めるか」を 1 行で書く。続けて、機能 → 便益 → 価値 → 体験 を 1 行ずつ書く（[references/principles.md](references/principles.md)）。この 1 行に効いていない要素が、削る候補になる。
-3. 3 つのものさしで点検する。
-   - 発見できる・予測できる・学習できる、と悪い画面を見つける 7 つの問い: [references/principles.md](references/principles.md)
+3. ものさしで点検する。
+   - 発見できる・予測できる・学習できる、と悪い画面を見つける問い（スライドの 7 つと、足した 4 つ）: [references/principles.md](references/principles.md)
+   - 人の認知に合わせる決まり（一時的な知らせ、よい知らせと注意の時機、直前の操作のなぞり、縦の長さ、外のサービスとの関係、はじめて／前に使った人）: [references/cognition.md](references/cognition.md)
    - 誤操作を防ぐ定番: [references/heuristics.md](references/heuristics.md)
    - 説明臭さと AI 感: [references/ai-smell.md](references/ai-smell.md)。日本語の文は [references/writing-ja.md](references/writing-ja.md)
 4. 指摘ごとに、場所（どの要素か）、何が起きる・起きそうか、当たる問いや定番、重さ、画面で確かめた事実か推測か、を書く。
@@ -76,7 +78,7 @@ description: >-
 
 ## 4. 直す方針
 
-中心の規則は 3 つ。
+中心の規則は 4 つ。
 
 **説明を足さない。構造と図で伝える。** 分かりにくい所には、次の順に手を考える。上の手で済めば、下の手は使わない。
 
@@ -90,7 +92,17 @@ description: >-
 
 説明を新しく足すのは、1〜6 では伝わらないと示せた時だけにする。足したら、理由を PR に書く。
 
-**文字の予算を守る。** 画面ごと・区画ごとに、最初に目に入る本文の上限を決める。既定の目安は区画ごとに 1〜2 行・40〜80 字（研究の裏付けがある数ではなく、設計の目標。設定ファイルで変えられる）。超える説明は 2 段目か、別のヘルプのページへ移す。区画ごとに数えて（[references/evaluation.md](references/evaluation.md) の 3 節の `root`）、前後と、予算を守れたかを報告する。区画を分けただけ、数える範囲を狭めただけで予算に収めない。導線の本文全体の説明文の文字数も前後で比べ、前後の区画の対応を書く。文言に触れられない時（B・C、確認中の画面）は、予算のために文言の決まりを破らない。文言を変えないと予算を超える区画だけ、予算を「守れない」と書き、削る案と 2 段目へ移す案を聞く案に回す（C の画面では、文の位置を 2 段目へ移すのも聞く案）。
+**人の認知に合わせる。** 人は流し読みし、作業の途中の注意は届かず、同じ注意には慣れる。次の 7 つを当てる。中身と出典は [references/cognition.md](references/cognition.md)。
+
+- 一時的な知らせは一時的な部品で（主な道の画面に段落や色の箱で残さない）
+- よい知らせは短く、注意は効く区切り（お金を入れる前・残高ができた時・失敗の直後）に別に 1 回
+- 直前の操作をなぞらない
+- 主な道の画面は、主な端末（既定 375×667）の最初の画面に、決めることと主な操作を入れる
+- 外のサービスとの関係は知っている型と図で（設定ファイルの法の柵に先に照らす）
+- 始める前に説明しない
+- はじめての人と前に使った人を端末の印で見分ける時の決まりを守る
+
+**文字の予算を守る。** 画面ごと・区画ごとに、画面に出ている本文（閉じた 2 段目の中を除く。スクロールした先も含む）の上限を決める。縦の長さと最初の画面の予算も同じに扱う（[references/cognition.md](references/cognition.md) の 5 節）。既定の目安は区画ごとに 1〜2 行・40〜80 字（研究の裏付けがある数ではなく、設計の目標。設定ファイルで変えられる）。超える説明は 2 段目か、別のヘルプのページへ移す。区画ごとに数えて（[references/evaluation.md](references/evaluation.md) の 3 節の `root`）、前後と、予算を守れたかを報告する。区画を分けただけ、数える範囲を狭めただけで予算に収めない。導線の本文全体の説明文の文字数も前後で比べ、前後の区画の対応を書く。文言に触れられない時（B・C、確認中の画面）は、予算のために文言の決まりを破らない。文言を変えないと予算を超える区画だけ、予算を「守れない」と書き、削る案と 2 段目へ移す案を聞く案に回す（C の画面では、文の位置を 2 段目へ移すのも聞く案）。
 
 **削った説明の行き先を必ず決める。** 消して終わりにしない。削る文ごとに、次のどれかを書く。
 
@@ -101,9 +113,10 @@ description: >-
 | 配置へ | 「先に〜を確かめて」のような順番の説明 |
 | 2 段目へ（くわしく見る、ヘルプ） | 一部の人だけが要る背景・理由・仕組み |
 | その時だけ出す | エラーや、条件を満たしていない時の案内 |
+| 効く区切りへ（別の画面・別の時） | 持っている間に起きうる損の注意（[references/cognition.md](references/cognition.md) の 3 節）。別の画面・時へ移すのは聞く案で、移す先が決まるまで元の場所から消さない |
 | 外の文書へ（FAQ・規約） | 画面の操作に関係しない |
 
-取り消せない結果やお金の損についての文は、2 段目に隠さない。最短にして、その操作のすぐ隣に 1 回だけ残す。文言の分類が B か C なら、言い換えも削除もせずに聞く。
+取り消せない結果やお金の損についての文は、2 段目に隠さない。その操作で失う損は、最短にして、その操作のすぐ隣に 1 回だけ残す（持っている間に起きうる損は、上の表の「効く区切りへ」）。文言の分類が B か C なら、言い換えも削除もせずに聞く。
 
 ほかの直し方（主な操作を 1 つにする、確認は 1 回、ボタンは動作名、エラーの書き方）は [references/heuristics.md](references/heuristics.md)、文は [references/writing-ja.md](references/writing-ja.md)、AI 感は [references/ai-smell.md](references/ai-smell.md) にある。同じくらい正しい直し方が複数ある時は、設定ファイルのブランドの文書の言葉に合う方を選ぶ（[references/principles.md](references/principles.md) の BRAND・VALUE・FUNCTION）。
 
@@ -125,9 +138,12 @@ description: >-
 ## 5. 確かめる（直した本人ではない目で）
 
 1. **柵**: E2E がそのまま通る（E2E が無い時と直す前から走らない時は、1 節で代わりの柵にした部品のテストと型チェック）。テストの期待している文言を直してよいのは、A の言い換えの時だけ。直した期待は PR に一覧で書く。
-2. **数**: 説明文の文字数と主な操作の数を、前後で比べる（[references/evaluation.md](references/evaluation.md) の 3 節）。区画ごとに文字の予算を守れたかも書く。増えたら理由を書く。
-3. **白紙の AI**: この skill も diff も読んでいない別の agent に、画面だけを見せてタスクをさせ、前後で比べる。合格の条件は、本文を隠した画面でも、見出し・ボタン・図・状態の表示だけでタスクができること（[references/evaluation.md](references/evaluation.md) の 1 節）。
-4. **人**: ux-walkthrough の 9 節の recorder で前後を録画し、build-review で前後のページを作って人に見せる（[references/evaluation.md](references/evaluation.md) の 4 節）。良くなったかを決めるのは人。
+2. **数**: 説明文の文字数、主な操作の数、縦の長さと最初の画面（主な操作が入るか、説明文の文字数）を、前後で比べる（[references/evaluation.md](references/evaluation.md) の 3 節）。区画ごとに文字の予算を守れたかも書く。増えたら理由を書く。
+3. **流し読み**: Haiku と Sonnet に各 3 回以上、画面の画像だけを流し読みさせる（[references/evaluation.md](references/evaluation.md) の 5 節）。試作を直すたびに 1 巡ずつ回し、合格の条件を満たすまで、直した画面を前後の比較として人に見せない（聞く案を実装の前に見せるのは別。4 節）。
+4. **白紙の AI**: この skill も diff も読んでいない別の agent に、画面だけを見せてタスクをさせ、前後で比べる。合格の条件は、本文を隠した画面でも、見出し・ボタン・図・状態の表示だけでタスクができること（[references/evaluation.md](references/evaluation.md) の 1 節）。
+5. **人**: ux-walkthrough の 9 節の recorder で前後を録画し、build-review で前後のページを作って人に見せる（[references/evaluation.md](references/evaluation.md) の 4 節）。良くなったかを決めるのは人。
+
+人に見せる前に、直した画面を [references/principles.md](references/principles.md) の問いと、[references/cognition.md](references/cognition.md) の決まりで点検し、3 と 4 を通す。直したら、点検と 3 をもう一度回し、最後の版で 4 も回す。1 回作っただけで見せない。
 
 AI の結果は甘めに出る（[references/evaluation.md](references/evaluation.md) の 2 節）。人が見るまで「分かりやすくなった」と言い切らない。
 
@@ -138,10 +154,10 @@ AI の結果は甘めに出る（[references/evaluation.md](references/evaluatio
 - PR の本文に書くこと:
   - 何の導線か。変えていないもの（柵）と E2E の結果
   - 前後の画像（スマホと PC）と、ux-walkthrough のページの場所
-  - 数の前後（説明文の文字数、主な操作の数、区画ごとの文字の予算）と、本文を隠した画面での結果
+  - 数の前後（説明文の文字数、最初の画面の説明文、縦の長さ、主な操作が最初の画面に入るか、主な操作の数、区画ごとの文字の予算）と、本文を隠した画面での結果
   - 前と今回作った版（大胆版・控えめ版のどちらか、または両方）を並べた画像と、人が決めた版。控えめ版だけの時は、大胆版にしなかった理由（仕様を動かせない、急ぎ）
-  - 白紙の AI の結果（何回、何が通り、何が通らなかったか）
-  - 文言の変更の一覧（A／B／C）と、削った説明の行き先
+  - 流し読み（モデルごとの回数）と白紙の AI の結果（何が通り、何が通らなかったか）
+  - 文言の変更の一覧（A／B／C）と、削った説明の行き先。知っている型を使う案は、照らした法の柵
   - 人に聞いて決めたこと。まだ決まっていない聞く案と、仕様の書き換えの提案（前の文・後の文・理由）
   - 確かめていないこと（撮っていない状態や幅、人ではまだ見ていないこと）
 
@@ -153,9 +169,14 @@ AI の結果は甘めに出る（[references/evaluation.md](references/evaluatio
 - 渡されたスマホ幅の画像が、ページの途中から撮られていて、金額と操作の位置関係を確かめられなかった。頭から撮る。
 - 実際の画面で数えたら、左のメニューやヘッダーの文字まで数えた。`root` で本文に絞る。
 - `keep` に表のセルを入れたら、セルの中のボタンまで `keep` に数えた。道具を、操作を先に判定する形に直した。
-- 縦に長い画面を 1 枚の画像で確かめ役の AI に渡したら、縮小されて文字が読めなかった。区切って渡す（[references/evaluation.md](references/evaluation.md) の 1 節）。
+- 縦に長い画面を 1 枚の画像で確かめ役の AI に渡したら、縮小されて文字が読めなかった。縦に分けて渡す（[references/evaluation.md](references/evaluation.md) の 1 節）。
 - 大胆版で図と段の一覧を作ったら、一覧に無い区画と、いまの段より後の段の強いボタンで、確かめ役の AI が迷った。段の一覧には全部の区画を載せ、強いボタンはいまの段だけにする。
 - 大胆版で注意を「くわしく」へ移しすぎ、取り消せない操作の前の注意まで隠して、レビューで戻した。お金・鍵の漏れ・取り消せないことの注意は、文字の予算より優先して残す。
+- 作った直後の「できました」を主な道の画面の頭に残る緑の箱にし、注意を 4 行ぶら下げた。オーナーに「一時的な知らせが残って長い」「よい知らせへの注意が長すぎる」と言われた（[references/cognition.md](references/cognition.md) の 2・3 節）。
+- 「このあと、〜の手続きがあります」の区画で、直前に入れた額・選んだ手続き先・ボタンの下の補足と同じことを文で繰り返した（同じ 4 節）。
+- 外の発行サービスを「お手続き先」の 1 行だけで示し、自社との関係が伝わらなかった。知っている型と図で見せる。型の言い方は法の柵に触れやすいので、設定ファイルの柵に先に照らす（同じ 6 節）。
+- 確かめで、診断役の AI（Sonnet）が、柵の観点の一覧を自分で柵として当てたり、事実か分からない約束や柵に触れる一語を理由にしたりして、知っている型を捨てた。照らすのは設定ファイルの柵だけ、柵に触れる言い方だけを替える、型を使う案は聞く案として少なくとも 1 つ出す（事実と比べて使えない型は除き、除いた理由を書く）、と書いた（同じ 6 節）。
+- 撮った画像を `sips --cropOffset 0 0` で縦に分けたら、指定が効かずに中央から切られ、1 枚目が画面の頭（いちばん問題の箱）を欠いた。その画像で回した確かめは全部やり直した。撮る時に分ける（[references/evaluation.md](references/evaluation.md) の 1 節の `shootInParts`）。分けた画像は、渡す前に全部自分の目で見る。
 - 試しで `keep` を金額の一覧だけにしたら、枚数・公演日・規約の表示・取り消せない警告まで説明文として数え、隠した画面からも消えた。`keep` には値・C の表示・残す警告を全部入れる。
 
 ## 関連 skill

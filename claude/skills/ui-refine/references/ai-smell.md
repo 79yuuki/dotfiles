@@ -26,6 +26,9 @@
 | 仕組みの説明（なぜそうなるか）が操作の前にある | 2 段目に移す。画面には、今の状態と取れる操作を出す |
 | 挨拶・前置き・中身の無い安心の言葉 | 消す |
 | どの部品にも説明文が付いている | 名前で分からない所だけに残す |
+| 「できました」の知らせを色の箱にして、主な道の画面に残し続ける | 一時的な部品にする（[cognition.md](cognition.md) の 2 節） |
+| よい知らせに、長い注意をぶら下げる | よい知らせは見出し 1 行と値 1 行まで。注意は効く区切りに別に 1 回（cognition.md の 3 節） |
+| いま入れた値・選んだ物を、次の区画で文にして繰り返す。「このあと〜があります」と手順を全部予告する | なぞりは消す。押す前に知るべき事実（別のタブで開く、など）は、ボタン名かボタンの下の 1 行に残す（cognition.md の 4 節） |
 | 「〜することができます」「〜となります」 | [writing-ja.md](writing-ja.md) |
 
 ## 数で見る
@@ -37,4 +40,5 @@
 - uxdesign.cc「How to de-slopify your designs」 https://uxdesign.cc/how-to-de-slopify-your-designs-4c40c57c1dc9
 - The Fountain Institute「Signs of vibe-coded UI」 https://www.thefountaininstitute.com/blog/signs-vibe-coded-ui
 - Kosta「Spot the slop」 https://world.hey.com/kostac/spot-the-slop-a-ui-designer-s-guide-to-fixing-ai-defaults-4c448c9c
-- 「同じ強さの物が並ぶ」「説明が多い」は上の記事では確かめられていない。NN/g の 10 原則 No.8（関係の無い情報を出さない）から導いた。警告の色・バッジ・文の表は、出典の無い経験則。
+- 文の表に足した 3 行（「できました」を色の箱で残す・よい知らせに注意をぶら下げる・直前の操作のなぞり）は、オーナーの指摘（2026-11-27、決済サービスの画面の試作）から足した。根拠の調べは cognition.md の出典。
+- 「同じ強さの物が並ぶ」「説明が多い」は上の記事では確かめられていない。NN/g の 10 原則 No.8（関係の無い情報を出さない）から導いた。警告の色・バッジ・文の表（足した 3 行を除く）は、出典の無い経験則。
