@@ -56,7 +56,7 @@ size_ignore = ["**/*.snap", "**/*.md"]
 # 検査そのもの（検査のスクリプト）・toolchain・ビルドの設定は when に入れない（全部読む側に残す。PR が触れたら絞らない）。
 # [[formal]]
 # area = "Lean の証明"
-# when = ["proofs/**"]
+# when = ["proofs/Proofs/**", "proofs/THEOREMS.md"]  # 証明のソースと定理の文の一覧だけ。lakefile・toolchain・検査のスクリプトは入れない
 # evidence = [
 #   "proofs/ で `lake build --wfail`（sorry で落ちる）と、公理の一覧の検査（native_decide・新しい axiom で落ちる）と、定理の文の一覧の検査が成功する",
 #   "proofs/ が証明の外のモジュール（import Lean など）を import していない（証明の中のメタプログラムがビルドの時にコードを走らせられるため）",

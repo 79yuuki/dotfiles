@@ -10,7 +10,9 @@ Input: one JSON object per line, as produced from the GitHub pulls/N/files API
 
 `formal` lists the matching [[formal]] entries (evidence the judge re-runs, and how far a human may
 narrow reading) even under a low ceiling; `formal_full_read` lists the files the human reads in full:
-those no narrowing entry (`narrows = true`) covers, and opaque files. A renamed file's old path is listed too.
+those no narrowing entry (`narrows = true`) covers, and opaque files. A renamed file's old path appears in the
+matching entries' files too. The judge still widens reading when the PR touches the checks the evidence runs
+(SKILL.md); this script cannot tell which files those are.
 
 The verdict can never be higher than `ceiling`. Take the config from the base branch,
 not from the change being judged. Anything the script cannot read exits non-zero:
