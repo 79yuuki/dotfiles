@@ -129,7 +129,7 @@ Codex は Claude Code の Stop hook 相当の仕組みを持たないため、se
 ## UI / slides / security routing
 
 - UI 実装やレビューでは `ui-design-system` / `component-gallery` / `ui-accessibility-design` 相当で、レイアウト、階層、状態、レスポンシブ、アクセシビリティを確認する。
-- 動いている画面を仕様（できること・状態・流れ）は変えずに直す時とそのレビューでは `ui-refine` 相当で、変えないもの（仕様の正本、外部に共有した文言、法定の表示）を先に並べ、説明を足さず構造・ラベル・順番で伝え、削った説明の行き先を確かめる。
+- 動いている画面を仕様（できること・状態・流れ）は変えずに直す時とそのレビューでは `ui-refine` 相当で、変えないもの（仕様の正本、外部に共有した文言、法定の表示、法の柵）を先に並べ、説明を足さず構造・ラベル・順番で伝え、削った説明の行き先を確かめる。一時的な知らせを画面に残さない、よい知らせに注意をぶら下げない、直前の操作を文でなぞらない、も見る。
 - スライド、提案書、経営向け資料は `slide-deck` / `winning-proposal` 相当で、意思決定者が承認できる構成にしてから表現を作る。
 - 暗号資産、wallet、exchange、DeFi、vendor、外部協業、smart contract、pentest は `crypto-counterparty-security` / `smart-contract-audit` / `pentest` 相当で、権限・鍵・資金・許可範囲を先に確認する。live 注文、送金、秘密情報送信、攻撃的スキャン、権限変更は明示承認なしに進めない。
 
