@@ -49,3 +49,23 @@ size_ignore = ["**/*.snap", "**/*.md"]
 # [[checks]]
 # when = ["**/controllers/**"]
 # ask = "認証や署名に使う値（origin、RP ID、challenge、鍵の指定）を変えていないか。変えていれば人に回す"
+
+# 決定的に確かめた所（証明・総当たり・対のテスト）。上限が low でも判定役が読む。SKILL.md の「形式検証に当たる PR」。
+# narrows = true の節だけが、証拠がそろった時に人が読む範囲を絞る（書かなければ絞らず、証拠の問いだけを足す）。
+# 同じファイルに絞る節と絞らない節が当たれば、絞る節の範囲に、絞らない節の「〜も読む」を足す。絞る節に当たらないファイルは全部読む。
+# 検査そのもの（検査のスクリプト）・toolchain・ビルドの設定は when に入れない（全部読む側に残す。PR が触れたら絞らない）。
+# [[formal]]
+# area = "Lean の証明"
+# when = ["proofs/Proofs/**", "proofs/THEOREMS.md"]  # 証明のソースと定理の文の一覧だけ。lakefile・toolchain・検査のスクリプトは入れない
+# evidence = [
+#   "proofs/ で `lake build --wfail`（sorry で落ちる）と、公理の一覧の検査（native_decide・新しい axiom で落ちる）と、定理の文の一覧の検査が成功する",
+#   "proofs/ が証明の外のモジュール（import Lean など）を import していない（証明の中のメタプログラムがビルドの時にコードを走らせられるため）",
+# ]
+# human_reads = "定理の文の一覧の差分と、theorem の証明部分以外の差分（定義・コメント・import）。theorem の証明部分は読まなくてよい"
+# narrows = true
+#
+# [[formal]]
+# area = "モデルの写し元"
+# when = ["src/payment/**"]
+# evidence = ["この差分が、モデルの写した振る舞いを変えているかを答える。変えていれば、モデルが先に直っている"]
+# human_reads = "全部読む（モデルと実物の一致を機械で確かめていない）"
